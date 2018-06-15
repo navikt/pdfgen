@@ -1,4 +1,4 @@
-image: "repo.adeo.no:5443/integrasjon/pdfgen"
+image: "repo.adeo.no:5443/integrasjon/pdf-gen"
 replicas:
   min: 1
   max: 4
@@ -24,9 +24,8 @@ resources:
     cpu: 2000m
     memory: 1Gi
   requests:
-    cpu: 50
+    cpu: 50m
     memory: 128Mi
-redis: true
 fasitResources:
   exposed:
   - alias: pdfgen
