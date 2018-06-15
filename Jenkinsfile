@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        APPLICATION_NAME = 'pdfgen'
+        APPLICATION_NAME = 'pdf-gen'
         FASIT_ENV = 't12'
         ZONE = 'fss'
         NAMESPACE = 'default'
