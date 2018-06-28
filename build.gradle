@@ -9,6 +9,7 @@ buildscript {
     ext.handlebars_jackson_version = '1.0.0'
     ext.jsoup_version = '1.8.3'
     ext.jackson_version = '2.9.5'
+    ext.junit_version = '4.12'
 
     repositories {
         mavenCentral()
@@ -64,6 +65,8 @@ dependencies {
 
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "net.logstash.logback:logstash-logback-encoder:$logstash_encoder_version"
+
+    testImplementation "junit:junit:$junit_version"
 }
 
 compileKotlin {
