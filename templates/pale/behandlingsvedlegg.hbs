@@ -72,6 +72,14 @@
 <h1 class="centered_title">Behandlingsvedlegg</h1>
 <h3>Behandlingsvedlegget viser informasjon fra automatisk kontroll av dokumentet</h3>
 <h2>Oppfølgingsmelding er sendt til Arena.</h2>
+{{#if sender.merknadOppfoelging }}
+    <h2>Følgene oppfølgingsmerknader er sendt til Arena</h2>
+    <ul>
+    {{#each sender.merknadOppfoelging }}
+        <li>{{ tekst }}</li>
+    {{/each}}
+    </ul>
+{{/if}}
 <h3>Informasjon om dokumentet</h3>
 <div class="table frame_solid">
     <div class="row bottom_solid">
