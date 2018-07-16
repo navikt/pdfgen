@@ -95,7 +95,7 @@ pipeline {
 }
 
 void deployApplication() {
-    def jiraIssueId = nais 'jiraDeploy'
+    def jiraIssueId = nais action: 'jiraDeploy'
     slackStatus status: 'deploying', jiraIssueId: "${jiraIssueId}"
     try {
         timeout(time: 1, unit: 'HOURS') {
