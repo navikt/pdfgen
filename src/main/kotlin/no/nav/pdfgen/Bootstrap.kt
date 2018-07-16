@@ -22,12 +22,10 @@ import io.prometheus.client.exporter.common.TextFormat
 import net.logstash.logback.argument.StructuredArguments.keyValue
 import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
-import java.io.File
-import java.io.FileOutputStream
+import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.streams.toList
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
@@ -88,16 +86,19 @@ fun main(args: Array<String>) {
                         .resolver(JsonNodeValueResolver.INSTANCE)
                         .build())
                 if (html != null) {
-                    val fileName = "${UUID.randomUUID()}.pdf"
-                    val doc = Jsoup.parse(html)
-                    val w3doc = W3CDom().fromJsoup(doc)
-                    PdfRendererBuilder()
-                            .withW3cDocument(w3doc, "")
-                            .toStream(FileOutputStream(File("out", fileName)))
-                            .run()
                     log.debug("Generated HTML {}", keyValue("html", html))
-                    call.respondFile(File("out", fileName))
-                    log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
+                    call.respondBytes(ContentType.parse("application/pdf")) {
+                        val doc = Jsoup.parse(html)
+                        val w3doc = W3CDom().fromJsoup(doc)
+                        ByteArrayOutputStream().use {
+                            PdfRendererBuilder()
+                                    .withW3cDocument(w3doc, "")
+                                    .toStream(it)
+                                    .run()
+                            log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
+                            it.toByteArray()
+                        }
+                    }
                 } else {
                     call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
                 }
