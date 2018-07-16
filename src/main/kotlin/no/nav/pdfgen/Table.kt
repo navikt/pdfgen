@@ -4,13 +4,13 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream
 import java.awt.Color
 
 class Table(
-        val border: Border? = null,
-        val borderRight: Border? = border,
-        val borderLeft: Border? = border,
-        val borderTop: Border? = border,
-        val borderBottom: Border? = border,
-        val child: Renderable? = null,
-        val height: Float = child?.calculateHeight() ?: 0f + 20
+    val border: Border? = null,
+    val borderRight: Border? = border,
+    val borderLeft: Border? = border,
+    val borderTop: Border? = border,
+    val borderBottom: Border? = border,
+    val child: Renderable? = null,
+    val height: Float = child?.calculateHeight() ?: 0f + 20
 ) : Renderable {
     override fun render(contentStream: PDPageContentStream) {
         contentStream.setNonStrokingColor(Color.BLACK)

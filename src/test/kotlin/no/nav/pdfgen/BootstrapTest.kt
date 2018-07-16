@@ -5,7 +5,7 @@ import org.junit.Test
 
 class BootstrapTest {
 
-    //TODO
+    // TODO
     @Test
     fun shouldBeTrue() {
         Assert.assertEquals(true, true)
