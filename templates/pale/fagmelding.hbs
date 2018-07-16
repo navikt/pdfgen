@@ -26,6 +26,9 @@
             margin: 3px;
             font-size: 12px;
         }
+        .field_value {
+            font-size: 12px;
+        }
         .col50 {
             margin: 0;
             width: 50%;
@@ -559,6 +562,7 @@
     <div class="row height70 bottom_solid">
         <div class="cell col100">
             <h5>5.1 Beskriv hvordan funksjonsevnen generelt er nedsatt på grunn av sykdom</h5>
+            <p>{{ funksjonsOgArbeidsevne.vurderingFunksjonsevne }}</p>
         </div>
     </div>
     <div class="row bottom_dashed">
@@ -814,23 +818,24 @@
                         </div>
                     </div>
                     <div class="row bottom_solid height70">
-                        <div class="cell col50">
+                        <div class="cell col50 field_value">
                             {{iso_to_nor_date signatur.dato }}
                         </div>
+                        <br>
                         <div class="cell col50">
-                            <div>{{ signatur.navn }}</div>
-                            <div>{{ signatur.adresse }}</div>
-                            <div>{{ signatur.postnummer }} {{ signatur.poststed }}</div>
+                            <div class="field_value">{{ signatur.navn }}</div>
+                            <div class="field_value">{{ signatur.adresse }}</div>
+                            <div class="field_value">{{ signatur.postnummer }} {{ signatur.poststed }}</div>
                         </div>
                     </div>
                     <div class="row height70">
                         <div class="cell col75 right_solid">
                             <h5>11.2 Legens underskrift</h5>
-                            <div>{{ signatur.signatur }}</div>
+                            <div class="field_value">{{ signatur.signatur }}</div>
                         </div>
                         <div class="cell col25">
                             <h5>11.3 Telefonnr.</h5>
-                            <div>{{signatur.tlfNummer }}</div>
+                            <div class="field_value">{{ signatur.tlfNummer }}</div>
                         </div>
                     </div>
                 </div>

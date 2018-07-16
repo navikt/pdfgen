@@ -19,24 +19,31 @@ import io.ktor.server.engine.*
 import io.ktor.util.extension
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
+import net.logstash.logback.argument.StructuredArguments.keyValue
 import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.streams.toList
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 val objectMapper: ObjectMapper = ObjectMapper()
+val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 fun main(args: Array<String>) {
     val templateRoot = Paths.get("templates/")
     val handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()))
     handlebars.registerHelper("iso_to_nor_date", Helper<String> {
         context, options ->
-        options.hash("Test date")
+        if (context == null) {
+            ""
+        } else {
+        dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
+        }
     })
 
     val templates = Files.list(templateRoot)
@@ -88,6 +95,7 @@ fun main(args: Array<String>) {
                             .withW3cDocument(w3doc, "")
                             .toStream(FileOutputStream(File("out", fileName)))
                             .run()
+                    log.debug("Generated HTML {}", keyValue("html", html))
                     call.respondFile(File("out", fileName))
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } else {
