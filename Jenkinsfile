@@ -53,8 +53,8 @@ pipeline {
         }
         stage('validate & upload nais.yaml to nexus m2internal') {
             steps {
-                nais 'validate'
-                nais 'upload'
+                nais action: 'validate'
+                nais action: 'upload'
             }
         }
         stage('deploy to preprod') {
