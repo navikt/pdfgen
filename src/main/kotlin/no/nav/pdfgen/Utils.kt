@@ -7,12 +7,13 @@ import org.apache.xmpbox.XMPMetadata
 import org.apache.xmpbox.xml.XmpSerializer
 import org.w3c.dom.Document
 import java.io.ByteArrayOutputStream
-import java.io.File
+
+class Utils
 
 fun createPDFA(w3doc: Document, title: String): ByteArrayOutputStream {
     val builder = PdfRendererBuilder().withW3cDocument(w3doc, "")
     val renderer = builder.buildPdfRenderer()
-    val colorProfile = File("resources/sRGB2014.icc").inputStream()
+    val colorProfile = Utils::class.java.getResourceAsStream("resources/sRGB2014.icc")
     val baos = ByteArrayOutputStream()
     renderer.createPDFWithoutClosing()
     renderer.pdfDocument.use {
