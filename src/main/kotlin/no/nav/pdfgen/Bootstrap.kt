@@ -80,17 +80,18 @@ fun main(args: Array<String>) {
                 val startTime = System.currentTimeMillis()
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
                 println(objectMapper.writeValueAsString(jsonNode))
-                val html = templates[call.parameters["applicationName"] to call.parameters["template"]]?.apply(Context
+                val template = call.parameters["template"]
+                val html = templates[call.parameters["applicationName"] to template]?.apply(Context
                         .newBuilder(jsonNode)
                         .resolver(JsonNodeValueResolver.INSTANCE)
                         .build())
-                if (html != null) {
+                if (template != null && html != null) {
                     log.debug("Generated HTML {}", keyValue("html", html))
                     call.respondBytes(ContentType.parse("application/pdf")) {
                         val doc = Jsoup.parse(html)
                         val w3doc = W3CDom().fromJsoup(doc)
 
-                        createPDFA(w3doc, call.parameters["template"]!!).toByteArray()
+                        createPDFA(w3doc, template)
                     }
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } else {

@@ -10,28 +10,31 @@ import java.io.ByteArrayOutputStream
 
 class Utils
 
-fun createPDFA(w3doc: Document, title: String): ByteArrayOutputStream {
-    val builder = PdfRendererBuilder().withW3cDocument(w3doc, "")
-    val renderer = builder.buildPdfRenderer()
-    val colorProfile = Utils::class.java.getResourceAsStream("resources/sRGB2014.icc")
-    val baos = ByteArrayOutputStream()
-    renderer.createPDFWithoutClosing()
-    renderer.pdfDocument.use {
-        it.documentCatalog.metadata = PDMetadata(it).apply {
-            importXMPMetadata(createXMPMetadata(title))
+fun createPDFA(w3doc: Document, title: String): ByteArray {
+    PdfRendererBuilder().withW3cDocument(w3doc, "").buildPdfRenderer().use {
+        renderer ->
+        val colorProfile = Utils::class.java.getResourceAsStream("/sRGB2014.icc")
+        renderer.createPDFWithoutClosing()
+        return renderer.pdfDocument.use {
+            it.documentCatalog.metadata = PDMetadata(it).apply {
+                importXMPMetadata(createXMPMetadata(title))
+            }
+            it.documentCatalog.addOutputIntent(PDOutputIntent(it, colorProfile).apply {
+                info = "sRGB IEC61966-2.1"
+                outputCondition = "sRGB IEC61966-2.1"
+                outputConditionIdentifier = "sRGB IEC61966-2.1"
+                registryName = "http://www.color.org"
+            })
+            ByteArrayOutputStream().use {
+                bytesOut ->
+                it.save(bytesOut)
+                bytesOut.toByteArray()
+            }
         }
-        it.documentCatalog.addOutputIntent(PDOutputIntent(it, colorProfile).apply {
-            info = "sRGB IEC61966-2.1"
-            outputCondition = "sRGB IEC61966-2.1"
-            outputConditionIdentifier = "sRGB IEC61966-2.1"
-            registryName = "http://www.color.org"
-        })
-        it.save(baos)
     }
-    return baos
 }
 
-fun createXMPMetadata(t: String): ByteArray? {
+fun createXMPMetadata(t: String): ByteArray {
     val xmp = XMPMetadata.createXMPMetadata().apply {
         createAndAddDublinCoreSchema().apply {
             title = t
