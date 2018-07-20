@@ -12,34 +12,38 @@ import java.io.File
 fun createPDFA(w3doc: Document, title: String): ByteArrayOutputStream {
     val builder = PdfRendererBuilder().withW3cDocument(w3doc, "")
     val renderer = builder.buildPdfRenderer()
-    renderer.createPDFWithoutClosing()
-    val document = renderer.pdfDocument
-    val metadata = PDMetadata(document)
-    metadata.importXMPMetadata(createXMPMetadata(title))
-    document.documentCatalog.metadata = metadata
-
     val colorProfile = File("resources/sRGB2014.icc").inputStream()
-    val intent = PDOutputIntent(document, colorProfile)
-    intent.info = "sRGB IEC61966-2.1"
-    intent.outputCondition = "sRGB IEC61966-2.1"
-    intent.outputConditionIdentifier = "sRGB IEC61966-2.1"
-    intent.registryName = "http://www.color.org"
-    document.documentCatalog.addOutputIntent(intent)
     val baos = ByteArrayOutputStream()
-    document.save(baos)
+    renderer.createPDFWithoutClosing()
+    renderer.pdfDocument.use {
+        it.documentCatalog.metadata = PDMetadata(it).apply {
+            importXMPMetadata(createXMPMetadata(title))
+        }
+        it.documentCatalog.addOutputIntent(PDOutputIntent(it, colorProfile).apply {
+            info = "sRGB IEC61966-2.1"
+            outputCondition = "sRGB IEC61966-2.1"
+            outputConditionIdentifier = "sRGB IEC61966-2.1"
+            registryName = "http://www.color.org"
+        })
+        it.save(baos)
+    }
     return baos
 }
 
-fun createXMPMetadata(title: String): ByteArray? {
-    val xmp = XMPMetadata.createXMPMetadata()
-    val dc = xmp.createAndAddDublinCoreSchema()
-    dc.title = title
-    dc.addCreator("pdfgen")
-    val id = xmp.createAndAddPFAIdentificationSchema()
-    id.part = 3
-    id.conformance = "B"
+fun createXMPMetadata(t: String): ByteArray? {
+    val xmp = XMPMetadata.createXMPMetadata().apply {
+        createAndAddDublinCoreSchema().apply {
+            title = t
+            addCreator("pdfgen")
+        }
+        createAndAddPFAIdentificationSchema().apply {
+            conformance = "B"
+            part = 3
+        }
+    }
     val serializer = XmpSerializer()
-    val baos = ByteArrayOutputStream()
-    serializer.serialize(xmp, baos, true)
-    return baos.toByteArray()
+    return ByteArrayOutputStream().use{
+        serializer.serialize(xmp, it, true)
+        it.toByteArray()
+    }
 }
