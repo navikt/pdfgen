@@ -8,7 +8,6 @@ import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import io.ktor.application.call
 import io.ktor.application.log
 import io.ktor.http.ContentType
@@ -28,7 +27,6 @@ import io.prometheus.client.exporter.common.TextFormat
 import net.logstash.logback.argument.StructuredArguments.keyValue
 import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
-import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
@@ -91,15 +89,10 @@ fun main(args: Array<String>) {
                     call.respondBytes(ContentType.parse("application/pdf")) {
                         val doc = Jsoup.parse(html)
                         val w3doc = W3CDom().fromJsoup(doc)
-                        ByteArrayOutputStream().use {
-                            PdfRendererBuilder()
-                                    .withW3cDocument(w3doc, "")
-                                    .toStream(it)
-                                    .run()
-                            log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
-                            it.toByteArray()
-                        }
+
+                        createPDFA(w3doc, call.parameters["template"]!!).toByteArray()
                     }
+                    log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } else {
                     call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
                 }
