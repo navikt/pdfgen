@@ -43,7 +43,7 @@ fun createXMPMetadata(t: String): ByteArray? {
         }
     }
     val serializer = XmpSerializer()
-    return ByteArrayOutputStream().use{
+    return ByteArrayOutputStream().use {
         serializer.serialize(xmp, it, true)
         it.toByteArray()
     }
