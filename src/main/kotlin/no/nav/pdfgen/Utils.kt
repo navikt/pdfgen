@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.openhtmltopdf.css.constants.IdentValue
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
@@ -18,6 +19,12 @@ val colorProfile: ByteArray = Files.readAllBytes(Paths.get(Utils::class.java.get
 fun createPDFA(w3doc: Document, title: String): ByteArray {
     PdfRendererBuilder().withW3cDocument(w3doc, "").buildPdfRenderer().use {
         renderer ->
+        renderer.fontResolver.addFont({
+            Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Regular.ttf")
+        }, "Source Sans Pro", IdentValue.NORMAL.FS_ID, IdentValue.NORMAL, false)
+        renderer.fontResolver.addFont({
+            Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Bold.ttf")
+        }, "Source Sans Pro", IdentValue.BOLD.FS_ID, IdentValue.NORMAL, true)
         renderer.createPDFWithoutClosing()
         return renderer.pdfDocument.use {
             it.documentCatalog.metadata = PDMetadata(it).apply {

@@ -4,7 +4,7 @@ buildscript {
     ext.prometheus_version = '0.3.0'
     ext.logback_version = '1.2.3'
     ext.logstash_encoder_version = '5.1'
-    ext.open_html_to_pdf_version = '0.0.1-RC13'
+    ext.open_html_to_pdf_version = '0.0.1-RC14'
     ext.handlebars_version = '4.1.0'
     ext.handlebars_jackson_version = '1.0.0'
     ext.jsoup_version = '1.8.3'
