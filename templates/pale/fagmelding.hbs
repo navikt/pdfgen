@@ -10,7 +10,7 @@
         h1 {
             font-weight: bold;
             font-style: normal;
-            font-size: 18px;
+            font-size: 24px;
             font-family: Arial, sans-serif;
         }
 
@@ -18,7 +18,7 @@
             font-weight: normal;
             font-style: normal;
             font-size: 16px;
-            margin-top: 4px;
+            margin-top: 5px;
             margin-bottom: 2px;
             font-family: Arial, sans-serif;
         }
@@ -70,9 +70,6 @@
         .col35 {
             width: 35%;
         }
-        .col40 {
-            width: 40%;
-        }
         .col70 {
             width: 70%;
         }
@@ -118,17 +115,23 @@
         .height50 {
             height: 50px;
         }
+        .height60 {
+            height: 60px;
+        }
         .height70 {
             height: 70px;
         }
         .height80 {
             height: 80px;
         }
+        .height90 {
+            height: 90px;
+        }
+        .height100 {
+            height: 100px;
+        }
         .height110 {
             height: 110px;
-        }
-        .height120 {
-            height: 120px;
         }
         .height200 {
             height: 200px;
@@ -136,8 +139,8 @@
         .height300 {
             height: 300px;
         }
-        .height360 {
-            height: 360px;
+        .height370 {
+            height: 370px;
         }
         .bottom_solid {
             border-bottom: black solid 1px;
@@ -193,7 +196,6 @@
         }
         .new_page {
             page-break-before: always;
-            margin-top: 20px;
         }
         @media not print {
             .new_page {
@@ -250,12 +252,17 @@
             width: 98%;
             margin: 0.2cm;
         }
+        .signature_value {
+            font-size: 14px;
+        }
         @page {
+            margin-top: 1.4cm;
             @top-right {
                 content: element(header);
             }
         }
         @page :first {
+            margin-top: 0.2cm;
             @top-right {
             }
         }
@@ -274,8 +281,17 @@
         </div>
     </div>
 </div>
-<h1>FOLKETRYGDEN</h1>
-<br>
+<div class="table">
+    <div class="row col50">
+        <div class="cell col70">
+            <h1>FOLKETRYGDEN</h1>
+        </div>
+        <div class="cell col30">
+            <h2 style="font-size: 20px;">Legeerklæring ved arbeidsuførhet</h2>
+            <p>Legen skal sende denne til NAV-kontoret.</p>
+        </div>
+    </div>
+</div>
 <h2>0 Erklæringen gjelder</h2>
 <div class="table frame_solid">
     <div id="erklaering_gjelder" class="row">
@@ -507,7 +523,7 @@
             <p>{{ plan.naarSpoerreOmNyeLegeopplysninger }}</p>
         </div>
     </div>
-    <div class="row height80">
+    <div class="row height70">
         <div class="cell col100">
             <h5>3.6 Hvis videre behandling ikke er aktuell, gi begrunnelse</h5>
             <p>{{ plan.videreBehandlingIkkeAktuellGrunn }}</p>
@@ -579,7 +595,7 @@
             <p>{{ forslagTilTiltak.naermereOpplysninger }}</p>
         </div>
     </div>
-    <div class="row height110">
+    <div class="row height100">
         <div class="cell col100">
             <h5>Hvis ja, oppgi ev. begrensninger i forhold til tiltak. Hvis nei, gi begrunnelse</h5>
             <p>{{ forslagTilTiltak.tekst }}</p>
@@ -588,13 +604,13 @@
 </div>
 <h2>5 Medisinsk begrunnet vurdering av funksjons- og arbeidsevne</h2>
 <div class="table frame_solid">
-    <div class="row height70 bottom_solid">
+    <div class="row height60 bottom_solid">
         <div class="cell col100">
             <h5>5.1 Beskriv hvordan funksjonsevnen generelt er nedsatt på grunn av sykdom</h5>
             <p>{{ funksjonsOgArbeidsevne.vurderingFunksjonsevne }}</p>
         </div>
     </div>
-    <div class="row bottom_dashed">
+    <div class="row bottom_dashed height30">
         <div class="cell col70" style="vertical-align: bottom">
             <h5 class="inline"><!--Width workaround for openhtmltopdf-->5.2 Er pasienten: </h5>
             <div class="checkbox inline">{{#if funksjonsOgArbeidsevne.iIntektsgivendeArbeid }}X{{/if}}</div>
@@ -611,7 +627,7 @@
             <p>{{ funksjonsOgArbeidsevne.annetArbeid }}</p>
         </div>
     </div>
-    <div class="row height80 bottom_solid">
+    <div class="row height70 bottom_solid">
         <div class="cell col100">
             <h5>Beskriv kort type arbeid og hvilke krav som stilles</h5>
             <p>{{ funksjonsOgArbeidsevne.kravTilArbeid }}</p>
@@ -703,7 +719,7 @@
             <p style="display: block;">{{ funksjonsOgArbeidsevne.kanIkkeINaaverendeArbeid }}</p>
         </div>
     </div>
-    <div class="row height70">
+    <div class="row height60">
         <div class="cell col100">
             <div>
                 <div class="inline_header" style="width: 20px; min-height: 1px;"> </div>
@@ -768,7 +784,7 @@
 
 <h2>8 Andre opplysninger</h2>
 <div class="table frame_solid">
-    <div class="row height360">
+    <div class="row height370">
         <div class="cell col100">
             <p>{{ andreOpplysninger }}</p>
         </div>
@@ -800,7 +816,7 @@
         <div class="cell" style="width: 13%;">
             <h5>9.2 Ønsker du kopi av vedtaket?</h5>
         </div>
-        <div class="cell col10 height30">
+        <div class="cell col10 height20">
             <div class="left_bottom">
                 <div class="checkbox inline">{{#if kontakt.oenskesKopiAvVedtak}}{{/if}}</div>
                 <h5 class="inline">Ja</h5>
@@ -814,7 +830,7 @@
         <div class="cell col50">
             <h2>10 Forbehold</h2>
             <div class="table frame_solid">
-                <div class="row bottom_solid height40">
+                <div class="row bottom_solid height30">
                     <div class="cell col75">
                         <h5>10.1 Er det noe i legeerklæringen som pasienten ikke bør få vite av medisinske grunner?</h5>
                     </div>
@@ -829,7 +845,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row height120">
+                <div class="row height90">
                     <div class="cell col100">
                         <h5>Hvis Ja, oppgi hva pasienten ikke bør vite</h5>
                         <p>{{ pasientenBurdeIkkeVite }}</p>
@@ -841,30 +857,21 @@
             <div style="margin-left: 20px; margin-right: 2px;">
                 <h2>Legens underskrift mv.</h2>
                 <div class="table frame_solid">
-                    <div class="row height20">
-                        <div class="cell col100">
+                    <div class="row height60">
+                        <div class="cell col100 bottom_solid">
                             <h5>11.1 Dato, legens navn og adresse</h5>
+                            <div class="signature_value">{{iso_to_nor_date signatur.dato }}, {{ signatur.navn }}</div>
+                            <div class="signature_value">{{ signatur.adresse }}, {{ signatur.postnummer }} {{ signatur.poststed }}</div>
                         </div>
                     </div>
-                    <div class="row bottom_solid height70">
-                        <div class="cell col50 field_value">
-                            {{iso_to_nor_date signatur.dato }}
-                        </div>
-                        <br>
-                        <div class="cell col50">
-                            <div class="field_value">{{ signatur.navn }}</div>
-                            <div class="field_value">{{ signatur.adresse }}</div>
-                            <div class="field_value">{{ signatur.postnummer }} {{ signatur.poststed }}</div>
-                        </div>
-                    </div>
-                    <div class="row height70">
+                    <div class="row height60">
                         <div class="cell col75 right_solid">
                             <h5>11.2 Legens underskrift</h5>
-                            <div class="field_value">{{ signatur.signatur }}</div>
+                            <div class="signature_value">{{ signatur.signatur }}</div>
                         </div>
                         <div class="cell col25">
                             <h5>11.3 Telefonnr.</h5>
-                            <div class="field_value">{{ signatur.tlfNummer }}</div>
+                            <div class="signature_value">{{ signatur.tlfNummer }}</div>
                         </div>
                     </div>
                 </div>
