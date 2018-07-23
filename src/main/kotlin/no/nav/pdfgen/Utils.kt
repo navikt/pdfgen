@@ -2,6 +2,7 @@ package no.nav.pdfgen
 
 import com.openhtmltopdf.css.constants.IdentValue
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
+import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
 import org.apache.xmpbox.XMPMetadata
@@ -17,8 +18,11 @@ class Utils
 val colorProfile: ByteArray = Files.readAllBytes(Paths.get(Utils::class.java.getResource("/sRGB2014.icc").toURI()))
 
 fun createPDFA(w3doc: Document, title: String): ByteArray {
-    PdfRendererBuilder().withW3cDocument(w3doc, "").buildPdfRenderer().use {
+
+    PdfRendererBuilder().useSVGDrawer(BatikSVGDrawer()).withW3cDocument(w3doc, "").buildPdfRenderer().use {
         renderer ->
+
+        val colorProfile = Utils::class.java.getResourceAsStream("/sRGB2014.icc")
         renderer.fontResolver.addFont({
             Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Regular.ttf")
         }, "Source Sans Pro", IdentValue.NORMAL.FS_ID, IdentValue.NORMAL, false)

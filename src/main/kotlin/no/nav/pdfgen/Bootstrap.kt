@@ -2,16 +2,11 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.jknack.handlebars.Context
-import com.github.jknack.handlebars.Handlebars
-import com.github.jknack.handlebars.Helper
-import com.github.jknack.handlebars.JsonNodeValueResolver
-import com.github.jknack.handlebars.Template
+import com.github.jknack.handlebars.*
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
-import io.ktor.application.log
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveStream
@@ -45,6 +40,22 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
     registerHelper("iso_to_nor_date", Helper<String> {
         context, _ ->
         if (context == null) "" else dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
+    })
+    registerHelper("split_person_id", Helper<Long> {
+        context, _ ->
+        if (context == null || context.toString().length < 11) "" else (context.toString().substring(0, 6) + " " + context.toString().substring(6, 11))
+    })
+    registerHelper("eq", Helper<String> {
+        context, options ->
+        if (context == options.param(0)) {
+            options.fn()
+        } else {
+            options.inverse()
+        }
+    })
+    registerHelper("safe", Helper<String> {
+        context, _ ->
+        if (context == null) "" else Handlebars.SafeString(context)
     })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
