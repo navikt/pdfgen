@@ -136,8 +136,8 @@
         .height300 {
             height: 300px;
         }
-        .height370 {
-            height: 370px;
+        .height360 {
+            height: 360px;
         }
         .bottom_solid {
             border-bottom: black solid 1px;
@@ -192,7 +192,8 @@
             display: table-cell;
         }
         .new_page {
-            page-break-after: always;
+            page-break-before: always;
+            margin-top: 20px;
         }
         @media not print {
             .new_page {
@@ -242,9 +243,37 @@
             left: 0;
             top: 0;
         }
+        .header {
+            display: block;
+            position: running(header);
+            /* A bit hacky, however works fine */
+            width: 98%;
+            margin: 0.2cm;
+        }
+        @page {
+            @top-right {
+                content: element(header);
+            }
+        }
+        @page :first {
+            @top-right {
+            }
+        }
     </style>
 </head>
 <body>
+<div class="header table frame_solid">
+    <div class="row">
+        <div class="cell col75 right_solid">
+            <h5>Etternavn, fornavn</h5>
+            <div class="field_value">{{ pasient.fornavn }} {{ pasient.mellomnavn }} {{ pasient.etternavn }}</div>
+        </div>
+        <div class="cell col25">
+            <h5>Fødselsnummer (11 siffer)</h5>
+            <div class="field_value">{{ pasient.foedselsnummer }}</div>
+        </div>
+    </div>
+</div>
 <h1>FOLKETRYGDEN</h1>
 <br>
 <h2>0 Erklæringen gjelder</h2>
@@ -739,7 +768,7 @@
 
 <h2>8 Andre opplysninger</h2>
 <div class="table frame_solid">
-    <div class="row height370">
+    <div class="row height360">
         <div class="cell col100">
             <p>{{ andreOpplysninger }}</p>
         </div>
