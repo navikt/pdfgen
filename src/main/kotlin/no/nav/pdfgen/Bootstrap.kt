@@ -46,6 +46,22 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
         context, _ ->
         if (context == null) "" else dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
     })
+    registerHelper("split_person_id", Helper<Long> {
+        context, _ ->
+        if (context == null || context.toString().length < 11) "" else (context.toString().substring(0, 6) + " " + context.toString().substring(6, 11))
+    })
+    registerHelper("eq", Helper<String> {
+        context, options ->
+        if (context == options.param(0)) {
+            options.fn()
+        } else {
+            options.inverse()
+        }
+    })
+    registerHelper("safe", Helper<String> {
+        context, _ ->
+        if (context == null) "" else Handlebars.SafeString(context)
+    })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 

@@ -7,7 +7,7 @@ buildscript {
     ext.open_html_to_pdf_version = '0.0.1-RC14'
     ext.handlebars_version = '4.1.0'
     ext.handlebars_jackson_version = '1.0.0'
-    ext.jsoup_version = '1.8.3'
+    ext.jsoup_version = '1.11.3'
     ext.jackson_version = '2.9.5'
     ext.junit_version = '4.12'
 
@@ -56,6 +56,7 @@ dependencies {
     implementation "com.github.jknack:handlebars:$handlebars_version"
     implementation "com.github.jknack:handlebars-jackson2:$handlebars_jackson_version"
     implementation "com.openhtmltopdf:openhtmltopdf-core:$open_html_to_pdf_version"
+    //implementation "com.openhtmltopdf:openhtmltopdf-svg-support:$open_html_to_pdf_version"
     implementation "com.openhtmltopdf:openhtmltopdf-pdfbox:$open_html_to_pdf_version"
 
     implementation "org.jsoup:jsoup:$jsoup_version"

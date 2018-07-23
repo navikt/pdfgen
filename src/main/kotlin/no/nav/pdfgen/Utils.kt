@@ -2,6 +2,7 @@ package no.nav.pdfgen
 
 import com.openhtmltopdf.css.constants.IdentValue
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
+import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
 import org.apache.xmpbox.XMPMetadata
@@ -53,7 +54,7 @@ fun createXMPMetadata(t: String): ByteArray {
         }
         createAndAddPFAIdentificationSchema().apply {
             conformance = "B"
-            part = 3
+            part = 2
         }
     }
     val serializer = XmpSerializer()
