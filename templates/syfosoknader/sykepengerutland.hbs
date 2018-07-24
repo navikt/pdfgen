@@ -137,12 +137,12 @@
 </head>
 <body>
     <div class="header">
-        <img class="navlogo" src="{{ image "syfosoknader" "Navlogo" }}" />
+        <img class="navlogo" src="{{ image "Navlogo.png" }}" />
         <h1 class="title">Søknad om å beholde sykepenger utenfor Norge</h1>
     </div>
     <div class="container">
         <div class="personinfo">
-            <img class="personikon" src="{{ image "syfosoknader" "Personikon" }}" />
+            <img class="personikon" src="{{ image "Personikon.png" }}" />
             <div class="persontekst">
                 <p class="sendt">
                     Sendt til NAV {{ iso_to_nor_date sendt }}
@@ -171,7 +171,7 @@
                     </p>
                 {{/eq}}
                 {{#eq type "CHECKBOX" }}
-                    <img class="checkbox" src="{{ image "syfosoknader" "Checkboks" }}" />
+                    <img class="checkbox" src="{{ image "Checkboks.png" }}" />
                     <p class="svar svar--checkbox">
                         {{ svar }}
                     </p>
@@ -180,7 +180,7 @@
                     {{#if undertekst}}
                         {{safe undertekst}}
                     {{/if}}
-                    <img class="checkbox checkbox--ikkerelevant" src="{{ image "syfosoknader" "Checkboks" }}" />
+                    <img class="checkbox checkbox--ikkerelevant" src="{{ image "Checkboks.png" }}" />
                     <p class="svar svar--checkbox">
                         {{ svar }}
                     </p>

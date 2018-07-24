@@ -35,13 +35,16 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
 import java.util.Base64
+import java.util.Base64.Encoder
 import kotlin.streams.toList
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 val objectMapper: ObjectMapper = ObjectMapper()
+val base64encoder: Encoder = Base64.getEncoder()
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
+val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     registerHelper("iso_to_nor_date", Helper<String> {
         context, _ ->
@@ -65,11 +68,11 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
     })
 
     registerHelper("image", Helper<String> {
-        context, options ->
+        context, _ ->
         if (context == null) {
             ""
         } else {
-            loadPNG()[context to options.param(0)]
+            images[context]
         }
     })
 }
@@ -154,22 +157,17 @@ fun loadTemplates() = Files.list(templateRoot)
         .toList()
         .toMap()
 
-fun loadPNG() = Files.list(imagesRoot)
+
+fun loadImages() = Files.list(imagesRoot)
         .filter {
             !Files.isHidden(it)
         }
         .map {
-            it.fileName.toString() to Files.list(it).filter { it.fileName.extension == "png" }
-        }
-        .flatMap {
-            (applicationName, imageFiles) ->
-            imageFiles.map {
-                val fileName = it.fileName.toString()
-                val imageName = fileName.substring(0..fileName.length - 5)
-                val imageBytes = Files.readAllBytes(it)
-                val base64 = "data:image/png;base64," + Base64.getEncoder().encodeToString(imageBytes)
-                (applicationName to imageName) to base64
-            }
+            val fileName = it.fileName.toString()
+            val extension = it.fileName.extension
+            val base64string = base64encoder.encodeToString(Files.readAllBytes(it))
+            val base64 = "data:image/$extension;base64,$base64string"
+            fileName to base64
         }
         .toList()
         .toMap()
