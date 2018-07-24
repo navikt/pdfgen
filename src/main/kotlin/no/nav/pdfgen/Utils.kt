@@ -2,7 +2,6 @@ package no.nav.pdfgen
 
 import com.openhtmltopdf.css.constants.IdentValue
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
-import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
 import org.apache.xmpbox.XMPMetadata
@@ -19,16 +18,15 @@ val colorProfile: ByteArray = Files.readAllBytes(Paths.get(Utils::class.java.get
 
 fun createPDFA(w3doc: Document, title: String): ByteArray {
 
-    PdfRendererBuilder().useSVGDrawer(BatikSVGDrawer()).withW3cDocument(w3doc, "").buildPdfRenderer().use {
+    PdfRendererBuilder().withW3cDocument(w3doc, "").buildPdfRenderer().use {
         renderer ->
 
-        val colorProfile = Utils::class.java.getResourceAsStream("/sRGB2014.icc")
         renderer.fontResolver.addFont({
             Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Regular.ttf")
-        }, "Source Sans Pro", IdentValue.NORMAL.FS_ID, IdentValue.NORMAL, false)
+        }, "Source Sans Pro", 400, IdentValue.NORMAL, false)
         renderer.fontResolver.addFont({
             Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Bold.ttf")
-        }, "Source Sans Pro", IdentValue.BOLD.FS_ID, IdentValue.NORMAL, true)
+        }, "Source Sans Pro", 700, IdentValue.NORMAL, false)
         renderer.createPDFWithoutClosing()
         return renderer.pdfDocument.use {
             it.documentCatalog.metadata = PDMetadata(it).apply {
@@ -57,7 +55,7 @@ fun createXMPMetadata(t: String): ByteArray {
         }
         createAndAddPFAIdentificationSchema().apply {
             conformance = "B"
-            part = 3
+            part = 2
         }
     }
     val serializer = XmpSerializer()
