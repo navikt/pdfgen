@@ -65,6 +65,7 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 
 fun main(args: Array<String>) {
+    System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     val templates = loadTemplates()
 
     embeddedServer(Netty, 8080) {
