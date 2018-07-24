@@ -55,7 +55,7 @@ dependencies {
 
     implementation "com.github.jknack:handlebars:$handlebars_version"
     implementation "com.github.jknack:handlebars-jackson2:$handlebars_jackson_version"
-    implementation "com.openhtmltopdf:openhtmltopdf-core:$open_html_to_pdf_version"
+    //implementation "com.openhtmltopdf:openhtmltopdf-svg-support:$open_html_to_pdf_version"
     implementation "com.openhtmltopdf:openhtmltopdf-pdfbox:$open_html_to_pdf_version"
     implementation "com.openhtmltopdf:openhtmltopdf-svg-support:$open_html_to_pdf_version"
     implementation "de.rototor.pdfbox:graphics2d:0.5"

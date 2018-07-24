@@ -30,7 +30,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 import kotlin.streams.toList
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
@@ -72,6 +72,7 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 
 fun main(args: Array<String>) {
+    System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     val templates = loadTemplates()
 
     embeddedServer(Netty, 8080) {
