@@ -48,19 +48,20 @@ val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     registerHelper("iso_to_nor_date", Helper<String> {
         context, _ ->
-        if (context == null) "" else dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
+        if (context == null) return@Helper ""
+        dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
     })
-    registerHelper("split_person_id", Helper<Long> {
-        context, _ ->
-        if (context == null || context.toString().length < 11) "" else (context.toString().substring(0, 6) + " " + context.toString().substring(6, 11))
+    registerHelper("insert_at", Helper<String> {
+        context, options ->
+        if (context == null) return@Helper ""
+        val divider = options.hash<String>("divider", " ")
+        options.params
+                .map { it as Int }
+                .fold(context) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
     })
     registerHelper("eq", Helper<String> {
         context, options ->
-        if (context == options.param(0)) {
-            options.fn()
-        } else {
-            options.inverse()
-        }
+        if (context == options.param(0)) options.fn() else options.inverse()
     })
     registerHelper("safe", Helper<String> {
         context, _ ->
@@ -68,12 +69,7 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
     })
 
     registerHelper("image", Helper<String> {
-        context, _ ->
-        if (context == null) {
-            ""
-        } else {
-            images[context]
-        }
+        context, _ -> if (context == null) "" else images[context]
     })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
