@@ -2,7 +2,11 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.jknack.handlebars.*
+import com.github.jknack.handlebars.Handlebars
+import com.github.jknack.handlebars.Helper
+import com.github.jknack.handlebars.Template
+import com.github.jknack.handlebars.Context
+import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.ApplicationCall
@@ -151,7 +155,7 @@ fun loadTemplates() = Files.list(templateRoot)
         .toMap()
 
 fun loadPNG() = Files.list(imagesRoot)
-        .filter{
+        .filter {
             !Files.isHidden(it)
         }
         .map {
