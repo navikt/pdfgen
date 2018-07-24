@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0.2cm;
+        }
+
+        * {
+            font-family: "Source Sans Pro";
+        }
+
+        img {
+            image-rendering: pixelated;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-style: normal;
+            font-size: 18px;
+            font-family: "Source Sans Pro";
+        }
+
+        p {
+            margin: 3px;
+            font-size: 12px;
+            font-family: "Source Sans Pro";
+        }
+
+        .title {
+            display: inline-block;
+            position: absolute;
+            top: 15px;
+            left: 100px;
+        }
+
+        .navlogo {
+            display: inline-block;
+            padding-top: 15px;
+            padding-bottom: 12px;
+            height: 30px;
+        }
+
+        .header {
+            background: #C2EAF7;
+            padding: 0cm 0.7cm;
+        }
+
+        .container {
+            margin: 0cm 0.7cm;
+        }
+
+        .personinfo {
+            margin-top: 0.7cm;
+            margin-bottom: 1cm;
+        }
+
+        .navn {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .personikon {
+            display: inline-block;
+            height: 28px;
+            margin-right: 0;
+            padding-right: 0;
+        }
+
+        .persontekst {
+            display: inline-block;
+            margin-left: -6px;
+            padding-left: 0;
+        }
+
+        .sendt {
+            position: absolute;
+            right: 3cm;
+            font-size: 10px;
+        }
+
+        .svar {
+            margin-top: 4px;
+        }
+
+        .svar--perioder {
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+
+        .svar--checkbox {
+            display: inline-block;
+            position: relative;
+            bottom: 1px;
+        }
+
+        .checkbox {
+            display: inline-block;
+            margin: 0px -12px 0 -17px;
+            height: 12px;
+        }
+
+        .checkbox--ikkerelevant {
+            margin-left: -4px;
+        }
+
+
+        .sporsmal {
+            margin-bottom: 0.5cm;
+        }
+
+        .sporsmalstekst {
+            font-weight: bold;
+        }
+
+        .footer {
+            display: block;
+            position: absolute;
+            top: 24.5cm;
+            left: 0.9cm;
+            font-size: 10px;
+        }
+
+        .sporsmal ul {
+            font-family: "Source Sans Pro";
+            font-size: 12px;
+        }
+
+        .sporsmal ul li {
+            margin-bottom: 12px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="navlogo" src="{{ image "Navlogo.png" }}" />
+        <h1 class="title">Søknad om å beholde sykepenger utenfor Norge</h1>
+    </div>
+    <div class="container">
+        <div class="personinfo">
+            <img class="personikon" src="{{ image "Personikon.png" }}" />
+            <div class="persontekst">
+                <p class="sendt">
+                    Sendt til NAV {{ iso_to_nor_date sendt }}
+                </p>
+                <p class="navn">
+                    {{ person.navn }}
+                </p>
+                <p class="id">
+                    {{ split_person_id person.pnr }}
+                </p>
+            </div>
+        </div>
+        {{# each sporsmal~}}
+            <div class="sporsmal">
+                <p class="sporsmalstekst">
+                    {{ tekst }}
+                </p>
+                {{#eq type "PERIODER" }}
+                    <p class="svar svar--perioder">
+                        {{ iso_to_nor_date svar.fom}} – {{ iso_to_nor_date svar.tom}}
+                    </p>
+                {{/eq}}
+                {{#eq type "FRITEKST" }}
+                    <p class="svar">
+                        {{ svar }}
+                    </p>
+                {{/eq}}
+                {{#eq type "CHECKBOX" }}
+                    <img class="checkbox" src="{{ image "Checkboks.png" }}" />
+                    <p class="svar svar--checkbox">
+                        {{ svar }}
+                    </p>
+                {{/eq}}
+                {{#eq type "IKKE_RELEVANT" }}
+                    {{#if undertekst}}
+                        {{safe undertekst}}
+                    {{/if}}
+                    <img class="checkbox checkbox--ikkerelevant" src="{{ image "Checkboks.png" }}" />
+                    <p class="svar svar--checkbox">
+                        {{ svar }}
+                    </p>
+                {{/eq}}
+            </div>
+        {{~/each}}
+    </div>
+    <p class="footer">
+        {{ id }}
+    </p>
+</body>
+</html>

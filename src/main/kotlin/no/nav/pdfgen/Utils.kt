@@ -1,6 +1,5 @@
 package no.nav.pdfgen
 
-import com.openhtmltopdf.css.constants.IdentValue
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import org.apache.pdfbox.io.IOUtils
@@ -21,9 +20,9 @@ val sourceSansProBold: ByteArray = IOUtils.toByteArray(Utils::class.java.getReso
 fun createPDFA(w3doc: Document, title: String): ByteArray {
     PdfRendererBuilder()
             .useFont({ ByteArrayInputStream(sourceSansProRegular) }, "Source Sans Pro",
-                    IdentValue.NORMAL.FS_ID, BaseRendererBuilder.FontStyle.NORMAL, false)
-            .useFont({ ByteArrayInputStream(sourceSansProBold) }, "Source Sans Pro", IdentValue.BOLD.FS_ID,
-                    BaseRendererBuilder.FontStyle.NORMAL, true)
+                    400, BaseRendererBuilder.FontStyle.NORMAL, false)
+            .useFont({ ByteArrayInputStream(sourceSansProBold) }, "Source Sans Pro", 700,
+                    BaseRendererBuilder.FontStyle.NORMAL, false)
             // .useFastMode() wait with fast mode until it doesn't print a bunch of errors
             .withW3cDocument(w3doc, "")
             .buildPdfRenderer().use {

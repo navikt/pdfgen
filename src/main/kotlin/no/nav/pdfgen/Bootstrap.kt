@@ -2,11 +2,11 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.Template
+import com.github.jknack.handlebars.Context
+import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.ApplicationCall
@@ -34,12 +34,17 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
+import java.util.Base64
+import java.util.Base64.Encoder
 import kotlin.streams.toList
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 val objectMapper: ObjectMapper = ObjectMapper()
+val base64encoder: Encoder = Base64.getEncoder()
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val templateRoot: Path = Paths.get("templates/")
+val imagesRoot: Path = Paths.get("resources/")
+val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     registerHelper("iso_to_nor_date", Helper<String> {
         context, _ ->
@@ -60,6 +65,15 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
     registerHelper("safe", Helper<String> {
         context, _ ->
         if (context == null) "" else Handlebars.SafeString(context)
+    })
+
+    registerHelper("image", Helper<String> {
+        context, _ ->
+        if (context == null) {
+            ""
+        } else {
+            images[context]
+        }
     })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
@@ -139,6 +153,20 @@ fun loadTemplates() = Files.list(templateRoot)
                 val xhtml = handlebars.compile(StringTemplateSource(fileName, templateBytes))
                 (applicationName to templateName) to xhtml
             }
+        }
+        .toList()
+        .toMap()
+
+fun loadImages() = Files.list(imagesRoot)
+        .filter {
+            !Files.isHidden(it)
+        }
+        .map {
+            val fileName = it.fileName.toString()
+            val extension = it.fileName.extension
+            val base64string = base64encoder.encodeToString(Files.readAllBytes(it))
+            val base64 = "data:image/$extension;base64,$base64string"
+            fileName to base64
         }
         .toList()
         .toMap()
