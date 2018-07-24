@@ -51,13 +51,13 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
         if (context == null) return@Helper ""
         dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
     })
-    registerHelper("insert_at", Helper<String> {
+    registerHelper("insert_at", Helper<Any> {
         context, options ->
         if (context == null) return@Helper ""
         val divider = options.hash<String>("divider", " ")
         options.params
                 .map { it as Int }
-                .fold(context) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
+                .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
     })
     registerHelper("eq", Helper<String> {
         context, options ->
