@@ -157,7 +157,6 @@ fun loadTemplates() = Files.list(templateRoot)
         .toList()
         .toMap()
 
-
 fun loadImages() = Files.list(imagesRoot)
         .filter {
             !Files.isHidden(it)
