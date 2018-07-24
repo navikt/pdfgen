@@ -155,11 +155,12 @@ fun loadTemplates() = Files.list(templateRoot)
 
 fun loadImages() = Files.list(imagesRoot)
         .filter {
-            !Files.isHidden(it)
+            val validExtensions = setOf("jpg", "jpeg", "png", "bmp")
+            !Files.isHidden(it) && it.fileName.extension in validExtensions
         }
         .map {
             val fileName = it.fileName.toString()
-            val extension = it.fileName.extension
+            val extension = if (it.fileName.extension == "jpg") "jpeg" else it.fileName.extension // jpg is not a valid mime-type
             val base64string = base64encoder.encodeToString(Files.readAllBytes(it))
             val base64 = "data:image/$extension;base64,$base64string"
             fileName to base64
