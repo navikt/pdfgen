@@ -9,7 +9,6 @@ import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
-import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -77,6 +76,7 @@ val log: Logger = LoggerFactory.getLogger("pdf-gen")
 fun main(args: Array<String>) {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     val templates = loadTemplates()
+    val disablePdfGet = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
 
     embeddedServer(Netty, 8080) {
         routing {
@@ -92,44 +92,50 @@ fun main(args: Array<String>) {
                     TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
                 }
             }
-            get("/api/v1/genpdf/{applicationName}/{template}") {
-                val template = call.parameters["template"]
-                val applicationName = call.parameters["applicationName"]
-                val dataFile = Paths.get("data", applicationName, "$template.json")
-                val data = if (Files.exists(dataFile)) {
-                    Files.readAllBytes(dataFile)
-                } else {
-                    "{}".toByteArray(Charsets.UTF_8)
+            if (!disablePdfGet) {
+                get("/api/v1/genpdf/{applicationName}/{template}") {
+                    val template = call.parameters["template"]!!
+                    val applicationName = call.parameters["applicationName"]!!
+                    val dataFile = Paths.get("data", applicationName, "$template.json")
+                    val data = objectMapper.readValue(if (Files.exists(dataFile)) {
+                        Files.readAllBytes(dataFile)
+                    } else {
+                        "{}".toByteArray(Charsets.UTF_8)
+                    }, JsonNode::class.java)
+                    render(applicationName, template, loadTemplates(), data)?.let {
+                        call.respondBytes(it, contentType = ContentType.parse("application/pdf"))
+                    } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
                 }
-                render(loadTemplates(), call, objectMapper.readValue(data, JsonNode::class.java))
             }
             post("/api/v1/genpdf/{applicationName}/{template}") {
+                val template = call.parameters["template"]!!
+                val applicationName = call.parameters["applicationName"]!!
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
                 println(objectMapper.writeValueAsString(jsonNode))
-                render(templates, call, jsonNode)
+                render(applicationName, template, templates, jsonNode)?.let {
+                    call.respondBytes(it, contentType = ContentType.parse("application/pdf"))
+                } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
         }
     }.start(wait = true)
 }
 
-suspend fun render(templates: Map<Pair<String, String>, Template>, call: ApplicationCall, jsonNode: JsonNode) {
+fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): ByteArray? {
     val startTime = System.currentTimeMillis()
-    val template = call.parameters["template"]
-    val html = templates[call.parameters["applicationName"] to template]?.apply(Context
+    val html = templates[applicationName to template]?.apply(Context
             .newBuilder(jsonNode)
             .resolver(JsonNodeValueResolver.INSTANCE)
             .build())
-    if (template != null && html != null) {
+    return if (html != null) {
         log.debug("Generated HTML {}", keyValue("html", html))
-        call.respondBytes(ContentType.parse("application/pdf")) {
             val doc = Jsoup.parse(html)
             val w3doc = W3CDom().fromJsoup(doc)
 
-            createPDFA(w3doc, template)
-        }
-        log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
+            createPDFA(w3doc, template).apply {
+                log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
+            }
     } else {
-        call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
+        null
     }
 }
 
