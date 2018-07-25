@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.40'
+    ext.kotlin_version = '1.2.51'
     ext.ktor_version = '0.9.3'
     ext.prometheus_version = '0.3.0'
     ext.logback_version = '1.2.3'
@@ -44,10 +44,20 @@ task printVersion() {
     }
 }
 
+test {
+    useJUnitPlatform {
+        includeEngines 'spek2'
+    }
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
 repositories {
     mavenCentral()
     jcenter()
     maven { url "https://dl.bintray.com/kotlin/ktor" }
+    maven { url  "https://dl.bintray.com/spekframework/spek-dev" }
 }
 
 dependencies {
@@ -68,7 +78,12 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "net.logstash.logback:logstash-logback-encoder:$logstash_encoder_version"
 
-    testImplementation "junit:junit:$junit_version"
+    testImplementation 'org.spekframework.spek2:spek-dsl-jvm:2.0.0-alpha.1'
+    testImplementation 'org.amshove.kluent:kluent:1.39'
+    testRuntimeOnly "org.spekframework.spek2:spek-runtime-jvm:2.0.0-alpha.1"
+    testRuntimeOnly 'org.spekframework.spek2:spek-runner-junit5:2.0.0-alpha.1'
+
+    testImplementation "org.verapdf:validation-model:1.4.5"
 }
 
 compileKotlin {
