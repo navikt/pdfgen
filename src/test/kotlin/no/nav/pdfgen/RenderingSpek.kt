@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream
 object RenderingSpek : Spek({
     val templates = loadTemplates()
     val objectMapper = ObjectMapper()
+    VeraGreenfieldFoundryProvider.initialise()
     describe("All pdfs should render with default values") {
         templates.map { it.key }.forEach {
             val (applicationName, templateName) = it
@@ -23,7 +24,6 @@ object RenderingSpek : Spek({
     }
 
     describe("All pdfs should create a PDF/A compliant file") {
-        VeraGreenfieldFoundryProvider.initialise()
         val blackList = listOf<Pair<String, String>>()
         val pdfaFlavour = PDFAFlavour.PDFA_2_B
         val validator = Foundries.defaultInstance().createValidator(pdfaFlavour, false)
