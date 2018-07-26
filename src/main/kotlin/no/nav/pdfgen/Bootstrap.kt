@@ -133,7 +133,6 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
-                println(objectMapper.writeValueAsString(jsonNode))
                 render(applicationName, template, templates, jsonNode)?.let {
                     call.respond(PdfContent(it, template))
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
@@ -144,14 +143,18 @@ fun initializeApplication(port: Int): ApplicationEngine {
 }
 
 fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): Document? {
-    val html = templates[applicationName to template]?.apply(Context
-            .newBuilder(jsonNode)
-            .resolver(JsonNodeValueResolver.INSTANCE)
-            .build())
+    val html = HANDLEBARS_RENDERING_SUMMARY.startTimer().use {
+        templates[applicationName to template]?.apply(Context
+                .newBuilder(jsonNode)
+                .resolver(JsonNodeValueResolver.INSTANCE)
+                .build())
+    }
     return if (html != null) {
         log.debug("Generated HTML {}", keyValue("html", html))
-        val doc = Jsoup.parse(html)
-        W3CDom().fromJsoup(doc)
+        JSOUP_PARSE_SUMMARY.startTimer().use {
+            val doc = Jsoup.parse(html)
+            W3CDom().fromJsoup(doc)
+        }
     } else {
         null
     }
