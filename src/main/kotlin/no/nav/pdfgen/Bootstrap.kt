@@ -88,7 +88,9 @@ class PdfContent(
     override val contentType: ContentType = ContentType.parse("application/pdf")
 ) : OutgoingContent.WriteChannelContent() {
     override suspend fun writeTo(channel: ByteWriteChannel) {
-        createPDFA(w3Doc, title, channel.toOutputStream())
+        channel.toOutputStream().use {
+            createPDFA(w3Doc, title, it)
+        }
     }
 }
 

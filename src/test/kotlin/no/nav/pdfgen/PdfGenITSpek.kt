@@ -48,6 +48,7 @@ object PdfGenITSpek : Spek({
                 document shouldNotEqual null
                 document.pages.count shouldBeGreaterThan 0
                 println(document.documentInformation.title)
+                response.close()
             }
         }
     }
@@ -66,12 +67,14 @@ object PdfGenITSpek : Spek({
             for (i in 0..19) {
                 val response = client.newCall(request).execute()
                 response.isSuccessful shouldEqual true
+                response.close()
             }
             it("$templateName for $applicationName performs fine") {
                 val startTime = System.currentTimeMillis()
                 for (i in 0..99) {
                     val response = client.newCall(request).execute()
                     response.isSuccessful shouldEqual true
+                    response.close()
                 }
                 println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
             }
