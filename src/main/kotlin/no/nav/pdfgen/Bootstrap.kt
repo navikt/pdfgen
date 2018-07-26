@@ -10,25 +10,30 @@ import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.call
+import io.ktor.content.OutgoingContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveStream
-import io.ktor.response.respondBytes
+import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondWrite
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.extension
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
+import kotlinx.coroutines.experimental.io.ByteWriteChannel
+import kotlinx.coroutines.experimental.io.jvm.javaio.toOutputStream
 import net.logstash.logback.argument.StructuredArguments.keyValue
 import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.w3c.dom.Document
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -74,11 +79,25 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 
 fun main(args: Array<String>) {
+    initializeApplication(8080).start(wait = true)
+}
+
+class PdfContent(
+    private val w3Doc: Document,
+    private val title: String,
+    override val contentType: ContentType = ContentType.parse("application/pdf")
+) : OutgoingContent.WriteChannelContent() {
+    override suspend fun writeTo(channel: ByteWriteChannel) {
+        createPDFA(w3Doc, title, channel.toOutputStream())
+    }
+}
+
+fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     val templates = loadTemplates()
     val disablePdfGet = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
 
-    embeddedServer(Netty, 8080) {
+    return embeddedServer(Netty, port) {
         routing {
             get("/is_ready") {
                 call.respondText("I'm ready")
@@ -103,37 +122,34 @@ fun main(args: Array<String>) {
                         "{}".toByteArray(Charsets.UTF_8)
                     }, JsonNode::class.java)
                     render(applicationName, template, loadTemplates(), data)?.let {
-                        call.respondBytes(it, contentType = ContentType.parse("application/pdf"))
+                        call.respond(PdfContent(it, template))
                     } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
                 }
             }
             post("/api/v1/genpdf/{applicationName}/{template}") {
+                val startTime = System.currentTimeMillis()
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
                 println(objectMapper.writeValueAsString(jsonNode))
                 render(applicationName, template, templates, jsonNode)?.let {
-                    call.respondBytes(it, contentType = ContentType.parse("application/pdf"))
+                    call.respond(PdfContent(it, template))
+                    log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
         }
-    }.start(wait = true)
+    }
 }
 
-fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): ByteArray? {
-    val startTime = System.currentTimeMillis()
+fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): Document? {
     val html = templates[applicationName to template]?.apply(Context
             .newBuilder(jsonNode)
             .resolver(JsonNodeValueResolver.INSTANCE)
             .build())
     return if (html != null) {
         log.debug("Generated HTML {}", keyValue("html", html))
-            val doc = Jsoup.parse(html)
-            val w3doc = W3CDom().fromJsoup(doc)
-
-            createPDFA(w3doc, template).apply {
-                log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
-            }
+        val doc = Jsoup.parse(html)
+        W3CDom().fromJsoup(doc)
     } else {
         null
     }

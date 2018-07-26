@@ -10,6 +10,7 @@ import org.apache.xmpbox.xml.XmpSerializer
 import org.w3c.dom.Document
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.OutputStream
 
 class Utils
 
@@ -17,7 +18,7 @@ val colorProfile: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceA
 val sourceSansProRegular: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Regular.ttf"))
 val sourceSansProBold: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Bold.ttf"))
 
-fun createPDFA(w3doc: Document, title: String): ByteArray {
+fun createPDFA(w3doc: Document, title: String, outputStream: OutputStream) {
     PdfRendererBuilder()
             .useFont({ ByteArrayInputStream(sourceSansProRegular) }, "Source Sans Pro",
                     400, BaseRendererBuilder.FontStyle.NORMAL, false)
@@ -38,11 +39,7 @@ fun createPDFA(w3doc: Document, title: String): ByteArray {
                         outputConditionIdentifier = "sRGB IEC61966-2.1"
                         registryName = "http://www.color.org"
                     })
-                    ByteArrayOutputStream().use {
-                        bytesOut ->
-                        it.save(bytesOut)
-                        bytesOut.toByteArray()
-                    }
+                    it.save(outputStream)
                 }
     }
 }
