@@ -50,21 +50,26 @@
 
         .container {
             margin: 0cm 0.7cm;
+            height: 850px;
+            border: 1px solid black;
         }
 
         .personinfo {
-            margin-top: 0.7cm;
-            margin-bottom: 1cm;
+            position: relative;
+            top: 25px;
+            border: 1px solid red;
         }
 
         .navn {
             font-weight: bold;
             font-size: 14px;
-            width: 470px;
+            width: 430px;
+            border: 1px solid black;
         }
 
         .id {
-            width: 470px;
+            width: 430px;
+            border: 1px solid green;
         }
 
         .personikon {
@@ -72,12 +77,14 @@
             width: 28px;
             margin-right: 0;
             padding-right: 0;
+            border: 1px solid blue;
         }
 
         .persontekst {
             display: inline-block;
-            margin-left: -6px;
+            margin-left: -4px;
             padding-left: 0;
+            border: 1px solid blue;
         }
 
         .sendt {
@@ -85,6 +92,19 @@
             right: 1cm;
             font-size: 10px;
             width: 180px;
+            border: 1px solid black;
+        }
+
+        .sporsmalcontainer {
+            position: relative;
+            top: 50px;
+            border: 1px solid red;
+        }
+
+        .svarcontainer {
+            position: relative;
+            left: 2px;
+            border: 1px solid yellow;
         }
 
         .svar {
@@ -92,12 +112,14 @@
             width: 650px;
             font-size: 12px;
             font-family: "Source Sans Pro";
+            border: 1px solid green;
         }
 
         .svar--perioder {
             font-size: 16px;
             font-weight: bold;
             margin-left: 2px;
+
         }
 
         .svar--checkbox {
@@ -109,14 +131,17 @@
 
         .checkbox {
             width: 13px;
+            border: 1px solid blue;
         }
 
         .sporsmal {
-            margin-bottom: 0.5cm;
+            padding-bottom: 0.5cm;
+            border: 1px solid green;
         }
 
         .sporsmalstekst {
             font-weight: bold;
+            border: 1px solid blue;
         }
 
         .footer {
@@ -126,14 +151,17 @@
             left: 0.9cm;
             font-size: 10px;
             width: 680px;
+            border: 1px solid black;
         }
 
         .sporsmal ul {
+            border: 1px solid blue;
             font-family: "Source Sans Pro";
             font-size: 12px;
         }
 
         .sporsmal ul li {
+            border: 1px solid black;
             margin-bottom: 12px;
         }
 
@@ -159,6 +187,7 @@
                 </p>
             </div>
         </div>
+        <div class="sporsmalcontainer">
         {{# each sporsmal~}}
             <div class="sporsmal">
                 <p class="sporsmalstekst">
@@ -195,6 +224,7 @@
                 {{/eq}}
             </div>
         {{~/each}}
+        </div>
     </div>
     <p class="footer">
         {{ id }}
