@@ -40,7 +40,7 @@
             display: inline-block;
             padding-top: 15px;
             padding-bottom: 12px;
-            height: 30px;
+            width: 48px;
         }
 
         .header {
@@ -55,24 +55,21 @@
         .personinfo {
             margin-top: 0.7cm;
             margin-bottom: 1cm;
-            border: 1px solid black;
         }
 
         .navn {
             font-weight: bold;
             font-size: 14px;
             width: 470px;
-            border: 1px solid black;
         }
 
         .id {
             width: 470px;
-            border: 1px solid black;
         }
 
         .personikon {
             display: inline-block;
-            height: 28px;
+            width: 28px;
             margin-right: 0;
             padding-right: 0;
         }
@@ -81,21 +78,20 @@
             display: inline-block;
             margin-left: -6px;
             padding-left: 0;
-            border: 1px solid black;
         }
 
         .sendt {
             position: absolute;
             right: 1cm;
             font-size: 10px;
-            border: 1px solid black;
             width: 180px;
         }
 
         .svar {
             margin-top: 4px;
-            border: 1px solid black;
-            width: 683px;
+            width: 650px;
+            font-size: 12px;
+            font-family: "Source Sans Pro";
         }
 
         .svar--perioder {
@@ -108,22 +104,15 @@
             display: inline-block;
             position: relative;
             bottom: 1px;
+            right: 5px;
         }
 
         .checkbox {
-            display: inline-block;
-            margin: 0px -12px 0 -17px;
-            height: 12px;
+            width: 13px;
         }
-
-        .checkbox--ikkerelevant {
-            margin-left: -4px;
-        }
-
 
         .sporsmal {
             margin-bottom: 0.5cm;
-            border: 1px solid black;
         }
 
         .sporsmalstekst {
@@ -136,6 +125,7 @@
             top: 24.5cm;
             left: 0.9cm;
             font-size: 10px;
+            width: 680px;
         }
 
         .sporsmal ul {
@@ -185,19 +175,23 @@
                     </p>
                 {{/eq}}
                 {{#eq type "CHECKBOX" }}
-                    <img class="checkbox" src="{{ image "Checkboks.png" }}" />
-                    <p class="svar svar--checkbox">
-                        {{ svar }}
-                    </p>
+                    <div class="svarcontainer">
+                        <img class="checkbox" src="{{ image "Checkboks.png" }}" />
+                        <span class="svar svar--checkbox">
+                            {{ svar }}
+                        </span>
+                    </div>
                 {{/eq}}
                 {{#eq type "IKKE_RELEVANT" }}
                     {{#if undertekst}}
                         {{safe undertekst}}
                     {{/if}}
-                    <img class="checkbox checkbox--ikkerelevant" src="{{ image "Checkboks.png" }}" />
-                    <p class="svar svar--checkbox">
-                        {{ svar }}
-                    </p>
+                    <div class="svarcontainer">
+                        <img class="checkbox" src="{{ image "Checkboks.png" }}" />
+                        <span class="svar svar--checkbox">
+                            {{ svar }}
+                        </span>
+                    </div>
                 {{/eq}}
             </div>
         {{~/each}}
