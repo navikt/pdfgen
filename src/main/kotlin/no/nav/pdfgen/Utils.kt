@@ -30,16 +30,22 @@ fun createPDFA(w3doc: Document, title: String, outputStream: OutputStream) {
                 renderer ->
                 renderer.createPDFWithoutClosing()
                 return renderer.pdfDocument.use {
-                    it.documentCatalog.metadata = PDMetadata(it).apply {
-                        importXMPMetadata(createXMPMetadata(title))
+                    XMP_METADATA_SUMMARY.startTimer().use { _ ->
+                        it.documentCatalog.metadata = PDMetadata(it).apply {
+                            importXMPMetadata(createXMPMetadata(title))
+                        }
                     }
-                    it.documentCatalog.addOutputIntent(PDOutputIntent(it, ByteArrayInputStream(colorProfile)).apply {
-                        info = "sRGB IEC61966-2.1"
-                        outputCondition = "sRGB IEC61966-2.1"
-                        outputConditionIdentifier = "sRGB IEC61966-2.1"
-                        registryName = "http://www.color.org"
-                    })
-                    it.save(outputStream)
+                    OUTPUT_INTENT_SUMMARY.startTimer().use { _ ->
+                        it.documentCatalog.addOutputIntent(PDOutputIntent(it, ByteArrayInputStream(colorProfile)).apply {
+                            info = "sRGB IEC61966-2.1"
+                            outputCondition = "sRGB IEC61966-2.1"
+                            outputConditionIdentifier = "sRGB IEC61966-2.1"
+                            registryName = "http://www.color.org"
+                        })
+                    }
+                    DOCUMENT_CREATION_SUMMARY.startTimer().use { _ ->
+                        it.save(outputStream)
+                    }
                 }
     }
 }
