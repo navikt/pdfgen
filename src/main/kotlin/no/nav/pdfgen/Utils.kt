@@ -57,7 +57,7 @@ fun createXMPMetadata(t: String): ByteArray {
             addCreator("pdfgen")
         }
         createAndAddPFAIdentificationSchema().apply {
-            conformance = "B"
+            conformance = "U"
             part = 2
         }
     }

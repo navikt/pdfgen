@@ -30,7 +30,7 @@ object RenderingSpek : Spek({
     }
     describe("All pdfs should create a PDF/A compliant file") {
         val blackList = listOf<Pair<String, String>>()
-        val pdfaFlavour = PDFAFlavour.PDFA_2_B
+        val pdfaFlavour = PDFAFlavour.PDFA_2_U
         val validator = Foundries.defaultInstance().createValidator(pdfaFlavour, false)
 
         templates.map { it.key }.filterNot(blackList::contains).forEach {
