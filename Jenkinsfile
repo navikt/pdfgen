@@ -60,13 +60,24 @@ pipeline {
         stage('deploy to preprod') {
             steps {
                 deployApplication()
+                waitForDeploy()
             }
         }
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
-            environment { FASIT_ENV = 'p' }
+            environment {
+                FASIT_ENV = 'p'
+                NAMESPACE = 'default'
+                APPLICATION_SERVICE = 'TODO'
+                APPLICATION_COMPONENT = 'TODO'
+            }
             steps {
-                deployApplication()
+                script {
+                    deployApplication()
+                    def jiraProdIssueId = nais action: 'jiraDeployProd', jiraIssueId: jiraIssueId
+                    slackStatus status: 'deploying', jiraIssueId: "${jiraProdIssueId}"
+                    waitForDeploy()
+                }
             }
         }
     }
@@ -97,6 +108,9 @@ pipeline {
 void deployApplication() {
     def jiraIssueId = nais action: 'jiraDeploy'
     slackStatus status: 'deploying', jiraIssueId: "${jiraIssueId}"
+}
+
+void waitForDeploy() {
     try {
         timeout(time: 1, unit: 'HOURS') {
             input id: "deploy", message: "Waiting for remote Jenkins server to deploy the application..."
