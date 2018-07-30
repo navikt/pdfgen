@@ -73,7 +73,7 @@ object PdfGenITSpek : Spek({
                 response shouldNotEqual null
                 response.body() shouldNotEqual null
                 val bytes = response.body()!!.bytes()
-                Files.write(Paths.get("out", "${it.first}-${it.second}.pdf"), bytes)
+                Files.write(Paths.get("build", "${it.first}-${it.second}.pdf"), bytes)
                 response.close()
             }
         }
