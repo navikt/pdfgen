@@ -75,12 +75,36 @@
 <h1 class="centered_title">Behandlingsvedlegg</h1>
 <h3>Behandlingsvedlegget viser informasjon fra automatisk kontroll av dokumentet</h3>
 <h2>Oppfølgingsmelding er sendt til Arena.</h2>
+{{#if sender.merknadManuellBehandling }}
+    <h2>Følgene merkander for manuell behandling er sendt til Arena</h2>
+    <ul>
+        {{#each sender.merknadManuellBehandling }}
+            <li>{{ tekst }}</li>
+        {{/each}}
+    </ul>
+{{/if}}
+{{#if sender.merknadAvvist }}
+    <h2>Følgene avvisningsmerknader er sendt til Arena</h2>
+    <ul>
+        {{#each sender.merknadAvvist }}
+            <li>{{ tekst }}</li>
+        {{/each}}
+    </ul>
+{{/if}}
 {{#if sender.merknadOppfoelging }}
     <h2>Følgene oppfølgingsmerknader er sendt til Arena</h2>
     <ul>
     {{#each sender.merknadOppfoelging }}
         <li>{{ tekst }}</li>
     {{/each}}
+    </ul>
+{{/if}}
+{{#if sender.merknadNotis }}
+    <h2>Følgene notismerknader er sendt til Arena</h2>
+    <ul>
+        {{#each sender.merknadNotis }}
+            <li>{{ tekst }}</li>
+        {{/each}}
     </ul>
 {{/if}}
 <h3>Informasjon om dokumentet</h3>
