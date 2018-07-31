@@ -12,6 +12,8 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.spekframework.spek2.style.specification.xdescribe
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 object PdfGenITSpek : Spek({
@@ -48,6 +50,30 @@ object PdfGenITSpek : Spek({
                 document shouldNotEqual null
                 document.pages.count shouldBeGreaterThan 0
                 println(document.documentInformation.title)
+                response.close()
+            }
+        }
+    }
+
+    describe("Generate sample PDFs using test data") {
+        templates.map { it.key }.forEach {
+            val (applicationName, templateName) = it
+            it("$templateName for $applicationName generates a sample PDF") {
+                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
+                    IOUtils.toByteArray(it)
+                } ?: "{}".toByteArray(Charsets.UTF_8)
+                val requestBody = RequestBody.create(MediaType.parse("application/json"), json)
+                val request = Request.Builder()
+                        .url("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName")
+                        .post(requestBody)
+                        .build()
+
+                val response = client.newCall(request).execute()
+                response.isSuccessful shouldEqual true
+                response shouldNotEqual null
+                response.body() shouldNotEqual null
+                val bytes = response.body()!!.bytes()
+                Files.write(Paths.get("build", "${it.first}-${it.second}.pdf"), bytes)
                 response.close()
             }
         }

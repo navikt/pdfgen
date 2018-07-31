@@ -38,6 +38,9 @@ applicationDefaultJvmArgs = [
         '-Dlogback.configurationFile=logback-remote.xml'
 ]
 
+// suppress warning for experimental coroutines
+kotlin { experimental { coroutines "enable"} }
+
 task printVersion() {
     doLast {
         println(version)
