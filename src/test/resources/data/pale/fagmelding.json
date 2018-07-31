@@ -1,0 +1,106 @@
+{
+  "_comment": "data er generert av PALEs test data generator",
+  "arbeidsvurderingVedSykefravaer": false,
+  "arbeidsavklaringsPenger": false,
+  "yrkesrettetAttfoering": false,
+  "ufoerepensjon": true,
+  "pasient": {
+    "fornavn": "Selma",
+    "mellomnavn": "Ada",
+    "etternavn": "Dahl",
+    "foedselsnummer": "11065911169",
+    "navKontor": "NAV Oslo",
+    "adresse": "183 Fjellveien",
+    "postnummer": 9187,
+    "poststed": "Molde",
+    "yrke": "Dokumentforfalsker",
+    "arbeidsgiver": {
+      "navn": "Flyselskapet",
+      "adresse": "161 Strandveien APT 350",
+      "postnummer": 1501,
+      "poststed": "Mo i Rana"
+    }
+  },
+  "sykdomsOpplysninger": {
+    "hoveddiagnose": {
+      "tekst": "82-01-Le",
+      "kode": "K74"
+    },
+    "bidiagnose": [
+      {
+        "tekst": "Nyresvikt kronisk",
+        "kode": "U99"
+      }
+    ],
+    "arbeidsufoerFra": "2018-07-25T09:46:35.426+02:00",
+    "sykdomsHistorie": "Hensyntagen helseutfordringene initieres tilsynsrapporten. Helseutfordringene samhandlingskoordineringen helsereformene. Rehabiliteringsprosjekt. Agenda av. Til hensyntagen til en styrkes. Tiltagende av bakgrunn en agenda på. Til med helseutfordringene synergi Uavhengig samhandlingskoordineringen linje tiltagende. Ventelisteskandalene. Ivaretas hensyntagen samhandlingskoordineringen med.",
+    "statusPresens": "Dokumenteres helseutfordringene linje en særlig I helsereformene. En en lys. Synergi av ut vesentlig tidshorisont Vedrørende på av. En Under rehabiliteringspotensialet utenom avtagende. Utenom en ut Under helsereformene. Helserisikoen med. Helseutfordringene helseutfordringene I synergi agenda Vedrørende helsereformene.",
+    "boerNavKontoretVurdereOmDetErEnYrkesskade": false
+  },
+  "plan": {
+    "utredning": {
+      "tekst": "Vedrørende helseutfordringene rehabiliteringsprosjekt. Linje. Vesentlig linje ivaretas tilsynsrapporten. Rehabiliteringspotensialet av arena en ventelisteskandalene. Avhengig linje. Kjernevirksomheten. Ut tidshorisont overstyres av stimuleres.",
+      "dato": "2018-07-25T09:46:35.425+02:00",
+      "antattVentetIUker": 7
+    },
+    "behandling": null,
+    "utredningsplan": "En helsereformene. Uavhengig ut en Vedrørende. Arena dokumenteres av overstyres med på tidshorisont. Av tilsynsrapporten. Samhandlingskoordineringen vesentlig rehabiliteringsprosjekt. Av til Under helseutfordringene ivaretas avtagende agenda.",
+    "behandlingsplan": "Under I en helseministerens av detaljering kvalitetsarbeidet. Proaktiv helsereformene. Utenom tilsynsrapporten. På helseutfordringene. Vedrørende en standpunkt stimuleres særlig dokumenteres detaljering helserisikoen. Helseutfordringene styrkes helsereformene. Sikte på avhengig av tilsynsrapporten. På. Initieres en avtagende ut utenom rehabiliteringsprosjekt. Av Under fra. Rehabiliteringspotensialet på med synergi av sikte.",
+    "vurderingAvTidligerePlan": "Av samhandlingskoordineringen rehabiliteringsprosjekt. Av proaktiv dokumenteres en. Helsereformene. Av samhandlingskoordineringen ut til kvalitetsarbeidet. Ventelisteskandalene. Dokumenteres en. Stimuleres helseministerens helseutfordringene helseutfordringene lys utenom særlig.",
+    "naarSpoerreOmNyeLegeopplysninger": "Forutsetning vesentlig detaljering avhengig av sikte. Dokumenteres avtagende utenom fra. Dokumenteres på fra. Ivaretas styrkes avtagende Under. Rehabiliteringspotensialet av avtagende Uavhengig. Særlig Under sikte rehabiliteringspotensialet.",
+    "videreBehandlingIkkeAktuellGrunn": null
+  },
+  "forslagTilTiltak": {
+    "behov": false,
+    "kjoepAvHelsetjenester": false,
+    "reisetilskudd": true,
+    "aktivSykMelding": true,
+    "hjelpemidlerArbeidsplassen": true,
+    "arbeidsavklaringsPenger": false,
+    "friskemeldingTilArbeidsformidling": false,
+    "andreTiltak": null,
+    "naermereOpplysninger": "Ut en rehabiliteringspotensialet ventelisteskandalene. Tilsynsrapporten. Med en arena overstyres. Av lys I ut agenda Under linje. Standpunkt synergi tidshorisont agenda av av tiltagende helseutfordringene henvisning. Helseutfordringene synergi avtagende en tiltagende.",
+    "tekst": "Avhengig ivaretas lys Vedrørende kvalitetsarbeidet. Under styrkes agenda samhandlingskoordineringen. Samhandlingskoordineringen tiltagende overstyres arena styringsinnsats Under initieres helseutfordringene tilsynsrapporten. Med forutsetning med initieres på utenom. Helserisikoen ut lys. Av rehabiliteringspotensialet kvalitetsarbeidet. Til detaljering sikte Uavhengig av. Tiltagende lys en av Vedrørende helseministerens helseutfordringene fra."
+  },
+  "funksjonsOgArbeidsevne": {
+    "vurderingFunksjonsevne": "Helsereformene. Helseministerens agenda sikte proaktiv ivaretas. Utenom særlig på ivaretas avhengig Under rehabiliteringsprosjekt. Med ut. En på bakgrunn av til ivaretas tiltagende særlig. I særlig henvisning en fra på Under. Helseministerens en tidshorisont til helseutfordringene overstyres avhengig helserisikoen sikte.",
+    "hjemmearbeidende": false,
+    "student": false,
+    "annetArbeid": "",
+    "kravTilArbeid": "Helsereformene. Tiltagende overstyres tidshorisont. Av tiltagende I en rehabiliteringsprosjekt. En avtagende Under av. Kjernevirksomheten. Samhandlingskoordineringen helserisikoen ventelisteskandalene. Med tiltagende dokumenteres. Under helseutfordringene av. Rehabiliteringspotensialet med I fra. Dokumenteres hensyntagen av.",
+    "kanGjenopptaTidligereArbeid": false,
+    "kanGjenopptaTidligereArbeidNaa": false,
+    "kanGjenopptaTidligereArbeidEtterBehandling": true,
+    "kanIkkeINaaverendeArbeid": "Lys kvalitetsarbeidet. Sikte med til. Av henvisning Vedrørende arena Under til ivaretas agenda en. Styrkes standpunkt helsereformene. Til på dokumenteres. Med kvalitetsarbeidet. Lys synergi på tilsynsrapporten. Utenom fra av. Styrkes detaljering en agenda på.",
+    "kanTaAnnetArbeid": true,
+    "kanTaAnnetArbeidNaa": false,
+    "kanTaAnnetArbeidEtterBehandling": true,
+    "kanIkkeIAnnetArbeid": "Agenda av helseutfordringene lys en av. Helseministerens en en på avtagende helsereformene. Tidshorisont. Fra med styringsinnsats samhandlingskoordineringen. Helseministerens med overstyres.",
+    "iintektsgivendeArbeid": true
+  },
+  "prognose": {
+    "vilForbedreArbeidsevne": false,
+    "anslaatVarighetSykdom": "1",
+    "anslaatVarighetFunksjonsNedsetting": "Detaljering helseutfordringene ventelisteskandalene. Fra avhengig på. Avhengig dokumenteres til standpunkt I henvisning synergi. Med en på linje styringsinnsats en rehabiliteringspotensialet. Overstyres Under på på tidshorisont med helseutfordringene Under. Styringsinnsats en stimuleres.",
+    "anslaatVarighetNedsattArbeidsevne": "Under standpunkt ventelisteskandalene. Arena tilsynsrapporten. På helsereformene. En proaktiv. Sikte lys styringsinnsats overstyres Uavhengig agenda stimuleres. Synergi på på fra. Agenda ventelisteskandalene. Tiltagende helseutfordringene Under på rehabiliteringspotensialet til."
+  },
+  "aarsaksSammenheng": "Dokumenteres utenom lys styrkes rehabiliteringspotensialet rehabiliteringsprosjekt. Til. Av en helseutfordringene. I av Under avhengig Under fra tiltagende en. Uavhengig helsereformene. Rehabiliteringsprosjekt. På tiltagende ivaretas en helseministerens.",
+  "andreOpplysninger": "Under av på utenom styrkes på hensyntagen av. En tidshorisont initieres stimuleres på av henvisning. Av en standpunkt en. En en med stimuleres med. Under detaljering standpunkt på lys.",
+  "kontakt": {
+    "skalKontakteBehandlendeLege": true,
+    "skalKontakteArbeidsgiver": true,
+    "skalKontakteBasisgruppe": false,
+    "kontakteAnnenInstans": null,
+    "oenskesKopiAvVedtak": true
+  },
+  "pasientenBurdeIkkeVite": null,
+  "signatur": {
+    "dato": "2018-07-25T09:46:35.451+02:00",
+    "navn": "MOE OLAV ",
+    "adresse": "110 Åsveien",
+    "postnummer": 6407,
+    "poststed": "Molde",
+    "signatur": "",
+    "tlfNummer": null
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "3c87f6e2-66ee-4376-9d4d-2444dea8368e",
+  "person": {
+    "navn": "Kari Normann Paulsrud Granholt",
+    "pnr": 12068745698
+  },
+  "sendt": "2017-02-01T00:00:00+01:00",
+  "sporsmal": [
+    {
+      "type": "PERIODER",
+      "tekst": "Når skal du oppholde deg utenfor Norge?",
+      "undertekst": null,
+      "svar": {
+        "fom": "2017-01-01T00:00:00+01:00",
+        "tom": "2017-01-31T00:00:00+01:00"
+      }
+    },
+    {
+      "type": "FRITEKST",
+      "tekst": "Hvilket land skal du reise til?",
+      "undertekst": null,
+      "svar": "Tyskland"
+    },
+    {
+      "type": "CHECKBOX",
+      "tekst": "Har du arbeidsgiver?",
+      "undertekst": null,
+      "svar": "Ja"
+    },
+    {
+      "type": "CHECKBOX",
+      "tekst": "Er du 100% sykmeldt?",
+      "undertekst": null,
+      "svar": "Ja"
+    },
+    {
+      "type": "IKKE_RELEVANT",
+      "tekst": "Før du reiser må du bekrefte at",
+      "undertekst": "<ul><li>Oppholdet utenfor Norge ikke medfører at helsetilstanden din blir forverret</li><li>Oppholdet utenfor Norge ikke vil forlenge arbeidsuførheten din eller hindre planlagt behandling eller oppfølging</li><li>Du har avklart dette med sykmelderen din</li></ul>",
+      "svar": "Jeg bekrefter at jeg har gjort meg kjent med pliktene mine"
+    }
+  ]
+}

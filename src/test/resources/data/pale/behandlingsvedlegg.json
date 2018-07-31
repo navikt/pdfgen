@@ -1,0 +1,46 @@
+{
+  "type": "LEGEERKL",
+  "status": "OPPFØLGING",
+  "pasientId": "28051475013",
+  "ediLoggId": "b6cd44c1-27e8-4c09-aa53-fd95bb7e9583",
+  "msgId": "4ceb462f-a096-476f-9376-c411b47c9cb6",
+  "generertDato": "2018-07-24T09:49:43.402+02:00",
+  "motattNavDato": "2018-07-25T09:49:43.402+02:00",
+  "registrertAutomatiskBehandlingDato": "2018-07-25T09:49:44.216+02:00",
+  "sender": {
+    "signaturId": "08035911171",
+    "signaturNavn": "08035911171",
+    "avsenderId": "08035911171",
+    "avsenderNavn": "SØRENSEN SARA ",
+    "tlfNummer": null,
+    "organisasjonsId": "999999905",
+    "organisasjonsNavn": "Spissen",
+    "adresse": "82 Åsveien APT 235",
+    "poststed": "Halden",
+    "postnummer": "4116",
+    "merknadAvvist": [
+      {
+        "tekst": "Pasientens fødselsnummer finnes ikke i skjema",
+        "number": 13
+      }
+    ],
+    "merknadManuellBehandling": [
+      {
+        "tekst": "Person er registrert utvandret i Folkeregisteret.",
+        "number": 54
+      }
+    ],
+    "merknadOppfoelging": [
+      {
+        "tekst": "Vurder om legeerklæring kan godtas, behandler er barn av pasient.",
+        "number": 357
+      }
+    ],
+    "merknadNotis": [
+      {
+        "tekst": "Behandler har angitt D-nummer, men SAR fant gyldig F-nummer.",
+        "number": 75
+      }
+    ]
+  }
+}

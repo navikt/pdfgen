@@ -13,4 +13,4 @@ src/generated
 
 # Project specific
 *.pdf
-data/
+/data/
