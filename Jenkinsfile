@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         APPLICATION_NAME = 'pdf-gen'
-        FASIT_ENV = 't12'
+        FASIT_ENV = 'q1'
         ZONE = 'fss'
         NAMESPACE = 'default'
         COMMIT_HASH_SHORT = gitVars 'commitHashShort'
