@@ -77,7 +77,7 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
     })
 
     registerHelper("capitalize", Helper<String> {
-        context, _ -> context.toLowerCase().capitalize()
+        context, _ -> if (context == null) "" else context.toLowerCase().capitalize()
     })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
