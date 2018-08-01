@@ -172,34 +172,34 @@
         {{# each sporsmal~}}
             <div class="sporsmal">
                 <p class="sporsmalstekst">
-                    {{ tekst }}
+                    {{ sporsmalstekst }}
                 </p>
-                {{#eq type "PERIODER" }}
+                {{#eq svartype "PERIODER" }}
                     <p class="svar svar--perioder">
-                        {{ iso_to_nor_date svar.fom}} – {{ iso_to_nor_date svar.tom}}
+                        {{ iso_to_nor_date svar.0.verdi}} – {{ iso_to_nor_date svar.1.verdi}}
                     </p>
                 {{/eq}}
-                {{#eq type "FRITEKST" }}
+                {{#eq svartype "FRITEKST" }}
                     <p class="svar">
-                        {{ svar }}
+                        {{ svar.0.verdi }}
                     </p>
                 {{/eq}}
-                {{#eq type "CHECKBOX" }}
+                {{#eq svartype "CHECKBOX" }}
                     <div class="svarcontainer">
                         <img class="checkbox" src="{{ image "Checkboks.png" }}" />
                         <span class="svar svar--checkbox">
-                            {{ svar }}
+                            {{ svar.0.verdi }}
                         </span>
                     </div>
                 {{/eq}}
-                {{#eq type "IKKE_RELEVANT" }}
+                {{#eq svartype "IKKE_RELEVANT" }}
                     {{#if undertekst}}
                         {{safe undertekst}}
                     {{/if}}
                     <div class="svarcontainer">
                         <img class="checkbox" src="{{ image "Checkboks.png" }}" />
                         <span class="svar svar--checkbox">
-                            {{ svar }}
+                            {{ svar.0.verdi }}
                         </span>
                     </div>
                 {{/eq}}
