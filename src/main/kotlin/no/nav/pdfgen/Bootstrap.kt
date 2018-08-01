@@ -162,7 +162,7 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
 
 fun loadTemplates() = Files.list(templateRoot)
         .filter {
-            !Files.isHidden(it)
+            !Files.isHidden(it) && Files.isDirectory(it)
         }
         .map {
             it.fileName.toString() to Files.list(it).filter { it.fileName.extension == "hbs" }
