@@ -50,6 +50,8 @@ val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
+    infiniteLoops(true)
+
     registerHelper("iso_to_nor_date", Helper<String> {
         context, _ ->
         if (context == null) return@Helper ""
@@ -167,7 +169,7 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
 
 fun loadTemplates() = Files.list(templateRoot)
         .filter {
-            !Files.isHidden(it)
+            !Files.isHidden(it) && Files.isDirectory(it)
         }
         .map {
             it.fileName.toString() to Files.list(it).filter { it.fileName.extension == "hbs" }

@@ -169,82 +169,9 @@
       </div>
     </div>
     <div class="sporsmalcontainer">
-      {{# each sporsmal~}}
-      <div class="sporsmal">
-        <p class="sporsmalstekst">
-          {{ sporsmalstekst }}
-        </p>
-        {{#eq svartype "PERIODER" }}
-        <p class="svar svar--perioder">
-          {{ iso_to_nor_date svar.0.verdi}} – {{ iso_to_nor_date svar.1.verdi}}
-        </p>
-        {{/eq}}
-        {{#eq svartype "FRITEKST" }}
-        <p class="svar">
-          {{ svar.0.verdi }}
-        </p>
-        {{/eq}}
-        {{#eq svartype "JA_NEI" }}
-        <div class="svarcontainer">
-          <img class="checkbox" src="{{ image "Checkboks.png" }}" />
-          <span class="svar svar--checkbox">
-            {{ capitalize svar.0.verdi }}
-          </span>
-        </div>
-        {{/eq}}
-        {{#eq svartype "IKKE_RELEVANT" }}
-        {{#if undertekst}}
-        {{safe undertekst}}
-        {{/if}}
-        <div class="svarcontainer">
-          <img class="checkbox" src="{{ image "Checkboks.png" }}" />
-          <span class="svar svar--checkbox">
-            {{ capitalize undersporsmal.0.sporsmalstekst }}
-          </span>
-        </div>
-        {{/eq}}
-      </div>
-      {{# eq svar.0.verdi kriterieForVisningAvUndersporsmal }}
-      {{# if svar }}
-      {{# each undersporsmal~}}
-      <div class="sporsmal">
-        <p class="sporsmalstekst">
-          {{ sporsmalstekst }}
-        </p>
-        {{#eq svartype "PERIODER" }}
-        <p class="svar svar--perioder">
-          {{ iso_to_nor_date svar.0.verdi}} – {{ iso_to_nor_date svar.1.verdi}}
-        </p>
-        {{/eq}}
-        {{#eq svartype "FRITEKST" }}
-        <p class="svar">
-          {{ svar.0.verdi }}
-        </p>
-        {{/eq}}
-        {{#eq svartype "JA_NEI" }}
-        <div class="svarcontainer">
-          <img class="checkbox" src="{{ image "Checkboks.png" }}" />
-          <span class="svar svar--checkbox">
-            {{ capitalize svar.0.verdi }}
-          </span>
-        </div>
-        {{/eq}}
-        {{#eq svartype "IKKE_RELEVANT" }}
-        {{#if undertekst}}
-        {{safe undertekst}}
-        {{/if}}
-        <div class="svarcontainer">
-          <img class="checkbox" src="{{ image "Checkboks.png" }}" />
-          <span class="svar svar--checkbox">
-            {{ svar.0.verdi }}
-          </span>
-        </div>
-        {{/eq}}
-      </div>
-      {{~/each}}
-      {{/if}}
-      {{/eq}}
-      {{~/each}}
+        {{# each sporsmal~}}
+            {{> 'syfosoknader/partials/spmpartial' s }}
+        {{/each}}
     </div>
   </div>
   <p class="footer">
