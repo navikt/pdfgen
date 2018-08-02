@@ -7,6 +7,7 @@ import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.JsonNodeValueResolver
+import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.call
@@ -35,8 +36,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 import java.nio.file.Files
-import java.io.File
-import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
@@ -51,11 +50,8 @@ val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val images = loadImages()
-val helpersFile: URL = Utils::class.java.getResource("/Helpers.js")
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     infiniteLoops(true)
-
-    registerHelpers(File(helpersFile.toURI()))
 
     registerHelper("iso_to_nor_date", Helper<String> { context, _ ->
         if (context == null) return@Helper ""
@@ -91,6 +87,14 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
 
     registerHelper("capitalize", Helper<String> { context, _ ->
         if (context == null) "" else context.toLowerCase().capitalize()
+    })
+
+    registerHelper("inc", Helper<Int> { context, _ ->
+        context + 1
+    })
+
+    registerHelper("formatComma", Helper<Any> { context, _ ->
+        if (context == null) "" else context.toString().replace(".", ",")
     })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
@@ -164,7 +168,8 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
     val html = HANDLEBARS_RENDERING_SUMMARY.startTimer().use {
         templates[applicationName to template]?.apply(Context
                 .newBuilder(jsonNode)
-                .resolver(JsonNodeValueResolver.INSTANCE)
+                .resolver(JsonNodeValueResolver.INSTANCE,
+                        MapValueResolver.INSTANCE)
                 .build())
     }
     return if (html != null) {
