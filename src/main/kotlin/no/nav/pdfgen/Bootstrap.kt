@@ -35,6 +35,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 import java.nio.file.Files
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
@@ -52,40 +53,42 @@ val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     infiniteLoops(true)
 
-    registerHelper("iso_to_nor_date", Helper<String> {
-        context, _ ->
+    registerHelpers(File("src/main/kotlin/no/nav/pdfgen/Helpers.js"))
+
+    registerHelper("iso_to_nor_date", Helper<String> { context, _ ->
         if (context == null) return@Helper ""
         dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
     })
-    registerHelper("iso_to_date", Helper<String> {
-        context, _ ->
+    registerHelper("iso_to_date", Helper<String> { context, _ ->
         if (context == null) return@Helper ""
         dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
     })
-    registerHelper("insert_at", Helper<Any> {
-        context, options ->
+    registerHelper("insert_at", Helper<Any> { context, options ->
         if (context == null) return@Helper ""
         val divider = options.hash<String>("divider", " ")
         options.params
                 .map { it as Int }
                 .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
     })
-    registerHelper("eq", Helper<String> {
-        context, options ->
+
+    registerHelper("eq", Helper<String> { context, options ->
         if (context == options.param(0)) options.fn() else options.inverse()
     })
 
-    registerHelper("safe", Helper<String> {
-        context, _ ->
+    registerHelper("not_eq", Helper<String> { context, options ->
+        if (context != options.param(0)) options.fn() else options.inverse()
+    })
+
+    registerHelper("safe", Helper<String> { context, _ ->
         if (context == null) "" else Handlebars.SafeString(context)
     })
 
-    registerHelper("image", Helper<String> {
-        context, _ -> if (context == null) "" else images[context]
+    registerHelper("image", Helper<String> { context, _ ->
+        if (context == null) "" else images[context]
     })
 
-    registerHelper("capitalize", Helper<String> {
-        context, _ -> if (context == null) "" else context.toLowerCase().capitalize()
+    registerHelper("capitalize", Helper<String> { context, _ ->
+        if (context == null) "" else context.toLowerCase().capitalize()
     })
 }
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
@@ -95,9 +98,9 @@ fun main(args: Array<String>) {
 }
 
 class PdfContent(
-    private val w3Doc: Document,
-    private val title: String,
-    override val contentType: ContentType = ContentType.parse("application/pdf")
+        private val w3Doc: Document,
+        private val title: String,
+        override val contentType: ContentType = ContentType.parse("application/pdf")
 ) : OutgoingContent.WriteChannelContent() {
     override suspend fun writeTo(channel: ByteWriteChannel) {
         channel.toOutputStream().use {
@@ -180,8 +183,7 @@ fun loadTemplates() = Files.list(templateRoot)
         .map {
             it.fileName.toString() to Files.list(it).filter { it.fileName.extension == "hbs" }
         }
-        .flatMap {
-            (applicationName, templateFiles) ->
+        .flatMap { (applicationName, templateFiles) ->
             templateFiles.map {
                 val fileName = it.fileName.toString()
                 val templateName = fileName.substring(0..fileName.length - 5)
