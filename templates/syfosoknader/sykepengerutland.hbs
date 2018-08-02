@@ -27,7 +27,9 @@
     </div>
     <div class="sporsmalcontainer">
         {{# each sporsmal as |spm index| ~}}
-            {{> syfosoknader/partials/spmpartial spm }}
+            <div class="hovedsporsmal">
+                {{> syfosoknader/partials/spmpartial spm }}
+            </div>
         {{/each}}
     </div>
   </div>
