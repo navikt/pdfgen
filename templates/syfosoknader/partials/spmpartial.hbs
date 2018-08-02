@@ -15,56 +15,62 @@
     {{/eq}}
 
     {{#not_eq svartype "CHECKBOX"}}
-
         <p class="sporsmalstekst">
             {{ sporsmalstekst }}
         </p>
 
-        {{#switch svartype}}
-            {{#case "DATO"}}
+            {{#eq svartype "DATO"}}
                 {{# each svar }}
                     <p class="svar svar--dato">
-                        {{ iso_to_date verdi}}
+                        {{ iso_to_date verdi }}
                     </p>
                 {{/each}}
-            {{/case}}
+            {{/eq}}
 
-            {{#case "PERIODER"}}
+            {{#eq svartype "PERIODER"}}
                 {{# each svar }}
-                    <p class="svar">
-                        {{ iso_to_date svar.0.verdi}} – {{ iso_to_date svar.1.verdi}}
+                    {{# eq svarverdiType "FOM" }}
+                    <p class="svar svar--dato">
+                        {{#with (lookup svar @index)}}
+                            {{ iso_to_date verdi }}
+                        {{/with}}
+                        –
+                        {{#with (lookup svar (inc @index))}}
+                            {{ iso_to_date verdi }}
+                        {{/with}}
                     </p>
+                    {{/eq}}
                 {{/each}}
-            {{/case}}
+            {{/eq}}
 
-            {{#case "FRITEKST"}}
+            {{#eq svartype "FRITEKST"}}
                 <p class="svar">
                     {{ svar.0.verdi }}
                 </p>
-            {{/case}}
+            {{/eq}}
 
-            {{#case "JA_NEI"}}
+            {{#eq svartype "JA_NEI"}}
                 <div class="svarcontainer">
                     <img class="checkbox" src="{{ image "Checkboks.png" }}"/>
                     <span class="svar svar--checkbox">
                         {{ capitalize svar.0.verdi }}
                     </span>
                 </div>
-            {{/case}}
+            {{/eq}}
 
-            {{#case "TIMER"}}
+            {{#eq svartype "TIMER"}}
                 <p class="svar">
                     {{ formatComma svar.0.verdi }} timer
                 </p>
-            {{/case}}
+            {{/eq}}
 
-            {{#case "PROSENT"}}
+            {{#eq svartype "PROSENT"}}
                 <p class="svar">
                     {{ svar.0.verdi }} %
                 </p>
-            {{/case}}
+            {{/eq}}
 
-            {{#case "IKKE_RELEVANT"}}
+            {{#eq svartype "IKKE_RELEVANT"}}
                 {{#if undertekst}}
                     {{safe undertekst}}
                 {{/if}}
@@ -74,8 +80,7 @@
                         {{ capitalize undersporsmal.0.sporsmalstekst }}
                     </span>
                 </div>
-            {{/case}}
-        {{/switch}}
+            {{/eq}}
     {{/not_eq}}
 
 
