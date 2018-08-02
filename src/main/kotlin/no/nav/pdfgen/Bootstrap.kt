@@ -57,6 +57,11 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
         if (context == null) return@Helper ""
         dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
     })
+    registerHelper("iso_to_date", Helper<String> {
+        context, _ ->
+        if (context == null) return@Helper ""
+        dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
+    })
     registerHelper("insert_at", Helper<Any> {
         context, options ->
         if (context == null) return@Helper ""
