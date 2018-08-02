@@ -69,6 +69,7 @@ val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile()
         context, options ->
         if (context == options.param(0)) options.fn() else options.inverse()
     })
+
     registerHelper("safe", Helper<String> {
         context, _ ->
         if (context == null) "" else Handlebars.SafeString(context)
