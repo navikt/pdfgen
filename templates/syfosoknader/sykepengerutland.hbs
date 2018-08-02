@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-    {{#block 'syfosoknader/partials/style' }}
+    {{#block syfosoknader/partials/style }}
     {{/block}}
 </head>
 <body>
@@ -26,8 +26,8 @@
       </div>
     </div>
     <div class="sporsmalcontainer">
-        {{# each sporsmal~}}
-            {{> 'syfosoknader/partials/spmpartial' s }}
+        {{# each sporsmal as |spm index| ~}}
+            {{> syfosoknader/partials/spmpartial spm }}
         {{/each}}
     </div>
   </div>

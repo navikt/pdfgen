@@ -34,8 +34,8 @@
 </div>
 {{# eq svar.0.verdi kriterieForVisningAvUndersporsmal }}
     {{# if svar }}
-        {{# each undersporsmal ~}}
-            {{> syfosoknader/partials/spmpartial u }}
+        {{# each undersporsmal as |underspm index| ~}}
+            {{> syfosoknader/partials/spmpartial underspm }}
         {{/each}}
     {{/if}}
 {{/eq}}
