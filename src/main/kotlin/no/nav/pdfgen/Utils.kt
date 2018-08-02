@@ -19,6 +19,7 @@ val sourceSansProRegular: ByteArray = IOUtils.toByteArray(Utils::class.java.getR
 val sourceSansProBold: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Bold.ttf"))
 
 fun createPDFA(w3doc: Document, title: String, outputStream: OutputStream) {
+
     PdfRendererBuilder()
             .useFont({ ByteArrayInputStream(sourceSansProRegular) }, "Source Sans Pro",
                     400, BaseRendererBuilder.FontStyle.NORMAL, false)

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 import java.nio.file.Files
 import java.io.File
+import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
@@ -50,10 +51,11 @@ val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val images = loadImages()
+val helpersFile: URL = Utils::class.java.getResource("/Helpers.js")
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     infiniteLoops(true)
 
-    registerHelpers(File("src/main/kotlin/no/nav/pdfgen/Helpers.js"))
+    registerHelpers(File(helpersFile.toURI()))
 
     registerHelper("iso_to_nor_date", Helper<String> { context, _ ->
         if (context == null) return@Helper ""
@@ -98,9 +100,9 @@ fun main(args: Array<String>) {
 }
 
 class PdfContent(
-        private val w3Doc: Document,
-        private val title: String,
-        override val contentType: ContentType = ContentType.parse("application/pdf")
+    private val w3Doc: Document,
+    private val title: String,
+    override val contentType: ContentType = ContentType.parse("application/pdf")
 ) : OutgoingContent.WriteChannelContent() {
     override suspend fun writeTo(channel: ByteWriteChannel) {
         channel.toOutputStream().use {
