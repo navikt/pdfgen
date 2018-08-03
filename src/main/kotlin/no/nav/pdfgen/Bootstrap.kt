@@ -50,13 +50,13 @@ val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
+    registerNavHelpers(this)
     infiniteLoops(true)
 }
 
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 
 fun main(args: Array<String>) {
-    registerHelpers(handlebars)
     initializeApplication(8080).start(wait = true)
 }
 

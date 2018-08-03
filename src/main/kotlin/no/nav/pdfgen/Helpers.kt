@@ -4,7 +4,7 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import java.time.format.DateTimeFormatter
 
-fun registerHelpers(handlebars: Handlebars) {
+fun registerNavHelpers(handlebars: Handlebars) {
     handlebars.apply {
         registerHelper("iso_to_nor_date", Helper<String> { context, _ ->
             if (context == null) return@Helper ""
