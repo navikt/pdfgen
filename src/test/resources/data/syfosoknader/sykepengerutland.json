@@ -1,43 +1,138 @@
 {
-  "id": "3c87f6e2-66ee-4376-9d4d-2444dea8368e",
-  "person": {
-    "navn": "Kari Normann Paulsrud Granholt",
-    "pnr": 12068745698
-  },
-  "sendt": "2017-02-01T00:00:00+01:00",
+  "aktørId": "abcdefg",
+  "soknadsId": "testuuid-558d-44f1-a837-10626f56f423",
+  "fom": null,
+  "tom": null,
+  "fnr": "12068745698",
+  "navn": "Kari Normann Paulsrud Granholt",
+  "sendt": "2019-01-08",
   "sporsmal": [
     {
-      "type": "PERIODER",
-      "tekst": "Når skal du oppholde deg utenfor Norge?",
+      "id": "107",
+      "uuid": null,
+      "tag": "PERIODEUTLAND",
+      "sporsmalstekst": "Når skal du være utenfor Norge?",
       "undertekst": null,
-      "svar": {
-        "fom": "2017-01-01T00:00:00+01:00",
-        "tom": "2017-01-31T00:00:00+01:00"
-      }
+      "svartype": "PERIODER",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "svarverdiType": "FOM",
+          "verdi": "2019-01-08"
+        },
+        {
+          "svarverdiType": "TOM",
+          "verdi": "2019-01-11"
+        }
+      ],
+      "undersporsmal": null
     },
     {
-      "type": "FRITEKST",
-      "tekst": "Hvilket land skal du reise til?",
+      "id": "108",
+      "uuid": null,
+      "tag": "LAND",
+      "sporsmalstekst": "Hvilket land skal du reise til?",
       "undertekst": null,
-      "svar": "Tyskland"
+      "svartype": "FRITEKST",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "svarverdiType": null,
+          "verdi": "Somalia"
+        }
+      ],
+      "undersporsmal": null
     },
     {
-      "type": "CHECKBOX",
-      "tekst": "Har du arbeidsgiver?",
+      "id": "109",
+      "uuid": null,
+      "tag": "ARBEIDSGIVER",
+      "sporsmalstekst": "Har du arbeidsgiver?",
       "undertekst": null,
-      "svar": "Ja"
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "svarverdiType": null,
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": null,
+          "uuid": null,
+          "tag": "SYKEMELDINGSGRAD",
+          "sporsmalstekst": "Er du 100% sykmeldt?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "svarverdiType": null,
+              "verdi": "JA"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": null,
+          "uuid": null,
+          "tag": "FERIE",
+          "sporsmalstekst": "Skal du ha ferie i hele perioden?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "svarverdiType": null,
+              "verdi": "NEI"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
     },
     {
-      "type": "CHECKBOX",
-      "tekst": "Er du 100% sykmeldt?",
-      "undertekst": null,
-      "svar": "Ja"
-    },
-    {
-      "type": "IKKE_RELEVANT",
-      "tekst": "Før du reiser må du bekrefte at",
-      "undertekst": "<ul><li>Oppholdet utenfor Norge ikke medfører at helsetilstanden din blir forverret</li><li>Oppholdet utenfor Norge ikke vil forlenge arbeidsuførheten din eller hindre planlagt behandling eller oppfølging</li><li>Du har avklart dette med sykmelderen din</li></ul>",
-      "svar": "Jeg bekrefter at jeg har gjort meg kjent med pliktene mine"
+      "id": "112",
+      "uuid": null,
+      "tag": "BEKREFT_OPPLYSNINGER_UTLAND_INFO",
+      "sporsmalstekst": "Jeg har lest all informasjonen jeg har fått i søknaden og bekrefter at opplysningene jeg har gitt er korrekte",
+      "undertekst": "<ul>\n  <li>Reisen vil ikke gjøre at jeg blir dårligere</li>\n    <li>Reisen vil ikke gjøre at sykefraværet blir lengre</li>\n    <li>Reisen vil ikke hindre planlagt behandling eller oppfølging</li>\n</ul>",
+      "svartype": "IKKE_RELEVANT",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": null,
+      "undersporsmal": [
+        {
+          "id": "120",
+          "tag": "BEKREFT_OPPLYSNINGER_UTLAND",
+          "uuid": null,
+          "sporsmalstekst": "Jeg har lest all informasjonen jeg har fått i søknaden og bekrefter at opplysningene jeg har gitt er korrekte.",
+          "undertekst": null,
+          "svartype": "CHECKBOX_PANEL",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "svarverdiType": null,
+              "verdi": "CHECKED"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
     }
   ]
 }

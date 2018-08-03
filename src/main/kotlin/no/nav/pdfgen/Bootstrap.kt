@@ -3,10 +3,10 @@ package no.nav.pdfgen
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.jknack.handlebars.Handlebars
-import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.JsonNodeValueResolver
+import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.call
@@ -50,35 +50,13 @@ val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
-    registerHelper("iso_to_nor_date", Helper<String> {
-        context, _ ->
-        if (context == null) return@Helper ""
-        dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
-    })
-    registerHelper("insert_at", Helper<Any> {
-        context, options ->
-        if (context == null) return@Helper ""
-        val divider = options.hash<String>("divider", " ")
-        options.params
-                .map { it as Int }
-                .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
-    })
-    registerHelper("eq", Helper<String> {
-        context, options ->
-        if (context == options.param(0)) options.fn() else options.inverse()
-    })
-    registerHelper("safe", Helper<String> {
-        context, _ ->
-        if (context == null) "" else Handlebars.SafeString(context)
-    })
-
-    registerHelper("image", Helper<String> {
-        context, _ -> if (context == null) "" else images[context]
-    })
+    infiniteLoops(true)
 }
+
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 
 fun main(args: Array<String>) {
+    registerHelpers(handlebars)
     initializeApplication(8080).start(wait = true)
 }
 
@@ -133,6 +111,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
+                log.debug("JSON: {}", jsonNode.toString())
                 render(applicationName, template, templates, jsonNode)?.let {
                     call.respond(PdfContent(it, template))
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
@@ -146,7 +125,8 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
     val html = HANDLEBARS_RENDERING_SUMMARY.startTimer().use {
         templates[applicationName to template]?.apply(Context
                 .newBuilder(jsonNode)
-                .resolver(JsonNodeValueResolver.INSTANCE)
+                .resolver(JsonNodeValueResolver.INSTANCE,
+                        MapValueResolver.INSTANCE)
                 .build())
     }
     return if (html != null) {
@@ -167,8 +147,7 @@ fun loadTemplates() = Files.list(templateRoot)
         .map {
             it.fileName.toString() to Files.list(it).filter { it.fileName.extension == "hbs" }
         }
-        .flatMap {
-            (applicationName, templateFiles) ->
+        .flatMap { (applicationName, templateFiles) ->
             templateFiles.map {
                 val fileName = it.fileName.toString()
                 val templateName = fileName.substring(0..fileName.length - 5)

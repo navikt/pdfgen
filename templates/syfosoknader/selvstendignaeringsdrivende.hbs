@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    {{#block 'syfosoknader/partials/style' }}
+    {{/block}}
+</head>
+<body>
+<div class="header">
+    <img class="navlogo" src="{{ image "Navlogo.png" }}"/>
+    <h1 class="title">Søknad om sykepenger for selvstendig næringsdrivende og frilansere</h1>
+</div>
+<div class="container">
+    <div class="personinfo">
+        <img class="personikon" src="{{ image "Personikon.png" }}"/>
+        <div class="persontekst">
+            <div class="sendt">
+                <p>
+                    Sendt til NAV {{ iso_to_nor_date sendt }}
+                </p>
+                <p>{{id}}</p>
+            </div>
+
+            <p class="navn">
+                {{ person.navn }}
+            </p>
+            <p class="id">
+                {{ insert_at person.pnr 6 }}
+            </p>
+        </div>
+    </div>
+    <div class="sporsmalcontainer">
+        {{# each sporsmal ~}}
+            {{> syfosoknader/partials/spmpartial s}}
+        {{/each}}
+    </div>
+</div>
+</body>
+</html>
