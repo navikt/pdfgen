@@ -111,7 +111,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
-                log.info("JSON: {}", jsonNode.toString())
+                log.debug("JSON: {}", jsonNode.toString())
                 render(applicationName, template, templates, jsonNode)?.let {
                     call.respond(PdfContent(it, template))
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
