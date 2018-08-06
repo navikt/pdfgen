@@ -6,16 +6,18 @@
     {{/block}}
 </head>
 <body>
-  <div class="header">
+  <div id="header">
     <img class="navlogo" src="{{ image "Navlogo.png" }}" />
     <h1 class="title">Søknad om å beholde sykepenger utenfor Norge</h1>
   </div>
   <div class="container">
     <div class="personinfo">
+
       <img class="personikon" src="{{ image "Personikon.png" }}" />
+
       <div class="persontekst">
-        <p class="sendt">
-          Sendt til NAV {{ iso_to_date sendt }}
+          <p class="sendt">
+            Sendt til NAV {{ iso_to_date innsendtDato }}
         </p>
         <p class="navn">
           {{ navn }}
@@ -33,8 +35,9 @@
         {{/each}}
     </div>
   </div>
-  <p class="footer">
-    {{ soknadsId }}
+  <p id="footer">
+      <span class="sidetall">side <span id="pagenumber"></span> av <span id="pagecount"></span></span>
+      <span class="soknadsid">{{ soknadsId }}</span>
   </p>
 </body>
 </html>
