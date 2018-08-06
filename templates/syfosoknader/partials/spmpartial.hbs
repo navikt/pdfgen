@@ -1,94 +1,189 @@
-<div class="sporsmal">
-
-    {{#eq svartype "CHECKBOX"}}
-        {{#each svar as |s index|~}}
-            {{#eq verdi "CHECKED"}}
-                <div class="svarcontainer">
+{{#eq svartype "CHECKBOX"}}
+    {{#each svar as |s index|~}}
+        {{#eq verdi "CHECKED"}}
+            <div class="oppsummering__sporsmalscontainer">
+                <div class="oppsummering__avkrysset">
                     <img class="checkbox" src="{{ image "Checkboks.png" }}"/>
-                    <span class="svar svar--checkbox">
-                        {{ capitalize sporsmalstekst }}
-                    </span>
-
+                    <span class="svar svar--checkbox">{{ capitalize sporsmalstekst }}</span>
                 </div>
-            {{/eq}}
-        {{/each}}
-    {{/eq}}
-
-    {{#not_eq svartype "CHECKBOX"}}
-        <p class="sporsmalstekst">
-            {{ sporsmalstekst }}
-        </p>
-
-            {{#eq svartype "DATO"}}
-                {{# each svar }}
-                    <p class="svar svar--dato">
-                        {{ iso_to_date verdi }}
-                    </p>
-                {{/each}}
-            {{/eq}}
-
-            {{#eq svartype "PERIODER"}}
-                {{# each svar }}
-                    {{# eq svarverdiType "FOM" }}
-                    <p class="svar svar--dato">
-                        {{#with (lookup svar @index)}}
-                            {{ iso_to_date verdi }}
-                        {{/with}}
-                        –
-                        {{#with (lookup svar (inc @index))}}
-                            {{ iso_to_date verdi }}
-                        {{/with}}
-                    </p>
-                    {{/eq}}
-                {{/each}}
-            {{/eq}}
-
-            {{#eq svartype "FRITEKST"}}
-                <p class="svar">
-                    {{ svar.0.verdi }}
-                </p>
-            {{/eq}}
-
-            {{#eq svartype "JA_NEI"}}
-                <div class="svarcontainer">
-                    <img class="checkbox" src="{{ image "Checkboks.png" }}"/>
-                    <span class="svar svar--checkbox">
-                        {{ capitalize svar.0.verdi }}
-                    </span>
-                </div>
-            {{/eq}}
-
-            {{#eq svartype "TIMER"}}
-                <p class="svar">
-                    {{ formatComma svar.0.verdi }} timer
-                </p>
-            {{/eq}}
-
-            {{#eq svartype "PROSENT"}}
-                <p class="svar">
-                    {{ svar.0.verdi }} %
-                </p>
-            {{/eq}}
-
-            {{#eq svartype "IKKE_RELEVANT"}}
-                {{#if undertekst}}
-                    {{safe undertekst}}
+                {{# if undersporsmal }}
+                    <div class="oppsummering__undersporsmalsliste">
+                        {{# each undersporsmal as |underspm index| ~}}
+                            {{> syfosoknader/partials/spmpartial underspm}}
+                        {{/each}}
+                    </div>
                 {{/if}}
-                <div class="svarcontainer">
-                    <img class="checkbox" src="{{ image "Checkboks.png" }}"/>
-                    <span class="svar svar--checkbox">
-                        {{ capitalize undersporsmal.0.sporsmalstekst }}
-                    </span>
-                </div>
-            {{/eq}}
-    {{/not_eq}}
+            </div>
+        {{/eq}}
+    {{/each}}
+{{/eq}}
 
+{{#eq svartype "DATO"}}
+    <p class="sporsmalstekst">
+        {{ sporsmalstekst }}
+    </p>
+    {{#if undertekst}}
+        <p class="undertekst">
+            {{ undertekst }}
+        </p>
+    {{/if }}
+    {{# each svar }}
+        <p class="svar svar--dato">
+            {{ iso_to_date verdi }}
+        </p>
+    {{/each}}
+{{/eq}}
 
-</div>
-{{# eq svar.0.verdi kriterieForVisningAvUndersporsmal }}
-    {{# if svar }}
-        {{# each undersporsmal as |underspm index| ~}}
-            {{> syfosoknader/partials/spmpartial underspm }}
+{{#eq svartype "CHECKBOX_GRUPPE"}}
+    <div class="oppsummering__sporsmalscontainer">
+        <h3 class="sporsmalstekst">{{ sporsmalstekst }}</h3>
+        {{#if undertekst}}
+            <p class="undertekst">
+                {{ undertekst }}
+            </p>
+        {{/if }}
+        {{# each svar }}
+            <p class="svar">
+                {{verdi}}
+            </p>
         {{/each}}
+        {{# if undersporsmal }}
+            <div class="oppsummering__undersporsmalsliste">
+                {{# each undersporsmal as |underspm index| ~}}
+                    {{> syfosoknader/partials/spmpartial underspm}}
+                {{/each}}
+            </div>
+        {{/if}}
+    </div>
+{{/eq}}
+
+{{#eq svartype "PERIODER"}}
+    <p class="sporsmalstekst">
+        {{ sporsmalstekst }}
+    </p>
+    {{#if undertekst}}
+        <p class="undertekst">
+            {{ undertekst }}
+        </p>
+    {{/if }}
+    {{# each svar }}
+        {{# eq svarverdiType "FOM" }}
+            <p class="svar svar--dato">
+                {{#with (lookup svar @index)}}
+                    {{ iso_to_date verdi }}
+                {{/with}}
+                –
+                {{#with (lookup svar (inc @index))}}
+                    {{ iso_to_date verdi }}
+                {{/with}}
+            </p>
+        {{/eq}}
+    {{/each}}
+{{/eq}}
+
+{{#eq svartype "FRITEKST"}}
+    <p class="sporsmalstekst">
+        {{ sporsmalstekst }}
+    </p>
+    {{#if undertekst}}
+        <p class="undertekst">
+            {{ undertekst }}
+        </p>
+    {{/if }}
+    <p class="svar">
+        {{ svar.0.verdi }}
+    </p>
+{{/eq}}
+
+{{#eq svartype "JA_NEI"}}
+    <div class="oppsummering__sporsmalscontainer">
+        <h3 class="sporsmalstekst">
+            {{ sporsmalstekst }}
+        </h3>
+        <div class="oppsummering__avkrysset">
+            <img class="checkbox" src="{{ image "Checkboks.png" }}"/>
+            <span class="svar svar--checkbox">
+                {{ capitalize svar.0.verdi }}
+            </span>
+        </div>
+        {{# eq svar.0.verdi kriterieForVisningAvUndersporsmal }}
+            {{# if undersporsmal }}
+                <div class="oppsummering__undersporsmalsliste">
+                    {{# each undersporsmal as |underspm index| ~}}
+                        {{> syfosoknader/partials/spmpartial underspm}}
+                    {{/each}}
+                </div>
+            {{/if}}
+        {{/eq}}
+    </div>
+{{/eq}}
+
+{{#eq svartype "TIMER"}}
+    <div class="oppsummering__sporsmalscontainer">
+        <h3 class="sporsmalstekst">
+            {{ sporsmalstekst }}
+        </h3>
+        <div class="oppsummering__tekstsvar">
+            {{#each svar}}
+                <p class="oppsummering__tekst">
+                    {{ formatComma verdi }} timer totalt
+                </p>
+            {{/each}}
+        </div>
+    </div>
+{{/eq}}
+
+{{#eq svartype "PROSENT"}}
+    <div class="oppsummering__sporsmalscontainer">
+        <h3 class="sporsmalstekst">
+            {{ sporsmalstekst }}
+        </h3>
+        <div class="oppsummering__tekstsvar">
+            {{#each svar}}
+                <p class="oppsummering__tekst">
+                    {{ verdi }} prosent
+                </p>
+            {{/each}}
+        </div>
+    </div>
+{{/eq}}
+
+{{#eq svartype "IKKE_RELEVANT"}}
+    <div>
+        <h3 class="sporsmalstekst">
+            {{ sporsmalstekst }}
+        </h3>
+        {{#if undertekst }}
+            <div class="redaksjonelt-innhold">
+                {{safe undertekst}}
+            </div>
+        {{/if}}
+    </div>
+    {{# if undersporsmal }}
+        <div class="oppsummering__undersporsmalsliste">
+            {{# each undersporsmal as |underspm index| ~}}
+                {{> syfosoknader/partials/spmpartial underspm}}
+            {{/each}}
+        </div>
     {{/if}}
+{{/eq}}
+
+{{#eq svartype "CHECKBOX_PANEL"}}
+    {{#each svar as |s index|~}}
+        {{#eq verdi "CHECKED"}}
+            <div class="oppsummering__sporsmalscontainer">
+                <div class="oppsummering__avkrysset">
+                    <img class="checkbox" src="{{ image "Checkboks.png" }}"/>
+                    <span class="svar svar--checkbox">{{ capitalize sporsmalstekst }}</span>
+                </div>
+                {{# if undersporsmal }}
+                    <div class="oppsummering__undersporsmalsliste">
+                        {{# each undersporsmal as |underspm index| ~}}
+                            {{> syfosoknader/partials/spmpartial underspm}}
+                        {{/each}}
+                    </div>
+                {{/if}}
+            </div>
+        {{/eq}}
+    {{/each}}
 {{/eq}}
