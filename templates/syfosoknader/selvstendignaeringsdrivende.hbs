@@ -6,7 +6,7 @@
     {{/block}}
 </head>
 <body>
-<div class="header">
+<div id="header">
     <img class="navlogo" src="{{ image "Navlogo.png" }}"/>
     <h1 class="title">Søknad om sykepenger for selvstendig næringsdrivende og frilansere</h1>
 </div>
@@ -16,24 +16,29 @@
         <div class="persontekst">
             <div class="sendt">
                 <p>
-                    Sendt til NAV {{ iso_to_nor_date sendt }}
+                    Sendt til NAV {{ iso_to_date innsendtDato }}
                 </p>
-                <p>{{id}}</p>
             </div>
 
             <p class="navn">
-                {{ person.navn }}
+                {{ navn }}
             </p>
             <p class="id">
-                {{ insert_at person.pnr 6 }}
+                {{ insert_at fnr 6 }}
             </p>
         </div>
     </div>
     <div class="sporsmalcontainer">
         {{# each sporsmal ~}}
+            <div class="oppsummering__seksjon">
             {{> syfosoknader/partials/spmpartial s}}
+            </div>
         {{/each}}
     </div>
+</div>
+<div id="footer">
+    <span class="sidetall">side <span id="pagenumber"></span> av <span id="pagecount"></span></span>
+    <span class="soknadsid">{{ soknadsId }}</span>
 </div>
 </body>
 </html>
