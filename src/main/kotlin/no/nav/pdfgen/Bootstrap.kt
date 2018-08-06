@@ -34,6 +34,10 @@ import org.jsoup.helper.W3CDom
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
+
+// Uncommemt to enable debug to file
+// import java.io.File
+
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -131,6 +135,12 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
     }
     return if (html != null) {
         log.debug("Generated HTML {}", keyValue("html", html))
+
+/* Uncomment to output html to file for easier debug
+*        File("pdf.html").bufferedWriter().use { out ->
+*            out.write(html)
+*        }
+*/
         JSOUP_PARSE_SUMMARY.startTimer().use {
             val doc = Jsoup.parse(html)
             W3CDom().fromJsoup(doc)
