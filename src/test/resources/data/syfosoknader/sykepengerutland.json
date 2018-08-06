@@ -5,7 +5,7 @@
   "tom": null,
   "fnr": "12068745698",
   "navn": "Kari Normann Paulsrud Granholt",
-  "innsendtDato": "2019-01-08",
+  "innsendtDato": "2019-01-08T00:00:00.000+00:00",
   "sporsmal": [
     {
       "id": "107",
@@ -20,11 +20,11 @@
       "svar": [
         {
           "svarverdiType": "FOM",
-          "verdi": "2019-01-08"
+          "verdi": "2019-01-08T00:00:00.000+00:00"
         },
         {
           "svarverdiType": "TOM",
-          "verdi": "2019-01-11"
+          "verdi": "2019-01-11T00:00:00.000+00:00"
         }
       ],
       "undersporsmal": null
