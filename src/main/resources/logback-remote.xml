@@ -4,7 +4,7 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
-    <logger name="no.nav.pale" level="INFO"/>
+    <logger name="pdf-gen" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="stdout_json" />
