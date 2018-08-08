@@ -73,7 +73,7 @@ pipeline {
             }
             steps {
                 script {
-                    deployApplication()
+                    jiraIssueId = deployApplication()
                     def jiraProdIssueId = nais action: 'jiraDeployProd', jiraIssueId: jiraIssueId
                     slackStatus status: 'deploying', jiraIssueId: "${jiraProdIssueId}"
                     waitForDeploy()
@@ -108,6 +108,7 @@ pipeline {
 void deployApplication() {
     def jiraIssueId = nais action: 'jiraDeploy'
     slackStatus status: 'deploying', jiraIssueId: "${jiraIssueId}"
+    return jiraIssueId
 }
 
 void waitForDeploy() {
