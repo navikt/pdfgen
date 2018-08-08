@@ -29,7 +29,7 @@
     {{/if }}
     {{# each svar }}
         <p class="svar svar--dato">
-            {{ iso_to_date verdi }}
+            {{ iso_to_nor_date verdi }}
         </p>
     {{/each}}
 {{/eq}}
@@ -70,11 +70,11 @@
         {{# eq svarverdiType "FOM" }}
             <p class="svar svar--dato">
                 {{#with (lookup svar @index)}}
-                    {{ iso_to_date  verdi }}
+                    {{ iso_to_nor_date verdi }}
                 {{/with}}
                 –
                 {{#with (lookup svar (inc @index))}}
-                    {{ iso_to_date  verdi }}
+                    {{ iso_to_nor_date verdi }}
                 {{/with}}
             </p>
         {{/eq}}
