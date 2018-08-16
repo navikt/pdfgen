@@ -15,6 +15,8 @@ fun registerNavHelpers(handlebars: Handlebars) {
             if (context == null) return@Helper ""
             dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
         })
+
+        // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
         registerHelper("json_to_period", Helper<String> { context, _ ->
             if (context == null) {
                 return@Helper ""
