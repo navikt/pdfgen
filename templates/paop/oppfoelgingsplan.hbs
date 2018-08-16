@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Oppfølgingsplan</title>
+    <style>
+        * {
+            font-family: "Source Sans Pro" !important;
+        }
+        .line_top {
+            border-top: 1px black solid;
+        }
+        .line_bottom {
+            border-bottom: 1px black solid;
+        }
+        .line_left {
+            border-left: 1px black solid;
+        }
+        .line_right {
+            border-right: 1px black solid;
+        }
+        .block {
+            width: 100%;
+            margin-top: 0;
+        }
+        .inline {
+            display: inline-block;
+        }
+        .main_title {
+            margin-bottom: 0;
+            margin-top: 2mm;
+            margin-left: 2mm;
+            vertical-align: bottom;
+        }
+        h1 {
+            font-size: 22px;
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+        h6 {
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+        p {
+            font-size: 12px;
+            margin-left: 1mm;
+            margin-top: 0;
+            margin-right: 1mm;
+        }
+        h5 {
+            padding-top: 1mm;
+            margin-left: 1mm;
+            font-size: 12px;
+            margin-top: 0;
+        }
+        h4 {
+            padding-top: 2mm;
+            margin-left: 1mm;
+            font-size: 13px;
+            margin-top: 0;
+        }
+        h3 {
+            padding-top: 3mm;
+            margin-left: 1mm;
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-style: italic;
+        }
+        tr {
+            font-size: 10px;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .checkbox {
+            width: 3mm;
+            height: 3mm;
+            border: black 1px solid;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 10px;
+        }
+
+        .new_page {
+            page-break-before: always;
+        }
+        .checkbox_title_right {
+            margin-left: 5mm;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        .titled_checkbox_block {
+            margin-left: 3mm;
+            margin-bottom: 5mm;
+        }
+        .titled_checkbox_inline {
+            display: inline;
+            margin-left: 3mm;
+        }
+        .signature_date_title {
+            font-size: 10px;
+        }
+        .centered_text_title {
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="line_top line_bottom line_left line_right block" style="vertical-align: bottom">
+    <div class="line_right inline" style="width: 66%; margin: 0; vertical-align: bottom">
+        <h1 class="main_title">Oppfølgingsplan ved sykemelding</h1>
+    </div>
+    <div class="inline filled_date" style="width: 33%; vertical-align: bottom">
+        <h6>Utfyllingsdato: </h6><div class="filled_date_field">{{ formFilledDate }}</div>
+    </div>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 4cm">
+    <p>
+        Oppfølgingsplan skal utarbeides senest innen 4 uker for alle sykmeldte, med mindre det er åpenbart unødvendig.
+        Planen skal være et dynamisk verktøy i oppfølgingsarbeidet og revideres underveis i sykefraværsløpet, for
+        eksempel i forbindelse med dialogmøter.
+    </p>
+    <p>
+        Oppfølgingsplanen skal sendes uoppfordret til sykmelder når den er utarbeidet første gang (dvs. ved 4 uker) og
+        til NAV når NAV ber om det.
+    </p>
+    <p>
+        Hvis du trenger bistand fra NAV i oppfølgingsarbeidet, kan du sende inn oppfølgingsplanen og krysse av for
+        bistandsbehov.
+    </p>
+    <p>
+        For opplysninger om sykefraværsoppfølging og henvisning til lov og regler, se nav.no og arbeidstilsynet.no
+    </p>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 2cm">
+    <h3>Nøkkelopplysninger</h3>
+    <p>
+        <span class="bold">Nøkkelopplysninger</span> skal identifisere arbeidsplassen og den sykmeldte, og gir grunnlagsinformasjon. Dette er
+        opplysninger som er viktig også for lege/sykmelder og NAV. Det er ikke behov for å fylle ut nøkkelopplysningene
+        på nytt når planen oppdateres.
+    </p>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 5cm">
+    <h4>Opplysninger om virksomheten</h4>
+    <table class="block">
+        <tbody>
+        <tr>
+            <th style="width: 40%">Virksomhetens navn: *</th>
+            <td style="width: 30%">{{ nokkelopplysninger.virksomhetsnavn }}Test</td>
+            <td style="width: 30%"></td>
+        </tr>
+        <tr>
+            <th>Bedriftsnr: *</th>
+            <td>{{ nokkelopplysninger.organiasjonsnr }}123123123</td>
+        </tr>
+        <tr>
+            <th>Nærmeste leder - Fornavn / Etternavn: *</th>
+            <td>{{ nokkelopplysninger.nermesteleder.fornavn }}Test</td>
+            <td>{{ nokkelopplysninger.nermesteleder.etternavn }}Testsen</td>
+        </tr>
+        <tr>
+            <th>Telefon nærmeste leder: *</th>
+            <td>{{ nokkelopplysninger.tlfnearmesteleder }}21937812/1235345</td>
+        </tr>
+        <tr>
+            <th>Annen kontaktperson - Fornavn / Etternavn: *</th>
+            <td>{{nokkelopplysninger.annenKontaktPerson.fornavn }}Tast</td>
+            <td>{{nokkelopplysninger.annenKontaktPerson.etternavn }}Tastsen</td>
+        </tr>
+        <tr>
+            <th>Telefon kontaktperson: *</th>
+            <td>{{ nokkelopplysninger.tlfkontatkperson }}21937812/1235345</td>
+        </tr>
+        <tr>
+            <th>Virksomheten er IA-virksomhet</th>
+            <td>
+                <div class="checkbox inline">{{#if nokkelopplysninger.virksomhetenerIAVirksomhet}}X{{/if}}</div>
+                <span class="bold">Ja</span>
+
+                <div class="checkbox inline" style="margin-left: 5mm">{{#unless nokkelopplysninger.virksomhetenerIAVirksomhet}}X{{/unless}}</div>
+                <span class="bold">Nei</span>
+            </td>
+        </tr>
+        <tr>
+            <th>Virksomheten har bedriftshelsetjeneste</th>
+            <td>
+                <div class="checkbox inline">{{#if nokkelopplysninger.virksomhetenHarBedrifsHelseTjeneste}}X{{/if}}</div>
+                <span class="bold">Ja</span>
+
+                <div class="checkbox inline" style="margin-left: 5mm">{{#unless nokkelopplysninger.virksomhetenHarBedrifsHelseTjeneste}}X{{/unless}}</div>
+                <span class="bold">Nei</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="block line_left line_right line_bottom">
+    <h4>Opplysninger om arbeidstakeren</h4>
+    <table class="block">
+        <tbody>
+        <tr>
+            <th style="width: 40%">Arbeidstaker - Fornavn / Etternavn: *</th>
+            <td style="width: 60%">{{ opplysningerOmArbeidstakeren.navn.fornavn }} {{ opplysningerOmArbeidstakeren.navn.etternavn }}</td>
+        </tr>
+        <tr>
+            <th>Fødselsnummer: *</th>
+            <td>{{ opplysningerOmArbeidstakeren.fodselsnummer }}</td>
+        </tr>
+        <tr>
+            <th>Telefon:</th>
+            <td>{{ opplysningerOmArbeidstakeren.tlf }}</td>
+        </tr>
+        <tr>
+            <th>Stilling / avdeling</th>
+            <td>{{ opplysningerOmArbeidstakeren.stillingAvdeling }}</td>
+        </tr>
+        <tr>
+            <th>Ordinære arbeidsoppgaver:</th>
+            <td>{{ opplysningerOmArbeidstakeren.ordineareArbeidsoppgaver }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="block line_left line_right line_bottom">
+    <h4>Opplysninger om sykefraværet</h4>
+    <table class="block">
+        <tbody>
+        <tr>
+            <th style="width: 40%">Første fraværsdag:</th>
+            <td style="width: 60%">{{iso_to_nor_date opplysingerOmSykefravaeret.forsteFravaersdag }}</td>
+        </tr>
+        <tr>
+            <th>Sykemeldingsdato:</th>
+            <td>{{iso_to_nor_date opplysingerOmSykefravaeret.sykemeldingsDato }}</td>
+        </tr>
+        <tr>
+            <th>Sykemeldingsprosent ved sykemeldingsdato:</th>
+            <td>{{ opplysingerOmSykefravaeret.sykmeldingsProsentVedSykmeldDato }}%</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="new_page"></div>
+
+<div class="block line_top line_left line_right line_bottom">
+    <h3>Tiltak</h3>
+    <p>
+        Under <span class="bold">Tiltak</span> beskrives hvilke oppgaver som kan utføres/ikke utføres, og hvilke
+        konkrete tiltak som avtales for at arbeidstaker skal være i eller komme tilbake i arbeid. Informasjon på
+        sykmeldingsblanketten kan gi viktige opplysninger til vurderingen av tilrettelegging eller andre tiltak.
+        Tiltak skal avtales for en angitt periode, og vurderes ved slutten av eller underveis i perioden. Hvis
+        vurderingen viser at det er behov for nye tiltak, oppdateres oppfølgingsplanen ved å fylle ut tiltak for
+        en ny tiltaksperiode.
+    </p>
+</div>
+<div class="block line_left line_right line_bottom">
+    <h4>Ordinære arbeidsoppgaver som kan / ikke kan utføres</h4>
+    <p>{{ tiltak.ordineareArbeidsoppgaverSomKanIkkeKanUtfores }}</p>
+</div>
+<div class="block line_left line_right line_bottom">
+    <div class="block" style="min-height: 4cm">
+        <h5>Beskrivelse av tiltak</h5>
+        <p>{{ tiltak.beskrivelseAvTiltak }}</p>
+    </div>
+    <div class="block" style="min-height: 1cm">
+        <h5>Mål med tiltaket</h5>
+        <p>{{ tiltak.maalMedTiltaket }}</p>
+    </div>
+    <div class="block" style="min-height: 7mm">
+        <div class="inline" style="width: 60%">
+            <h5>Tiltaket gjennomføres i perioden</h5>
+            <!-- TODO -->
+        </div>
+        <div class="inline" style="width: 39%">
+            <h5>Sykemeldingsprosent i perioden</h5>
+            <!-- TODO -->
+        </div>
+    </div>
+</div>
+<div class="block line_left line_right line_bottom">
+    <h4>Ønsker bistand fra NAV <span style="font-weight: normal">(Kryss av og gi begrunnelse for ønsket bistand)</span></h4>
+    <div class="block titled_checkbox_block">
+        <div class="inline checkbox"><!-- TODO --></div><div class="inline checkbox_title_right">Råd og veiledning</div>
+    </div>
+    <div class="block titled_checkbox_block">
+        <div class="inline checkbox"><!-- TODO --></div><div class="inline checkbox_title_right">Dialogmøte i regi av NAV</div>
+    </div>
+    <div class="block titled_checkbox_block">
+        <div class="inline checkbox"><!-- TODO --></div><div class="inline checkbox_title_right">Arbeidsrettede tiltak og virkemidler</div>
+    </div>
+    <div class="block titled_checkbox_block">
+        <div class="inline checkbox"><!-- TODO --></div><div class="inline checkbox_title_right">Hjelpemidler</div>
+    </div>
+</div>
+<div class="block line_left line_right line_bottom">
+    <h4>Behov for bistand fra andre</h4>
+    <div class="titled_checkbox_inline">
+        <div class="inline checkbox"><!-- TODO --></div><div class="inline checkbox_title_right">Bedriftshelsetjenesten</div>
+    </div>
+    <div class="titled_checkbox_inline" style="margin-left: 2cm">
+        <div class="inline checkbox"><!-- TODO --></div><div class="inline checkbox_title_right">Andre (spesifiser i fritekst under)</div>
+    </div>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 2cm">
+    <h4>Behov for avklaring med lege/sykemelder</h4>
+    <p><!-- TODO --></p>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 2.5cm">
+    <h4>Tilrettelagt arbeid ikke mulig</h4>
+    <p><!-- TODO --></p>
+</div>
+
+<div class="new_page"></div>
+<div class="block line_left line_top line_right line_bottom">
+    <h3>Vurdering - effekt av tiltak</h3>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 12cm">
+    <p><!-- TODO --></p>
+</div>
+<div class="block line_left line_right line_bottom">
+    <h3>Fremdrift</h3>
+</div>
+<div class="block line_left line_right line_bottom" style="min-height: 7cm">
+    <h4>Oppfølgingssamtaler, dialogmeldinger og andre opplysninger om fremdriften</h4>
+    <p><!-- TODO --></p>
+</div>
+<div class="block line_left line_right line_bottom" style="vertical-align: bottom">
+    <div class="inline" style="width: 60%">
+        <h3>Underskrift</h3>
+    </div>
+    <div class="inline signature_date_title" style="width: 39%">
+        Dato for underskrift:
+    </div>
+</div>
+<div class="block line_left line_right line_bottom">
+    <div class="inline" style="width: 50%; text-align: center">
+        <div class="block line_bottom inline centered_text_title" style="width: 90%; height: 1cm; vertical-align: bottom">
+            <!-- TODO -->
+        </div>
+        <div class="centered_text_title">Arbeidstaker</div>
+    </div>
+    <div class="inline" style="width: 49%; text-align: center">
+        <div class="block line_bottom inline centered_text_title" style="height: 1cm; width: 90%">
+            <!-- TODO -->
+        </div>
+        <div class="centered_text_title">Arbeidsgiver</div>
+    </div>
+</div>
+<div class="block line_left line_right line_bottom">
+    <div class="checkbox inline"><!-- TODO --></div>
+    <div class="checkbox_title_right inline">Signert papirkopi foreligger på arbeidsplassen</div>
+</div>
+<div class="new_page"></div>
+<div class="block line_top line_left line_right line_bottom">
+    <h3>Utfyllende opplysninger</h3>
+</div>
+<div class="block line_left line_right line_bottom" style="height: 25cm;">
+
+</div>
+</body>
+</html>
