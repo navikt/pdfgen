@@ -2,6 +2,7 @@ package no.nav.pdfgen
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun registerNavHelpers(handlebars: Handlebars) {
@@ -13,6 +14,16 @@ fun registerNavHelpers(handlebars: Handlebars) {
         registerHelper("iso_to_date", Helper<String> { context, _ ->
             if (context == null) return@Helper ""
             dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
+        })
+        registerHelper("json_to_period", Helper<String> { context, _ ->
+            if (context == null) {
+                return@Helper ""
+            } else {
+                val fom:LocalDate = LocalDate.parse(context.substring(8, 18))
+                val tom:LocalDate = LocalDate.parse(context.substring(27, 37))
+
+                return@Helper fom.format(dateFormat) + " - " + tom.format(dateFormat)
+            }
         })
         registerHelper("insert_at", Helper<Any> { context, options ->
             if (context == null) return@Helper ""
