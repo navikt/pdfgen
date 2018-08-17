@@ -2,6 +2,8 @@ package no.nav.pdfgen
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import no.nav.pdfgen.domain.syfosoknader.Periode
+import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.format.DateTimeFormatter
 
 fun registerNavHelpers(handlebars: Handlebars) {
@@ -13,6 +15,16 @@ fun registerNavHelpers(handlebars: Handlebars) {
         registerHelper("iso_to_date", Helper<String> { context, _ ->
             if (context == null) return@Helper ""
             dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
+        })
+
+        // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
+        registerHelper("json_to_period", Helper<String> { context, _ ->
+            if (context == null) {
+                return@Helper ""
+            } else {
+                val periode: Periode = PeriodeMapper.jsonTilPeriode(context)
+                return@Helper periode.fom!!.format(dateFormat) + " - " + periode.tom!!.format(dateFormat)
+            }
         })
         registerHelper("insert_at", Helper<Any> { context, options ->
             if (context == null) return@Helper ""

@@ -19,12 +19,7 @@
       "kriterieForVisningAvUndersporsmal": null,
       "svar": [
         {
-          "svarverdiType": "FOM",
-          "verdi": "2019-01-08T00:00:00.000Z"
-        },
-        {
-          "svarverdiType": "TOM",
-          "verdi": "2019-01-11T00:00:00.000Z"
+          "verdi": "{\"fom\":\"2019-01-08\",\"tom\":\"2019-01-11\"}"
         }
       ],
       "undersporsmal": null
@@ -41,7 +36,6 @@
       "kriterieForVisningAvUndersporsmal": null,
       "svar": [
         {
-          "svarverdiType": null,
           "verdi": "Tyskland"
         }
       ],
@@ -59,7 +53,6 @@
       "kriterieForVisningAvUndersporsmal": "JA",
       "svar": [
         {
-          "svarverdiType": null,
           "verdi": "JA"
         }
       ],
@@ -76,7 +69,6 @@
           "kriterieForVisningAvUndersporsmal": null,
           "svar": [
             {
-              "svarverdiType": null,
               "verdi": "JA"
             }
           ],
@@ -94,7 +86,6 @@
           "kriterieForVisningAvUndersporsmal": null,
           "svar": [
             {
-              "svarverdiType": null,
               "verdi": "NEI"
             }
           ],
@@ -126,7 +117,6 @@
           "kriterieForVisningAvUndersporsmal": null,
           "svar": [
             {
-              "svarverdiType": null,
               "verdi": "CHECKED"
             }
           ],
