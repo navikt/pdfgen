@@ -15,18 +15,7 @@ pipeline {
     stages {
         stage('initialize') {
             steps {
-                sh './gradlew clean'
-                script {
-                    init action: 'default'
-                    applicationVersionGradle = sh(script: './gradlew -q printVersion', returnStdout: true).trim()
-                    env.APPLICATION_VERSION = "${applicationVersionGradle}"
-                    if (applicationVersionGradle.endsWith('-SNAPSHOT')) {
-                        env.APPLICATION_VERSION = "${applicationVersionGradle}.${env.BUILD_ID}-${env.COMMIT_HASH_SHORT}"
-                    } else {
-                        env.DEPLOY_TO = 'production'
-                    }
-                    init action: 'updateStatus'
-                }
+                init action: 'gradle'
             }
         }
         stage('build') {
