@@ -4,20 +4,20 @@ pipeline {
     agent any
 
     environment {
-        APPLICATION_NAME = 'pdf-gen'
-        FASIT_ENV = 'q1'
         ZONE = 'fss'
-        NAMESPACE = 'default'
-        COMMIT_HASH_SHORT = gitVars 'commitHashShort'
-        COMMIT_HASH = gitVars 'commitHash'
+        APPLICATION_NAME = 'pdf-gen'
+        DOCKER_SLUG = 'integrasjon'
+        FASIT_ENVIRONMENT = 'q1'
+        APPLICATION_SERVICE = 'CMDB-366907'
+        APPLICATION_COMPONENT = 'CMDB-317076'
     }
 
     stages {
         stage('initialize') {
             steps {
-                ciSkip 'check'
                 sh './gradlew clean'
                 script {
+                    init action: 'default'
                     applicationVersionGradle = sh(script: './gradlew -q printVersion', returnStdout: true).trim()
                     env.APPLICATION_VERSION = "${applicationVersionGradle}"
                     if (applicationVersionGradle.endsWith('-SNAPSHOT')) {
@@ -25,8 +25,7 @@ pipeline {
                     } else {
                         env.DEPLOY_TO = 'production'
                     }
-                    changeLog = utils.gitVars(env.APPLICATION_NAME).changeLog.toString()
-                    slackStatus status: 'started', changeLog: "${changeLog}"
+                    init action: 'updateStatus'
                 }
             }
         }
@@ -59,65 +58,29 @@ pipeline {
         }
         stage('deploy to preprod') {
             steps {
-                deployApplication()
-                waitForDeploy()
+                deploy action: 'jiraPreprod'
             }
         }
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
-            environment {
-                FASIT_ENV = 'p'
-                NAMESPACE = 'default'
-                APPLICATION_SERVICE = 'CMDB-366907'
-                APPLICATION_COMPONENT = 'CMDB-317076'
-            }
             steps {
-                script {
-                    jiraIssueId = deployApplication()
-                    def jiraProdIssueId = nais action: 'jiraDeployProd', jiraIssueId: jiraIssueId
-                    slackStatus status: 'deploying', jiraIssueId: "${jiraProdIssueId}"
-                    waitForDeploy()
-                }
+                deploy action: 'jiraProd'
             }
         }
     }
     post {
         always {
-            ciSkip 'postProcess'
-            dockerUtils 'pruneBuilds'
-            script {
-                if (currentBuild.result == 'ABORTED') {
-                    slackStatus status: 'aborted'
-                }
-            }
+            postProcess action: 'always'
             junit '**/build/test-results/test/*.xml'
             archiveArtifacts artifacts: 'build/reports/rules.csv', allowEmptyArchive: true
             archiveArtifacts artifacts: '**/build/libs/*', allowEmptyArchive: true
             archiveArtifacts artifacts: '**/build/install/*', allowEmptyArchive: true
-            deleteDir()
         }
         success {
-            slackStatus status: 'success'
+            postProcess action: 'success'
         }
         failure {
-            slackStatus status: 'failure'
+            postProcess action: 'failure'
         }
-    }
-}
-
-void deployApplication() {
-    def jiraIssueId = nais action: 'jiraDeploy'
-    slackStatus status: 'deploying', jiraIssueId: "${jiraIssueId}"
-    return jiraIssueId
-}
-
-void waitForDeploy() {
-    try {
-        timeout(time: 1, unit: 'HOURS') {
-            input id: "deploy", message: "Waiting for remote Jenkins server to deploy the application..."
-        }
-    } catch (Exception exception) {
-        currentBuild.description = "Deploy failed, see " + currentBuild.description
-        throw exception
     }
 }
