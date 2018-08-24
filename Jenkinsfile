@@ -47,7 +47,7 @@ pipeline {
         }
         stage('push docker image') {
             steps {
-                dockerUtils 'createPushImage'
+                dockerUtils action: 'createPushImage'
             }
         }
         stage('validate & upload nais.yaml to nexus m2internal') {
