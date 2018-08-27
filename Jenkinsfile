@@ -49,13 +49,13 @@ pipeline {
         }
         stage('deploy to preprod') {
             steps {
-                deploy action: 'jiraPreprod'
+                deployApp action: 'jiraPreprod'
             }
         }
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
             steps {
-                deploy action: 'jiraProd'
+                deployApp action: 'jiraProd'
                 githubStatus action: 'tagRelease', applicationName: "${env.GITHUB_NAME}"
             }
         }
