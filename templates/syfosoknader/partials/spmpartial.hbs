@@ -142,9 +142,11 @@
 
 {{#eq svartype "IKKE_RELEVANT"}}
     <div>
-        <h3 class="sporsmalstekst">
-            {{ sporsmalstekst }}
-        </h3>
+        {{#if this.sporsmalstekst}}
+            <h3 class="sporsmalstekst">
+                {{ this.sporsmalstekst }}
+            </h3>
+        {{/if}}
         {{#if undertekst }}
             <div class="redaksjonelt-innhold">
                 {{safe undertekst}}
