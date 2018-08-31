@@ -147,15 +147,15 @@
                 {{ this.sporsmalstekst }}
             </h3>
         {{/if}}
-        {{#if undertekst }}
+        {{#if this.undertekst }}
             <div class="redaksjonelt-innhold">
-                {{safe undertekst}}
+                {{safe this.undertekst}}
             </div>
         {{/if}}
     </div>
-    {{# if undersporsmal }}
+    {{# if this.undersporsmal }}
         <div class="oppsummering__undersporsmalsliste">
-            {{# each undersporsmal as |underspm index| ~}}
+            {{# each this.undersporsmal as |underspm index| ~}}
                 {{> syfosoknader/partials/spmpartial underspm}}
             {{/each}}
         </div>
