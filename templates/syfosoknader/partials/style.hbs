@@ -1,8 +1,9 @@
 <style>
+
     @page {
         size: A4 portrait;
-        margin: 0.2cm;
-        padding-top: 1cm;
+        margin: 1cm 0.3cm 0.5cm;
+        padding-bottom: 1cm;
 
         @bottom-left {
             content: element(footer);
@@ -10,7 +11,7 @@
     }
 
     @page:first {
-        padding-top: 0;
+        margin-top: 0;
         @top-left {
             content: element(header);
         }
@@ -41,7 +42,8 @@
     #footer {
         position: running(footer);
         font-size: 12px;
-        margin: -20px 0.7cm 0;
+        margin-top: -25px;
+        padding-left: 0.6cm;
     }
 
     .sidetall {
@@ -51,7 +53,6 @@
     #pagenumber:before {
         content: counter(page);
     }
-
     #pagecount:before {
         content: counter(pages)
     }

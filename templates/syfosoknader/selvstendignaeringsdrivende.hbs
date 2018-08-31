@@ -29,16 +29,16 @@
         </div>
     </div>
     <div class="sporsmalcontainer">
-        {{# each sporsmal ~}}
+        {{# each sporsmal as |spm|~}}
             <div class="oppsummering__seksjon">
-            {{> syfosoknader/partials/spmpartial s}}
+            {{> syfosoknader/partials/spmpartial spm}}
             </div>
         {{/each}}
     </div>
 </div>
 <div id="footer">
-    <span class="sidetall">side <span id="pagenumber"></span> av <span id="pagecount"></span></span>
     <span class="soknadsid">{{ soknadsId }}</span>
+    <span class="sidetall">side <span id="pagenumber"></span> av <span id="pagecount"></span></span>
 </div>
 </body>
 </html>
