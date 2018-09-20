@@ -125,15 +125,13 @@ fun initializeApplication(port: Int): ApplicationEngine {
             post("/api/convert") {
                 val html = call.receiveText()
 
-                fromHtmlToDocument(html)?.let {
-                    call.respond(PdfContent(it, html))
-                } ?: call.respondText("Failed to parse html", status = HttpStatusCode.BadRequest)
+                call.respond(PdfContent(fromHtmlToDocument(html), "<title>"))
             }
         }
     }
 }
 
-fun fromHtmlToDocument(html: String): Document? {
+fun fromHtmlToDocument(html: String): Document {
     return JSOUP_PARSE_SUMMARY.startTimer().use {
             val doc = Jsoup.parse(html)
             W3CDom().fromJsoup(doc)
