@@ -4,7 +4,7 @@ buildscript {
     ext.prometheus_version = '0.3.0'
     ext.logback_version = '1.2.3'
     ext.logstash_encoder_version = '5.1'
-    ext.open_html_to_pdf_version = '0.0.1-RC14'
+    ext.open_html_to_pdf_version = '0.0.1-RC15'
     ext.handlebars_version = '4.1.0'
     ext.handlebars_jackson_version = '1.0.0'
     ext.jsoup_version = '1.11.3'
@@ -70,6 +70,7 @@ dependencies {
     implementation "com.github.jknack:handlebars-jackson2:$handlebars_jackson_version"
     implementation "com.openhtmltopdf:openhtmltopdf-pdfbox:$open_html_to_pdf_version"
     implementation "com.openhtmltopdf:openhtmltopdf-slf4j:$open_html_to_pdf_version"
+    implementation "com.openhtmltopdf:openhtmltopdf-svg-support:$open_html_to_pdf_version"
 
     implementation "org.jsoup:jsoup:$jsoup_version"
     implementation "com.fasterxml.jackson.core:jackson-core:$jackson_version"

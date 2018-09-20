@@ -14,6 +14,7 @@ import io.ktor.content.OutgoingContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveStream
+import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondWrite
@@ -121,8 +122,22 @@ fun initializeApplication(port: Int): ApplicationEngine {
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
+            post("/api/convert") {
+                val html = call.receiveText()
+
+                fromHtmlToDocument(html)?.let {
+                    call.respond(PdfContent(it, html))
+                } ?: call.respondText("Failed to parse html", status = HttpStatusCode.BadRequest)
+            }
         }
     }
+}
+
+fun fromHtmlToDocument(html: String): Document? {
+    return JSOUP_PARSE_SUMMARY.startTimer().use {
+            val doc = Jsoup.parse(html)
+            W3CDom().fromJsoup(doc)
+        }
 }
 
 fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): Document? {

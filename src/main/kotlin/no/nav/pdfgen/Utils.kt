@@ -2,6 +2,7 @@ package no.nav.pdfgen
 
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
+import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
@@ -25,6 +26,7 @@ fun createPDFA(w3doc: Document, title: String, outputStream: OutputStream) {
                     400, BaseRendererBuilder.FontStyle.NORMAL, false)
             .useFont({ ByteArrayInputStream(sourceSansProBold) }, "Source Sans Pro", 700,
                     BaseRendererBuilder.FontStyle.NORMAL, false)
+            .useSVGDrawer(BatikSVGDrawer())
             // .useFastMode() wait with fast mode until it doesn't print a bunch of errors
             .withW3cDocument(w3doc, "")
             .buildPdfRenderer().use {
