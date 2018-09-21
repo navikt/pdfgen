@@ -4,8 +4,8 @@ pipeline {
     agent any
 
     environment {
-        ZONE = 'fss'
-        APPLICATION_NAME = 'pdf-gen-svg'
+        ZONE = 'sbs'
+        APPLICATION_NAME = 'pdf-gen'
         DOCKER_SLUG = 'integrasjon'
         FASIT_ENVIRONMENT = 'q1'
         APPLICATION_SERVICE = 'TODO-366907'
@@ -49,7 +49,7 @@ pipeline {
         }
         stage('push docker image') {
             steps {
-                dockerUtils action: 'createPushImage'
+                dockerUtils action: 'createPushImage', applicationName: 'pdf-gen-svg'
             }
         }
         stage('validate & upload nais.yaml to nexus m2internal') {
