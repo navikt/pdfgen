@@ -5,11 +5,11 @@ pipeline {
 
     environment {
         ZONE = 'fss'
-        APPLICATION_NAME = 'pdf-gen'
+        APPLICATION_NAME = 'pdf-gen-svg'
         DOCKER_SLUG = 'integrasjon'
         FASIT_ENVIRONMENT = 'q1'
-        APPLICATION_SERVICE = 'CMDB-366907'
-        APPLICATION_COMPONENT = 'CMDB-317076'
+        APPLICATION_SERVICE = 'TODO-366907'
+        APPLICATION_COMPONENT = 'TODO-317076'
         GITHUB_NAME = 'pdfgen'
     }
 
