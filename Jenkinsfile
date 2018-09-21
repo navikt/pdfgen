@@ -20,6 +20,17 @@ pipeline {
                 init action: 'gradle'
             }
         }
+        stage('build openhtmltopdf fork') {
+            steps {
+                dir('openhtmltopdf') {
+                    deleteDir()
+                }
+                sh 'git clone --single-branch -b add_pdfa_part_nav https://github.com/TheUnnamedDude/openhtmltopdf.git'
+                dir('openhtmltopdf') {
+                    sh 'mvn clean install'
+                }
+            }
+        }
         stage('build') {
             steps {
                 sh './gradlew build -x test'

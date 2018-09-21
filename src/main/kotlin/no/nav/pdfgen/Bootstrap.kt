@@ -67,12 +67,11 @@ fun main(args: Array<String>) {
 
 class PdfContent(
     private val w3Doc: Document,
-    private val title: String,
     override val contentType: ContentType = ContentType.parse("application/pdf")
 ) : OutgoingContent.WriteChannelContent() {
     override suspend fun writeTo(channel: ByteWriteChannel) {
         channel.toOutputStream().use {
-            createPDFA(w3Doc, title, it)
+            createPDFA(w3Doc, it)
         }
     }
 }
@@ -107,7 +106,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                         "{}".toByteArray(Charsets.UTF_8)
                     }, JsonNode::class.java)
                     render(applicationName, template, loadTemplates(), data)?.let {
-                        call.respond(PdfContent(it, template))
+                        call.respond(PdfContent(it))
                     } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
                 }
             }
@@ -118,14 +117,14 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
                 log.debug("JSON: {}", objectMapper.writeValueAsString(jsonNode))
                 render(applicationName, template, templates, jsonNode)?.let {
-                    call.respond(PdfContent(it, template))
+                    call.respond(PdfContent(it))
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
-            post("/api/convert") {
+            post("/api/v1/genpdf/html/{applicationName}") {
                 val html = call.receiveText()
 
-                call.respond(PdfContent(fromHtmlToDocument(html), "<title>"))
+                call.respond(PdfContent(fromHtmlToDocument(html)))
             }
         }
     }
