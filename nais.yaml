@@ -28,6 +28,6 @@ resources:
     memory: 128Mi
 fasitResources:
   exposed:
-  - alias: pdfgen-svg
+  - alias: pdfgen
     resourceType: RestService
     path: /api
