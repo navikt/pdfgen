@@ -15,6 +15,9 @@
         <img class="personikon" src="{{ image "Personikon.png" }}"/>
         <div class="persontekst">
             <div class="sendt">
+                {{# if korrigerer}}
+                    <p class="korrigert">Korrigert</p>
+                {{/if}}
                 <p>
                     Sendt til NAV {{ iso_to_date innsendtDato }}
                 </p>
