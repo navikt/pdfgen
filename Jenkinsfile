@@ -73,6 +73,9 @@ pipeline {
                     }
                 }
             }
+        }
+        stage('tag git release') {
+            when { environment name: "DEPLOY_TO", value: 'production' }
             steps {
                 githubStatus action: 'tagRelease', applicationName: "${env.GITHUB_NAME}"
             }
