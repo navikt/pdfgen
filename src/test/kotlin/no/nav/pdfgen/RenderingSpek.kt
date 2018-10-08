@@ -41,7 +41,7 @@ object RenderingSpek : Spek({
             it("Renders the template $templateName for application $applicationName to a PDF/A compliant document") {
                 val doc = render(applicationName, templateName, templates, node)
                 val bytesOut = ByteArrayOutputStream()
-                createPDFA(doc!!, "Test title", bytesOut)
+                createPDFA(doc!!, bytesOut)
                 Foundries.defaultInstance().createParser(ByteArrayInputStream(bytesOut.toByteArray())).use {
                     val validationResult = validator.validate(it)
                     validationResult.testAssertions

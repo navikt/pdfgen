@@ -121,7 +121,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
-            post("/api/convert") {
+            post("/api/v1/genpdf/html/{applicationName}") {
                 val html = call.receiveText()
 
                 call.respond(PdfContent(fromHtmlToDocument(html)))

@@ -2,6 +2,7 @@ package no.nav.pdfgen
 
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
+import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import org.apache.pdfbox.io.IOUtils
 import org.w3c.dom.Document
 import java.io.ByteArrayInputStream
@@ -20,6 +21,7 @@ fun createPDFA(w3doc: Document, outputStream: OutputStream) = PdfRendererBuilder
                 BaseRendererBuilder.FontStyle.NORMAL, false)
         // .useFastMode() wait with fast mode until it doesn't print a bunch of errors
         .useColorProfile(colorProfile)
+        .useSVGDrawer(BatikSVGDrawer())
         .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
         .withW3cDocument(w3doc, "")
         .toStream(outputStream)
