@@ -1,9 +1,16 @@
 package no.nav.pdfgen
 
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.post
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readBytes
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.experimental.runBlocking
 import org.amshove.kluent.shouldBeGreaterThan
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
@@ -19,7 +26,7 @@ import java.util.concurrent.TimeUnit
 object PdfGenITSpek : Spek({
     val applicationPort = getRandomPort()
     val application = initializeApplication(applicationPort)
-    val client = OkHttpClient()
+    val client = HttpClient(CIO)
     val templates = loadTemplates()
     application.start()
 
@@ -34,17 +41,16 @@ object PdfGenITSpek : Spek({
                 val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
                     IOUtils.toByteArray(it)
                 } ?: "{}".toByteArray(Charsets.UTF_8)
-                val requestBody = RequestBody.create(MediaType.parse("application/json"), json)
-                val request = Request.Builder()
-                        .url("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName")
-                        .post(requestBody)
-                        .build()
 
-                val response = client.newCall(request).execute()
-                response.isSuccessful shouldEqual true
-                response shouldNotEqual null
-                response.body() shouldNotEqual null
-                val bytes = response.body()!!.bytes()
+                val response = runBlocking<HttpResponse> {
+                    client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                        contentType(ContentType.Application.Json)
+                        body = json
+                    }
+                }
+                response.status.isSuccess() shouldEqual true
+                val bytes = runBlocking { response.readBytes() }
+                bytes shouldNotEqual null
                 // Load the document in pdfbox to ensure its valid
                 val document = PDDocument.load(bytes)
                 document shouldNotEqual null
@@ -62,17 +68,17 @@ object PdfGenITSpek : Spek({
                 val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
                     IOUtils.toByteArray(it)
                 } ?: "{}".toByteArray(Charsets.UTF_8)
-                val requestBody = RequestBody.create(MediaType.parse("application/json"), json)
-                val request = Request.Builder()
-                        .url("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName")
-                        .post(requestBody)
-                        .build()
 
-                val response = client.newCall(request).execute()
-                response.isSuccessful shouldEqual true
-                response shouldNotEqual null
-                response.body() shouldNotEqual null
-                val bytes = response.body()!!.bytes()
+                val response = runBlocking<HttpResponse> {
+                    client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                        contentType(ContentType.Application.Json)
+                        body = json
+                    }
+                }
+
+                response.status.isSuccess() shouldEqual true
+                val bytes = runBlocking { response.readBytes() }
+                bytes shouldNotEqual null
                 Files.write(Paths.get("build", "${it.first}-${it.second}.pdf"), bytes)
                 response.close()
             }
@@ -80,29 +86,67 @@ object PdfGenITSpek : Spek({
     }
 
     xdescribe("Simple performance test") {
-        templates.map { it.key }.forEach {
-            val (applicationName, templateName) = it
-            val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                IOUtils.toByteArray(it)
-            } ?: "{}".toByteArray(Charsets.UTF_8)
-            val requestBody = RequestBody.create(MediaType.parse("application/json"), json)
-            val request = Request.Builder()
-                    .url("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName")
-                    .post(requestBody)
-                    .build()
-            for (i in 0..19) {
-                val response = client.newCall(request).execute()
-                response.isSuccessful shouldEqual true
-                response.close()
-            }
+        val warmupPasses = 20
+        val passes = 100
+
+        val context = newFixedThreadPoolContext(8, "Perftest")
+        runBlocking {
+            val warmupTemplate = templates.map { it.key }.first()
+            (1..warmupPasses).map {
+                val (applicationName, templateName) = warmupTemplate
+                launch(context) {
+                    val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
+                        IOUtils.toByteArray(it)
+                    } ?: "{}".toByteArray(Charsets.UTF_8)
+
+                    val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                        contentType(ContentType.Application.Json)
+                        body = json
+                    }
+                    response.readBytes() shouldNotEqual null
+                    response.status.isSuccess() shouldEqual true
+                }
+            }.toList().forEach { it.join() }
+        }
+        templates.map { it.key }.forEach { (applicationName, templateName) ->
             it("$templateName for $applicationName performs fine") {
                 val startTime = System.currentTimeMillis()
-                for (i in 0..99) {
-                    val response = client.newCall(request).execute()
-                    response.isSuccessful shouldEqual true
-                    response.close()
+                val tasks = (1..passes).map {
+                    launch(context) {
+                        val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
+                            IOUtils.toByteArray(it)
+                        } ?: "{}".toByteArray(Charsets.UTF_8)
+
+                        val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                            contentType(ContentType.Application.Json)
+                            body = json
+                        }
+                        response.readBytes() shouldNotEqual null
+                        response.status.isSuccess() shouldEqual true
+                    }
+                }.toList()
+                runBlocking {
+                    tasks.forEach { it.join() }
                 }
                 println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
+            }
+            it("$templateName for $applicationName performs fine with single-thread load") {
+                val startTime = System.currentTimeMillis()
+                runBlocking {
+                    for (i in 1..passes) {
+                        val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
+                            IOUtils.toByteArray(it)
+                        } ?: "{}".toByteArray(Charsets.UTF_8)
+
+                        val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                            contentType(ContentType.Application.Json)
+                            body = json
+                        }
+                        response.readBytes() shouldNotEqual null
+                        response.status.isSuccess() shouldEqual true
+                    }
+                }
+                println("Single-thread performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
             }
         }
     }
