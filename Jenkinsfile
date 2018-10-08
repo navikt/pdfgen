@@ -46,14 +46,34 @@ pipeline {
             }
         }
         stage('deploy to preprod') {
-            steps {
-                deployApp action: 'jiraPreprod'
+            parallel {
+                stage("deploy to preprod FSS") {
+                    steps {
+                        deployApp action: 'jiraPreprod', zone: 'fss'
+                    }
+                }
+                stage("deploy to preprod SBS") {
+                    steps {
+                        deployApp action: 'jiraPreprod', zone: 'sbs'
+                    }
+                }
             }
         }
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
+            parallel {
+                stage("deploy to prod FSS") {
+                    steps {
+                        deployApp action: 'jiraProd', zone: 'fss'
+                    }
+                }
+                stage("deploy to prod SBS") {
+                    steps {
+                        deployApp action: 'jiraProd', zone: 'sbs'
+                    }
+                }
+            }
             steps {
-                deployApp action: 'jiraProd'
                 githubStatus action: 'tagRelease', applicationName: "${env.GITHUB_NAME}"
             }
         }
