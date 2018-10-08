@@ -126,13 +126,16 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
             post("/api/v1/genpdf/html/{applicationName}") {
-                val html = call.receiveText()
-                OPENHTMLTOPDF_RENDERING_SUMMARY.labels(call.parameters["applicationName"], "converthtml").startTimer().use {
-                    val bytes = ByteArrayOutputStream()
-                    createPDFA(fromHtmlToDocument(html), bytes)
+                val applicationName = call.parameters["applicationName"]!!
+                val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "converthtml").startTimer()
 
-                    call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
-                }
+                val html = call.receiveText()
+
+                val bytes = ByteArrayOutputStream()
+                createPDFA(fromHtmlToDocument(html), bytes)
+                call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
+
+                log.info("Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms")
             }
         }
     }
@@ -151,7 +154,7 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
                         MapValueResolver.INSTANCE)
                 .build())
     }?.let { html ->
-        log.debug("Generated HML {}", keyValue("html", html))
+        log.debug("Generated HTML {}", keyValue("html", html))
 
 /* Uncomment to output html to file for easier debug
 *        File("pdf.html").bufferedWriter().use { out ->
