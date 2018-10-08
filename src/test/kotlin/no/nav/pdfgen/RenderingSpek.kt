@@ -56,5 +56,23 @@ object RenderingSpek : Spek({
                 }
             }
         }
+
+        it("Renders a HTML payload to a PDF/A compliant document") {
+            val doc = fromHtmlToDocument(testTemplateIncludedFonts.toString(Charsets.UTF_8))
+            val bytesOut = ByteArrayOutputStream()
+            createPDFA(doc, bytesOut)
+            Foundries.defaultInstance().createParser(ByteArrayInputStream(bytesOut.toByteArray())).use {
+                val validationResult = validator.validate(it)
+                validationResult.testAssertions
+                        .filter { it.status != TestAssertion.Status.PASSED }
+                        .forEach {
+                            println(it.message)
+                            println("Location ${it.location.context} ${it.location.level}")
+                            println("Status ${it.status}")
+                            println("Test number ${it.ruleId.testNumber}")
+                        }
+                validationResult.isCompliant shouldBe true
+            }
+        }
     }
 })

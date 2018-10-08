@@ -16,6 +16,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
 import io.ktor.response.respond
+import io.ktor.response.respondBytes
 import io.ktor.response.respondText
 import io.ktor.response.respondWrite
 import io.ktor.routing.get
@@ -35,6 +36,7 @@ import org.jsoup.helper.W3CDom
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
+import java.io.ByteArrayOutputStream
 
 // Uncommemt to enable debug to file
 // import java.io.File
@@ -46,6 +48,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Base64
 import java.util.Base64.Encoder
 import kotlin.streams.toList
+
+val APPLICATION_PDF = ContentType.parse("application/pdf")
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 val objectMapper: ObjectMapper = ObjectMapper()
@@ -67,7 +71,7 @@ fun main(args: Array<String>) {
 
 class PdfContent(
     private val w3Doc: Document,
-    override val contentType: ContentType = ContentType.parse("application/pdf")
+    override val contentType: ContentType = APPLICATION_PDF
 ) : OutgoingContent.WriteChannelContent() {
     override suspend fun writeTo(channel: ByteWriteChannel) {
         channel.toOutputStream().use {
@@ -123,42 +127,38 @@ fun initializeApplication(port: Int): ApplicationEngine {
             }
             post("/api/v1/genpdf/html/{applicationName}") {
                 val html = call.receiveText()
+                OPENHTMLTOPDF_RENDERING_SUMMARY.labels(call.parameters["applicationName"], "converthtml").startTimer().use {
+                    val bytes = ByteArrayOutputStream()
+                    createPDFA(fromHtmlToDocument(html), bytes)
 
-                call.respond(PdfContent(fromHtmlToDocument(html)))
+                    call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
+                }
             }
         }
     }
 }
 
-fun fromHtmlToDocument(html: String): Document {
-    return JSOUP_PARSE_SUMMARY.startTimer().use {
-            val doc = Jsoup.parse(html)
-            W3CDom().fromJsoup(doc)
-        }
+fun fromHtmlToDocument(html: String): Document = JSOUP_PARSE_SUMMARY.startTimer().use {
+    val doc = Jsoup.parse(html)
+    W3CDom().fromJsoup(doc)
 }
 
 fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): Document? {
-    val html = HANDLEBARS_RENDERING_SUMMARY.startTimer().use {
+    return HANDLEBARS_RENDERING_SUMMARY.startTimer().use {
         templates[applicationName to template]?.apply(Context
                 .newBuilder(jsonNode)
                 .resolver(JsonNodeValueResolver.INSTANCE,
                         MapValueResolver.INSTANCE)
                 .build())
-    }
-    return if (html != null) {
-        log.debug("Generated HTML {}", keyValue("html", html))
+    }?.let { html ->
+        log.debug("Generated HML {}", keyValue("html", html))
 
 /* Uncomment to output html to file for easier debug
 *        File("pdf.html").bufferedWriter().use { out ->
 *            out.write(html)
 *        }
 */
-        JSOUP_PARSE_SUMMARY.startTimer().use {
-            val doc = Jsoup.parse(html)
-            W3CDom().fromJsoup(doc)
-        }
-    } else {
-        null
+        fromHtmlToDocument(html)
     }
 }
 

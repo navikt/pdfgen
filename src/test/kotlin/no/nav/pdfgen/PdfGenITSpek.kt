@@ -85,6 +85,37 @@ object PdfGenITSpek : Spek({
         }
     }
 
+    describe("Using the HTML convert endpoint") {
+        it("Should render a document using default HTML") {
+            val response = runBlocking<HttpResponse> {
+                client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
+                    contentType(ContentType.Application.Json)
+                    body = testTemplateIncludedFonts
+                }
+            }
+            response.status.isSuccess() shouldEqual true
+            val bytes = runBlocking { response.readBytes() }
+            bytes shouldNotEqual null
+            Files.write(Paths.get("build", "html.pdf"), bytes)
+            // Load the document in pdfbox to ensure its valid
+            val document = PDDocument.load(bytes)
+            document shouldNotEqual null
+            document.pages.count shouldBeGreaterThan 0
+            println(document.documentInformation.title)
+            response.close()
+        }
+
+        it("Should return non OK status code when rendering templates with invalid font names") {
+            val response = runBlocking<HttpResponse> {
+                client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
+                    contentType(ContentType.Application.Json)
+                    body = testTemplateInvalidFonts
+                }
+            }
+            response.status.isSuccess() shouldEqual false
+        }
+    }
+
     xdescribe("Simple performance test") {
         val warmupPasses = 20
         val passes = 100
