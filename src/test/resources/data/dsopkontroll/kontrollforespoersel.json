@@ -1,0 +1,13 @@
+{
+  "brevSporring":
+  {
+    "bankOrganizationID" : "999999999",
+    "customerId" : "111111111111",
+    "fornavn" : "fornavn",
+    "etternavn" : "etternavn",
+    "fraDato":"12-12-2006",
+    "tilDato":"13-10-2007",
+    "dagensDato" : "14-11-2018"
+  },
+  "forhandsvisning":true
+}
