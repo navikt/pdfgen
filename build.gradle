@@ -26,7 +26,7 @@ plugins {
 }
 
 group 'no.nav.pdfgen'
-version '1.0.6'
+version '1.0.7'
 
 mainClassName = 'no.nav.pdfgen.BootstrapKt'
 
