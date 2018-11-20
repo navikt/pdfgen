@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Søknad selvstendig næringsdrivende</title>
+    <title>Søknad om sykepenger</title>
     {{#block 'syfosoknader/partials/style' }}
     {{/block}}
 </head>
 <body>
 <div id="header">
     <img class="navlogo" src="{{ image "Navlogo.png" }}"/>
-    <h1 class="title">Søknad om sykepenger for selvstendig næringsdrivende og frilansere</h1>
+    <h1 class="title">Søknad om sykepenger</h1>
 </div>
 <div class="container">
     <div class="personinfo">
@@ -48,12 +48,19 @@
                     {{ iso_to_date sykmeldingUtskrevet }}
                 </p>
             {{/if}}
+
+            <p class="header__tittel">
+                Arbeidsgiver
+            </p>
+            <p>
+                {{ arbeidsgiver }}
+            </p>
         </div>
     </div>
     <div class="sporsmalcontainer">
         {{# each sporsmal as |spm|~}}
             <div class="oppsummering__seksjon">
-            {{> syfosoknader/partials/spmpartial spm}}
+                {{> syfosoknader/partials/spmpartial spm}}
             </div>
         {{/each}}
     </div>
