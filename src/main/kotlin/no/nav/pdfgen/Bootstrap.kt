@@ -10,15 +10,15 @@ import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.call
-import io.ktor.content.OutgoingContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.OutgoingContent
 import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.response.respondText
-import io.ktor.response.respondWrite
+import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
@@ -28,8 +28,8 @@ import io.ktor.server.netty.Netty
 import io.ktor.util.extension
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
-import kotlinx.coroutines.experimental.io.ByteWriteChannel
-import kotlinx.coroutines.experimental.io.jvm.javaio.toOutputStream
+import kotlinx.coroutines.io.ByteWriteChannel
+import kotlinx.coroutines.io.jvm.javaio.toOutputStream
 import net.logstash.logback.argument.StructuredArguments.keyValue
 import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
@@ -95,7 +95,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
             }
             get("/prometheus") {
                 val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
-                call.respondWrite(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
+                call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
                     TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
                 }
             }

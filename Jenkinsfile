@@ -3,6 +3,10 @@
 pipeline {
     agent any
 
+    tools {
+        jdk "openjdk11"
+    }
+
     environment {
         ZONE = 'fss'
         APPLICATION_NAME = 'pdf-gen'
@@ -29,9 +33,9 @@ pipeline {
                 slackStatus status: 'passed'
             }
         }
-        stage('extract application files') {
+        stage('create uber jar') {
             steps {
-                sh './gradlew installDist'
+                sh './gradlew shadowJar'
             }
         }
         stage('push docker image') {

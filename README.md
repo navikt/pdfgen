@@ -14,10 +14,7 @@ Repository for PdfGen, an application written in Kotlin used to create PDFs
 
 ## Getting started
 ### Build and run tests
-`./gradlew installDist`
-
-### Running locally
-`./gradlew run`
+`./gradlew shadowJar`
 
 Running the application locally enables a GET endpoint at `/api/v1/genpdf/<application>/<template>`
 which looks for test data at `data/<application>/<template>.json` and outputs a PDF to your browser.
@@ -34,7 +31,6 @@ templates will look like in production.
 ## Contact us
 ### Code/project related questions can be sent to
 * Kevin Sillerud, `kevin.sillerud@nav.no`
-* Joakim Kartveit, `joakim.kartveit@nav.no`
 
 ### For NAV employees
 We are also available on the slack channel #integrasjon for internal communication.

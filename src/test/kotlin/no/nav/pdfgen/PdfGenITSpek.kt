@@ -6,11 +6,11 @@ import io.ktor.client.request.post
 import io.ktor.client.response.HttpResponse
 import io.ktor.client.response.readBytes
 import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeGreaterThan
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
@@ -21,6 +21,7 @@ import org.spekframework.spek2.style.specification.describe
 import org.spekframework.spek2.style.specification.xdescribe
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 object PdfGenITSpek : Spek({
@@ -39,13 +40,12 @@ object PdfGenITSpek : Spek({
             val (applicationName, templateName) = it
             it("With $templateName for $applicationName results in a valid PDF") {
                 val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                    IOUtils.toByteArray(it)
-                } ?: "{}".toByteArray(Charsets.UTF_8)
+                    IOUtils.toByteArray(it).toString(Charsets.UTF_8)
+                } ?: "{}"
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        contentType(ContentType.Application.Json)
-                        body = json
+                        body = TextContent(json, contentType = ContentType.Application.Json)
                     }
                 }
                 response.status.isSuccess() shouldEqual true
@@ -66,13 +66,12 @@ object PdfGenITSpek : Spek({
             val (applicationName, templateName) = it
             it("$templateName for $applicationName generates a sample PDF") {
                 val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                    IOUtils.toByteArray(it)
-                } ?: "{}".toByteArray(Charsets.UTF_8)
+                    IOUtils.toByteArray(it).toString(Charsets.UTF_8)
+                } ?: "{}"
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        contentType(ContentType.Application.Json)
-                        body = json
+                        body = TextContent(json, contentType = ContentType.Application.Json)
                     }
                 }
 
@@ -89,7 +88,6 @@ object PdfGenITSpek : Spek({
         it("Should render a document using default HTML") {
             val response = runBlocking<HttpResponse> {
                 client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
-                    contentType(ContentType.Application.Json)
                     body = testTemplateIncludedFonts
                 }
             }
@@ -108,8 +106,7 @@ object PdfGenITSpek : Spek({
         it("Should return non OK status code when rendering templates with invalid font names") {
             val response = runBlocking<HttpResponse> {
                 client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
-                    contentType(ContentType.Application.Json)
-                    body = testTemplateInvalidFonts
+                    body = TextContent(testTemplateInvalidFonts, contentType = ContentType.Application.Json)
                 }
             }
             response.status.isSuccess() shouldEqual false
@@ -120,19 +117,18 @@ object PdfGenITSpek : Spek({
         val warmupPasses = 20
         val passes = 100
 
-        val context = newFixedThreadPoolContext(8, "Perftest")
-        runBlocking {
+        val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
+        runBlocking(context) {
             val warmupTemplate = templates.map { it.key }.first()
             (1..warmupPasses).map {
                 val (applicationName, templateName) = warmupTemplate
-                launch(context) {
+                launch {
                     val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                        IOUtils.toByteArray(it)
-                    } ?: "{}".toByteArray(Charsets.UTF_8)
+                        IOUtils.toByteArray(it).toString(Charsets.UTF_8)
+                    }!!
 
                     val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        contentType(ContentType.Application.Json)
-                        body = json
+                        body = TextContent(json, contentType = ContentType.Application.Json)
                     }
                     response.readBytes() shouldNotEqual null
                     response.status.isSuccess() shouldEqual true
@@ -142,21 +138,20 @@ object PdfGenITSpek : Spek({
         templates.map { it.key }.forEach { (applicationName, templateName) ->
             it("$templateName for $applicationName performs fine") {
                 val startTime = System.currentTimeMillis()
-                val tasks = (1..passes).map {
-                    launch(context) {
-                        val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                            IOUtils.toByteArray(it)
-                        } ?: "{}".toByteArray(Charsets.UTF_8)
+                runBlocking(context) {
+                    val tasks = (1..passes).map {
+                        launch {
+                            val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
+                                IOUtils.toByteArray(it).toString(Charsets.UTF_8)
+                            } ?: "{}"
 
-                        val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                            contentType(ContentType.Application.Json)
-                            body = json
+                            val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                                body = TextContent(json, contentType = ContentType.Application.Json)
+                            }
+                            response.readBytes() shouldNotEqual null
+                            response.status.isSuccess() shouldEqual true
                         }
-                        response.readBytes() shouldNotEqual null
-                        response.status.isSuccess() shouldEqual true
-                    }
-                }.toList()
-                runBlocking {
+                    }.toList()
                     tasks.forEach { it.join() }
                 }
                 println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
@@ -166,12 +161,11 @@ object PdfGenITSpek : Spek({
                 runBlocking {
                     for (i in 1..passes) {
                         val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                            IOUtils.toByteArray(it)
-                        } ?: "{}".toByteArray(Charsets.UTF_8)
+                            IOUtils.toByteArray(it).toString(Charsets.UTF_8)
+                        } ?: "{}"
 
                         val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                            contentType(ContentType.Application.Json)
-                            body = json
+                            body = TextContent(json, contentType = ContentType.Application.Json)
                         }
                         response.readBytes() shouldNotEqual null
                         response.status.isSuccess() shouldEqual true

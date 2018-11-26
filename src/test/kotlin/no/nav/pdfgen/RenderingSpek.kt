@@ -58,7 +58,7 @@ object RenderingSpek : Spek({
         }
 
         it("Renders a HTML payload to a PDF/A compliant document") {
-            val doc = fromHtmlToDocument(testTemplateIncludedFonts.toString(Charsets.UTF_8))
+            val doc = fromHtmlToDocument(testTemplateIncludedFonts)
             val bytesOut = ByteArrayOutputStream()
             createPDFA(doc, bytesOut)
             Foundries.defaultInstance().createParser(ByteArrayInputStream(bytesOut.toByteArray())).use {
