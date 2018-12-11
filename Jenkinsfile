@@ -13,6 +13,8 @@ pipeline {
         DOCKER_SLUG = 'integrasjon'
         GITHUB_NAME = 'pdfgen'
         KUBECONFIG="kubeconfig-teamsykefravr"
+
+        FASIT_ENVIRONMENT = 'q1'
     }
 
     stages {
