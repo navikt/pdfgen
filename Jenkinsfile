@@ -12,6 +12,7 @@ pipeline {
         APPLICATION_NAME = 'pdf-gen'
         DOCKER_SLUG = 'integrasjon'
         GITHUB_NAME = 'pdfgen'
+        KUBECONFIG="kubeconfig-teamsykefravr"
     }
 
     stages {
