@@ -53,12 +53,12 @@ pipeline {
             parallel {
                 stage("deploy to preprod FSS") {
                     steps {
-                        deployApp action: 'jiraPreprod', zone: 'fss'
+                        deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
                     }
                 }
                 stage("deploy to preprod SBS") {
                     steps {
-                        deployApp action: 'jiraPreprod', zone: 'sbs'
+                        deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
                     }
                 }
             }
@@ -68,12 +68,12 @@ pipeline {
             parallel {
                 stage("deploy to prod FSS") {
                     steps {
-                        deployApp action: 'jiraProd', zone: 'fss'
+                        deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
                     }
                 }
                 stage("deploy to prod SBS") {
                     steps {
-                        deployApp action: 'jiraProd', zone: 'sbs'
+                        deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
                     }
                 }
             }
