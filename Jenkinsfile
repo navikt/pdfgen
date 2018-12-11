@@ -43,12 +43,6 @@ pipeline {
                 dockerUtils action: 'createPushImage'
             }
         }
-        stage('validate & upload nais.yaml to nexus m2internal') {
-            steps {
-                nais action: 'validate'
-                nais action: 'upload'
-            }
-        }
         stage('deploy to preprod') {
             steps {
                 deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
