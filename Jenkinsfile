@@ -11,7 +11,6 @@ pipeline {
         ZONE = 'fss'
         APPLICATION_NAME = 'pdf-gen'
         DOCKER_SLUG = 'integrasjon'
-        FASIT_ENVIRONMENT = 'q1'
         GITHUB_NAME = 'pdfgen'
     }
 
@@ -45,6 +44,7 @@ pipeline {
         }
         stage('deploy to preprod') {
             steps {
+                sh 'echo $KUBECONFIG'
                 deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
                 deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
             }
