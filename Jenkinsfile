@@ -45,9 +45,10 @@ pipeline {
         }
         stage('deploy to preprod') {
             steps {
-                sh 'echo $KUBECONFIG'
-                deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
-                deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
+                //deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
+                //deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
+                deployApp action: 'jiraPreprod', zone: 'fss'
+                deployApp action: 'jiraPreprod', zone: 'sbs'
             }
             //parallel {
             //    stage("deploy to preprod FSS") {
@@ -61,8 +62,10 @@ pipeline {
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
             steps {
-                deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
-                deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
+                //deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
+                //deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
+                deployApp action: 'jiraProd', zone: 'fss'
+                deployApp action: 'jiraProd', zone: 'sbs'
             }
             //parallel {
             //    stage("deploy to prod FSS") {

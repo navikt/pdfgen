@@ -1,4 +1,5 @@
 image: "repo.adeo.no:5443/integrasjon/pdf-gen"
+team: teamsykefravr
 replicas:
   min: 1
   max: 1
