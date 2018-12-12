@@ -46,33 +46,33 @@ pipeline {
             }
         }
         stage('deploy to preprod') {
-            steps {
-                deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
-                deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
+            parallel {
+                stage("deploy to preprod FSS") {
+                    steps {
+                        deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
+                    }
+                }
+                stage("deploy to preprod SBS") {
+                    steps {
+                        deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
+                    }
+                }
             }
-            //parallel {
-            //    stage("deploy to preprod FSS") {
-            //    }
-            //    stage("deploy to preprod SBS") {
-            //        steps {
-            //        }
-            //    }
-            //}
         }
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
-            steps {
-                deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
-                deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
+            parallel {
+                stage("deploy to prod FSS") {
+                    steps {
+                        deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
+                    }
+                }
+                stage("deploy to prod SBS") {
+                    steps {
+                        deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
+                    }
+                }
             }
-            //parallel {
-            //    stage("deploy to prod FSS") {
-            //    }
-            //    stage("deploy to prod SBS") {
-            //        steps {
-            //        }
-            //    }
-            //}
         }
         stage('tag git release') {
             when { environment name: "DEPLOY_TO", value: 'production' }
