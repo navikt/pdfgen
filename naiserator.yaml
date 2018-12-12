@@ -6,7 +6,7 @@ metadata:
 spec:
   image: "repo.adeo.no:5443/integrasjon/pdf-gen"
   port: 8080
-  team: integrasjon
+  team: teamsykefravr
   replicas:
     min: 1
     max: 4
