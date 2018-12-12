@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamsykefravr
 spec:
-  image: "repo.adeo.no:5443/integrasjon/pdf-gen"
+  image: "repo.adeo.no:5443/integrasjon/pdf-gen:@@VERSION@@"
   port: 8080
   team: teamsykefravr
   replicas:
