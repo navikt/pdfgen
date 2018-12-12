@@ -47,12 +47,8 @@ pipeline {
         }
         stage('deploy to preprod') {
             steps {
-                //deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
-                //deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
-                nais action: 'validate'
-                nais action: 'upload'
-                deployApp action: 'jiraPreprod', zone: 'fss'
-                deployApp action: 'jiraPreprod', zone: 'sbs'
+                deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
+                deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
             }
             //parallel {
             //    stage("deploy to preprod FSS") {
@@ -66,10 +62,8 @@ pipeline {
         stage('deploy to production') {
             when { environment name: 'DEPLOY_TO', value: 'production' }
             steps {
-                //deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
-                //deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
-                deployApp action: 'jiraProd', zone: 'fss'
-                deployApp action: 'jiraProd', zone: 'sbs'
+                deployApp action: 'kubectlDeploy', cluster: 'prod-fss'
+                deployApp action: 'kubectlDeploy', cluster: 'prod-sbs'
             }
             //parallel {
             //    stage("deploy to prod FSS") {

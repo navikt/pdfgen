@@ -21,7 +21,7 @@ plugins {
 }
 
 group 'no.nav.pdfgen'
-version '1.0.9'
+version '1.0.10-SNAPSHOT'
 
 jar.manifest.attributes("Main-Class" : "no.nav.pdfgen.BootstrapKt")
 
