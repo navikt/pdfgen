@@ -49,6 +49,8 @@ pipeline {
             steps {
                 //deployApp action: 'kubectlDeploy', cluster: 'preprod-fss'
                 //deployApp action: 'kubectlDeploy', cluster: 'preprod-sbs'
+                nais action: 'validate'
+                nais action: 'upload'
                 deployApp action: 'jiraPreprod', zone: 'fss'
                 deployApp action: 'jiraPreprod', zone: 'sbs'
             }
