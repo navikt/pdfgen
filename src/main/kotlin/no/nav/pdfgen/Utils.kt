@@ -15,9 +15,11 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.AffineTransformOp.TYPE_BILINEAR
 import java.awt.image.BufferedImage
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import javax.imageio.ImageIO
-
 
 class Utils
 
@@ -49,19 +51,16 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, imageFormat
         val pdImage = PDImageXObject.createFromByteArray(document, toBytes(image, imageFormat), "img")
         val imageSize = scale(pdImage, page)
 
-
         PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false).use {
 
             it.drawImage(pdImage, Matrix(imageSize.width, 0f, 0f, imageSize.height, 0f, 0f))
-
         }
         document.save(outputStream)
-
     }
 }
 
 private fun toPortait(image: BufferedImage): BufferedImage {
-    if(image.height >= image.width) {
+    if (image.height >= image.width) {
         return image
     }
 
@@ -69,7 +68,6 @@ private fun toPortait(image: BufferedImage): BufferedImage {
 
     return AffineTransformOp(rotateTransform, TYPE_BILINEAR)
             .filter(image, BufferedImage(image.height, image.width, image.type))
-
 }
 
 private fun toBytes(img: BufferedImage, format: String): ByteArray {
@@ -97,5 +95,3 @@ private fun scale(image: PDImageXObject, page: PDPage): ImageSize {
 
     return ImageSize(width, height)
 }
-
-

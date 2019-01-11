@@ -150,7 +150,6 @@ object PdfGenITSpek : Spek({
             println(document.documentInformation.title)
             response.close()
         }
-
     }
 
     xdescribe("Simple performance test") {

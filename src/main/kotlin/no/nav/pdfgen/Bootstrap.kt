@@ -144,7 +144,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "convertjpeg").startTimer()
 
                 val format = call.request.contentType().contentSubtype
-                if(!arrayOf("jpeg", "png" ).contains(format)) {
+                if (!arrayOf("jpeg", "png").contains(format)) {
                     call.respond(HttpStatusCode.UnsupportedMediaType)
                 }
 
