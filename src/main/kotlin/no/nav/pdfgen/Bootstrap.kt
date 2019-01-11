@@ -13,6 +13,7 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
+import io.ktor.request.contentType
 import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
 import io.ktor.response.respond
@@ -131,11 +132,28 @@ fun initializeApplication(port: Int): ApplicationEngine {
 
                 val html = call.receiveText()
 
-                val bytes = ByteArrayOutputStream()
-                createPDFA(fromHtmlToDocument(html), bytes)
-                call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
+                ByteArrayOutputStream().use { bytes ->
+                    createPDFA(fromHtmlToDocument(html), bytes)
+                    call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
+                }
 
                 log.info("Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms")
+            }
+            post("/api/v1/genpdf/image/{applicationName}") {
+                val applicationName = call.parameters["applicationName"]!!
+                val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "convertjpeg").startTimer()
+
+                val format = call.request.contentType().contentSubtype
+                if(!arrayOf("jpeg", "png" ).contains(format)) {
+                    call.respond(HttpStatusCode.UnsupportedMediaType)
+                }
+
+                ByteArrayOutputStream().use { outputStream ->
+                    createPDFA(call.receiveStream(), outputStream, format)
+                    call.respondBytes(outputStream.toByteArray(), contentType = APPLICATION_PDF)
+                }
+
+                log.info("Generated PDF using image for $applicationName om ${timer.observeDuration()}ms")
             }
         }
     }
