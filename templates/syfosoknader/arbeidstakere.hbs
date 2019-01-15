@@ -19,9 +19,16 @@
                 {{# if korrigerer}}
                     <p class="korrigert">Korrigert</p>
                 {{/if}}
-                <p>
-                    Sendt til NAV {{ iso_to_date innsendtDato }}
-                </p>
+                {{# if innsendtDato}}
+                    <p>
+                        Sendt til NAV {{ iso_to_date innsendtDato }}
+                    </p>
+                {{/if}}
+                {{# if sendtArbeidsgiver}}
+                    <p>
+                        Sendt til arbeidsgiver {{ iso_to_date sendtArbeidsgiver }}
+                    </p>
+                {{/if}}
             </div>
 
             <p class="navn">
