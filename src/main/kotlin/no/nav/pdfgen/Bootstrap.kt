@@ -1,11 +1,14 @@
 package no.nav.pdfgen
 
+// Uncommemt to enable debug to file
+// import java.io.File
+
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.jknack.handlebars.Handlebars
-import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.Context
+import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
+import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
@@ -38,15 +41,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 import java.io.ByteArrayOutputStream
-
-// Uncommemt to enable debug to file
-// import java.io.File
-
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
-import java.util.Base64
+import java.util.*
 import java.util.Base64.Encoder
 import kotlin.streams.toList
 
@@ -143,15 +142,16 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val applicationName = call.parameters["applicationName"]!!
                 val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "convertjpeg").startTimer()
 
-                val format = call.request.contentType().contentSubtype
-                if (!arrayOf("jpeg", "png").contains(format)) {
-                    call.respond(HttpStatusCode.UnsupportedMediaType)
+                when (val contentType = call.request.contentType()) {
+                    ContentType.Image.JPEG, ContentType.Image.PNG -> {
+                        ByteArrayOutputStream().use { outputStream ->
+                            createPDFA(call.receiveStream(), outputStream, contentType.contentSubtype)
+                            call.respondBytes(outputStream.toByteArray(), contentType = APPLICATION_PDF)
+                        }
+                    }
+                    else -> call.respond(HttpStatusCode.UnsupportedMediaType)
                 }
 
-                ByteArrayOutputStream().use { outputStream ->
-                    createPDFA(call.receiveStream(), outputStream, format)
-                    call.respondBytes(outputStream.toByteArray(), contentType = APPLICATION_PDF)
-                }
 
                 log.info("Generated PDF using image for $applicationName om ${timer.observeDuration()}ms")
             }

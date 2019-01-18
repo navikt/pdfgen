@@ -8,14 +8,11 @@ import io.ktor.client.response.readBytes
 import io.ktor.http.ContentType
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
-import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.shouldBeGreaterThan
-import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldNotEqual
+import org.amshove.kluent.*
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.spekframework.spek2.Spek
@@ -116,39 +113,27 @@ object PdfGenITSpek : Spek({
     }
 
     describe("Using the image convert endpoint") {
-        it("Should render a document using input impage") {
-            val response = runBlocking<HttpResponse> {
-                client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
-                    body = ByteArrayContent(testJpg, ContentType.Image.JPEG)
+        mapOf(
+                ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
+                ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf"
+        ).forEach { payload, outputFile ->
+
+            it("Should render a document using input image, $outputFile") {
+                val response = runBlocking<HttpResponse> {
+                    client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
+                        body = payload
+                    }
+                }.use {response ->
+                    response.status.isSuccess().shouldBeTrue()
+                    val bytes = runBlocking { response.readBytes() }
+                    bytes.shouldNotBeEmpty()
+                    Files.write(Paths.get("build", outputFile), bytes)
+                    // Load the document in pdfbox to ensure its valid
+                    val document = PDDocument.load(bytes)
+                    document.shouldNotBeNull()
+                    document.pages.count shouldBeGreaterThan 0
                 }
             }
-            response.status.isSuccess() shouldEqual true
-            val bytes = runBlocking { response.readBytes() }
-            bytes shouldNotEqual null
-            Files.write(Paths.get("build", "jpg.pdf"), bytes)
-            // Load the document in pdfbox to ensure its valid
-            val document = PDDocument.load(bytes)
-            document shouldNotEqual null
-            document.pages.count shouldBeGreaterThan 0
-            println(document.documentInformation.title)
-            response.close()
-        }
-        it("Should render a document using input impage") {
-            val response = runBlocking<HttpResponse> {
-                client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
-                    body = ByteArrayContent(testPng, ContentType.Image.PNG)
-                }
-            }
-            response.status.isSuccess() shouldEqual true
-            val bytes = runBlocking { response.readBytes() }
-            bytes shouldNotEqual null
-            Files.write(Paths.get("build", "png.pdf"), bytes)
-            // Load the document in pdfbox to ensure its valid
-            val document = PDDocument.load(bytes)
-            document shouldNotEqual null
-            document.pages.count shouldBeGreaterThan 0
-            println(document.documentInformation.title)
-            response.close()
         }
     }
 
