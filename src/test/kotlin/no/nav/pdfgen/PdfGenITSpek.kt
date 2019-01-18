@@ -12,7 +12,12 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.*
+import org.amshove.kluent.shouldBeGreaterThan
+import org.amshove.kluent.shouldBeTrue
+import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldNotBeEmpty
+import org.amshove.kluent.shouldNotBeNull
+import org.amshove.kluent.shouldNotEqual
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.spekframework.spek2.Spek
@@ -119,11 +124,11 @@ object PdfGenITSpek : Spek({
         ).forEach { payload, outputFile ->
 
             it("Should render a document using input image, $outputFile") {
-                val response = runBlocking<HttpResponse> {
+                runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
                         body = payload
                     }
-                }.use {response ->
+                }.use { response ->
                     response.status.isSuccess().shouldBeTrue()
                     val bytes = runBlocking { response.readBytes() }
                     bytes.shouldNotBeEmpty()
