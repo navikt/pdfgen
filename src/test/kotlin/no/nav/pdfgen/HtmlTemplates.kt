@@ -1,6 +1,16 @@
 package no.nav.pdfgen
 
-import org.apache.pdfbox.io.IOUtils
+val testTemplateIncludedFonts: String = getResource("/html/test_template_included_fonts.html")
+val testTemplateInvalidFonts: String = getResource("/html/test_template_invalid_fonts.html")
 
-val testTemplateIncludedFonts: String = IOUtils.toByteArray(PdfGenITSpek::class.java.getResourceAsStream("/html/test_template_included_fonts.html")).toString(Charsets.UTF_8)
-val testTemplateInvalidFonts: String = IOUtils.toByteArray(PdfGenITSpek::class.java.getResourceAsStream("/html/test_template_invalid_fonts.html")).toString(Charsets.UTF_8)
+val testJpg: ByteArray = getResource("/image/test.jpg")
+val testPng: ByteArray = getResource("/image/test.png")
+
+inline fun <reified T> getResource(path: String): T =
+        PdfGenITSpek::class.java.getResourceAsStream(path).use { stream ->
+            when (T::class) {
+                String::class -> stream.bufferedReader(Charsets.UTF_8).use { it.readText() } as T
+                ByteArray::class -> stream.readBytes() as T
+                else -> throw UnsupportedOperationException()
+            }
+        }

@@ -1,11 +1,14 @@
 package no.nav.pdfgen
 
+// Uncommemt to enable debug to file
+// import java.io.File
+
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.jknack.handlebars.Handlebars
-import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.Context
+import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
+import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
@@ -13,6 +16,7 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
+import io.ktor.request.contentType
 import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
 import io.ktor.response.respond
@@ -37,10 +41,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 import java.io.ByteArrayOutputStream
-
-// Uncommemt to enable debug to file
-// import java.io.File
-
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -131,11 +131,27 @@ fun initializeApplication(port: Int): ApplicationEngine {
 
                 val html = call.receiveText()
 
-                val bytes = ByteArrayOutputStream()
-                createPDFA(fromHtmlToDocument(html), bytes)
-                call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
+                ByteArrayOutputStream().use { bytes ->
+                    createPDFA(fromHtmlToDocument(html), bytes)
+                    call.respondBytes(bytes.toByteArray(), contentType = APPLICATION_PDF)
+                }
 
                 log.info("Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms")
+            }
+            post("/api/v1/genpdf/image/{applicationName}") {
+                val applicationName = call.parameters["applicationName"]!!
+                val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "convertjpeg").startTimer()
+
+                when (val contentType = call.request.contentType()) {
+                    ContentType.Image.JPEG, ContentType.Image.PNG -> {
+                        ByteArrayOutputStream().use { outputStream ->
+                            createPDFA(call.receiveStream(), outputStream, contentType.contentSubtype)
+                            call.respondBytes(outputStream.toByteArray(), contentType = APPLICATION_PDF)
+                        }
+                    }
+                    else -> call.respond(HttpStatusCode.UnsupportedMediaType)
+                }
+                log.info("Generated PDF using image for $applicationName om ${timer.observeDuration()}ms")
             }
         }
     }
