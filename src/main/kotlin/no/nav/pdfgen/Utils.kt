@@ -15,7 +15,6 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.AffineTransformOp.TYPE_BILINEAR
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -24,14 +23,21 @@ import javax.imageio.ImageIO
 class Utils
 
 val colorProfile: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/sRGB2014.icc"))
-val sourceSansProRegular: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Regular.ttf"))
-val sourceSansProBold: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/fonts/SourceSansPro-Bold.ttf"))
+
+data class FontMetadata(
+    val family: String,
+    val path: String,
+    val weight: Int,
+    val style: BaseRendererBuilder.FontStyle,
+    val subset: Boolean
+)
 
 fun createPDFA(w3doc: Document, outputStream: OutputStream) = PdfRendererBuilder()
-        .useFont({ ByteArrayInputStream(sourceSansProRegular) }, "Source Sans Pro",
-                400, BaseRendererBuilder.FontStyle.NORMAL, false)
-        .useFont({ ByteArrayInputStream(sourceSansProBold) }, "Source Sans Pro", 700,
-                BaseRendererBuilder.FontStyle.NORMAL, false)
+        .apply {
+            for (font in fonts) {
+                useFont(fontsRoot.resolve(font.path).toFile(), font.family, font.weight, font.style, font.subset)
+            }
+        }
         // .useFastMode() wait with fast mode until it doesn't print a bunch of errors
         .useColorProfile(colorProfile)
         .useSVGDrawer(BatikSVGDrawer())

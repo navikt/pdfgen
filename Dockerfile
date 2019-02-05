@@ -6,3 +6,4 @@ ENV DISABLE_PDF_GET="true"
 RUN mkdir out
 COPY templates templates
 COPY resources resources
+COPY fonts fonts

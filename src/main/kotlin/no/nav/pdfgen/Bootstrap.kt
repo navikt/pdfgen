@@ -5,6 +5,8 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
@@ -53,15 +55,19 @@ val APPLICATION_PDF = ContentType.parse("application/pdf")
 
 val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 val objectMapper: ObjectMapper = ObjectMapper()
+        .registerKotlinModule()
 val base64encoder: Encoder = Base64.getEncoder()
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
+val fontsRoot: Path = Paths.get("fonts/")
 val images = loadImages()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     registerNavHelpers(this)
     infiniteLoops(true)
 }
+
+val fonts: Array<FontMetadata> = objectMapper.readValue(Files.newInputStream(fontsRoot.resolve("config.json")))
 
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 
