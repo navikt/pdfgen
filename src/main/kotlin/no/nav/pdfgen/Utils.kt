@@ -89,7 +89,7 @@ private fun scale(image: PDImageXObject, page: PDPage): ImageSize {
     var width = image.width.toFloat()
     var height = image.height.toFloat()
 
-    if (image.width.toFloat() > page.cropBox.width) {
+    if (width > page.cropBox.width) {
         width = page.cropBox.width
         height = width * image.height.toFloat() / image.width.toFloat()
     }
