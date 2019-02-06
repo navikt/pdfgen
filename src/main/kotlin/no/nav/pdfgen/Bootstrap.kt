@@ -15,10 +15,14 @@ import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
+import io.ktor.jackson.jackson
 import io.ktor.request.contentType
+import io.ktor.request.receive
 import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
 import io.ktor.response.respond
@@ -92,6 +96,10 @@ fun initializeApplication(port: Int): ApplicationEngine {
     val disablePdfGet = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
 
     return embeddedServer(Netty, port) {
+        install(ContentNegotiation) {
+            jackson {}
+        }
+
         routing {
             get("/is_ready") {
                 call.respondText("I'm ready")
@@ -115,8 +123,8 @@ fun initializeApplication(port: Int): ApplicationEngine {
                     } else {
                         "{}".toByteArray(Charsets.UTF_8)
                     }, JsonNode::class.java)
-                    render(applicationName, template, loadTemplates(), data)?.let {
-                        call.respond(PdfContent(it))
+                    render(applicationName, template, loadTemplates(), data)?.let { document ->
+                        call.respond(PdfContent(document))
                     } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
                 }
             }
@@ -124,10 +132,10 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val startTime = System.currentTimeMillis()
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
-                val jsonNode = objectMapper.readValue(call.receiveStream(), JsonNode::class.java)
+                val jsonNode = call.receive<JsonNode>()
                 log.debug("JSON: {}", objectMapper.writeValueAsString(jsonNode))
-                render(applicationName, template, templates, jsonNode)?.let {
-                    call.respond(PdfContent(it))
+                render(applicationName, template, templates, jsonNode)?.let { document ->
+                    call.respond(PdfContent(document))
                     log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
@@ -148,10 +156,10 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 val applicationName = call.parameters["applicationName"]!!
                 val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "convertjpeg").startTimer()
 
-                when (val contentType = call.request.contentType()) {
+                when (call.request.contentType()) {
                     ContentType.Image.JPEG, ContentType.Image.PNG -> {
                         ByteArrayOutputStream().use { outputStream ->
-                            createPDFA(call.receiveStream(), outputStream, contentType.contentSubtype)
+                            createPDFA(call.receiveStream(), outputStream)
                             call.respondBytes(outputStream.toByteArray(), contentType = APPLICATION_PDF)
                         }
                     }

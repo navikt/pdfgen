@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.common.PDRectangle
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.apache.pdfbox.util.Matrix
 import org.w3c.dom.Document
@@ -16,7 +17,6 @@ import java.awt.image.AffineTransformOp
 import java.awt.image.AffineTransformOp.TYPE_BILINEAR
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
@@ -51,20 +51,20 @@ fun createPDFA(w3doc: Document, outputStream: OutputStream) = PdfRendererBuilder
         .buildPdfRenderer()
         .createPDF()
 
-fun createPDFA(imageStream: InputStream, outputStream: OutputStream, imageFormat: String) {
+fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
     PDDocument().use { document ->
 
         val page = PDPage(PDRectangle.A4)
         document.addPage(page)
         val image = toPortait(ImageIO.read(imageStream))
 
-        val pdImage = PDImageXObject.createFromByteArray(document, toBytes(image, imageFormat), "img")
+        val pdImage = LosslessFactory.createFromImage(document, image)
         val imageSize = scale(pdImage, page)
 
         PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false).use {
-
             it.drawImage(pdImage, Matrix(imageSize.width, 0f, 0f, imageSize.height, 0f, 0f))
         }
+
         document.save(outputStream)
     }
 }
@@ -78,13 +78,6 @@ private fun toPortait(image: BufferedImage): BufferedImage {
 
     return AffineTransformOp(rotateTransform, TYPE_BILINEAR)
             .filter(image, BufferedImage(image.height, image.width, image.type))
-}
-
-private fun toBytes(img: BufferedImage, format: String): ByteArray {
-    ByteArrayOutputStream().use { baos ->
-        ImageIO.write(img, format, baos)
-        return baos.toByteArray()
-    }
 }
 
 data class ImageSize(val width: Float, val height: Float)
