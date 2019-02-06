@@ -43,9 +43,8 @@ object PdfGenITSpek : Spek({
         templates.map { it.key }.forEach {
             val (applicationName, templateName) = it
             it("With $templateName for $applicationName results in a valid PDF") {
-                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                    IOUtils.toByteArray(it).toString(Charsets.UTF_8)
-                } ?: "{}"
+                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
+                        ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
@@ -69,9 +68,8 @@ object PdfGenITSpek : Spek({
         templates.map { it.key }.forEach {
             val (applicationName, templateName) = it
             it("$templateName for $applicationName generates a sample PDF") {
-                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                    IOUtils.toByteArray(it).toString(Charsets.UTF_8)
-                } ?: "{}"
+                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
+                        ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {

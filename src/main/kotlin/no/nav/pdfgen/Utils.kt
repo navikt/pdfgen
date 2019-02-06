@@ -15,9 +15,11 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.AffineTransformOp.TYPE_BILINEAR
 import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.file.Files
 import javax.imageio.ImageIO
 
 class Utils
@@ -30,12 +32,14 @@ data class FontMetadata(
     val weight: Int,
     val style: BaseRendererBuilder.FontStyle,
     val subset: Boolean
-)
+) {
+    val bytes: ByteArray = Files.readAllBytes(fontsRoot.resolve(path))
+}
 
 fun createPDFA(w3doc: Document, outputStream: OutputStream) = PdfRendererBuilder()
         .apply {
             for (font in fonts) {
-                useFont(fontsRoot.resolve(font.path).toFile(), font.family, font.weight, font.style, font.subset)
+                useFont({ ByteArrayInputStream(font.bytes) }, font.family, font.weight, font.style, font.subset)
             }
         }
         // .useFastMode() wait with fast mode until it doesn't print a bunch of errors
