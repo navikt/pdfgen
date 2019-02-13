@@ -21,12 +21,12 @@
                 {{/if}}
                 {{# if innsendtDato}}
                     <p>
-                        Sendt til NAV {{ iso_to_date innsendtDato }}
+                        Sendt til NAV<br/>{{ iso_to_date innsendtDato }}
                     </p>
                 {{/if}}
                 {{# if sendtArbeidsgiver}}
                     <p>
-                        Sendt til arbeidsgiver {{ iso_to_date sendtArbeidsgiver }}
+                        Sendt til arbeidsgiver<br/>{{ iso_to_date sendtArbeidsgiver }}
                     </p>
                 {{/if}}
             </div>
@@ -45,6 +45,11 @@
                 <p>
                     {{ periode.grad }} % sykmeldt
                 </p>
+                {{# if periode.faktiskGrad }}
+                    <p>
+                        Oppgitt faktisk arbeidsgrad {{ periode.faktiskGrad }} %
+                    </p>
+                {{/if}}
             {{/each}}
 
             {{# if sykmeldingUtskrevet }}
