@@ -26,21 +26,18 @@ pipeline {
         }
         stage('build') {
             steps {
-                sh 'echo disabled'
-                //sh './gradlew build -x test'
+                sh './gradlew build -x test'
             }
         }
         stage('run tests (unit & intergration)') {
             steps {
-                sh 'echo disabled'
-                //sh './gradlew test'
-                //slackStatus status: 'passed'
+                sh './gradlew test'
+                slackStatus status: 'passed'
             }
         }
         stage('create uber jar') {
             steps {
-                sh 'echo disabled'
-                //sh './gradlew shadowJar'
+                sh './gradlew shadowJar'
             }
         }
         stage('push docker image') {
