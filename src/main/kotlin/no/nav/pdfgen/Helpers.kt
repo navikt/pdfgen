@@ -4,17 +4,27 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import no.nav.pdfgen.domain.syfosoknader.Periode
 import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 fun registerNavHelpers(handlebars: Handlebars) {
     handlebars.apply {
         registerHelper("iso_to_nor_date", Helper<String> { context, _ ->
             if (context == null) return@Helper ""
-            dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(context))
+            try {
+                dateFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
+            } catch (e: Exception) {
+                dateFormat.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
+            }
         })
         registerHelper("iso_to_date", Helper<String> { context, _ ->
             if (context == null) return@Helper ""
             dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
+        })
+
+        registerHelper("duration", Helper<String> { context, options ->
+            ChronoUnit.DAYS.between(LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)), LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0))))
         })
 
         // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
@@ -50,6 +60,10 @@ fun registerNavHelpers(handlebars: Handlebars) {
             if (context == null) "" else images[context]
         })
 
+        registerHelper("resource", Helper<String> { context, _ ->
+            resources[context]?.toString(Charsets.UTF_8) ?: ""
+        })
+
         registerHelper("capitalize", Helper<String> { context, _ ->
             if (context == null) "" else context.toLowerCase().capitalize()
         })
@@ -60,6 +74,15 @@ fun registerNavHelpers(handlebars: Handlebars) {
 
         registerHelper("formatComma", Helper<Any> { context, _ ->
             if (context == null) "" else context.toString().replace(".", ",")
+        })
+
+        registerHelper("doubleIf", Helper<Any> { a, options ->
+            val operator = options.param(0, null as Any?)
+            val b = options.param(1, null as Any?)
+            when(operator) {
+                "||" -> if (options.isFalsy(a) && options.isFalsy(b)) { options.inverse() } else { options.fn() }
+                else -> options.inverse()
+            }
         })
     }
 }

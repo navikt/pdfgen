@@ -66,6 +66,7 @@ val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val fontsRoot: Path = Paths.get("fonts/")
 val images = loadImages()
+val resources = loadResources()
 val handlebars: Handlebars = Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
     registerNavHelpers(this)
     infiniteLoops(true)
@@ -216,15 +217,30 @@ fun loadTemplates() = Files.list(templateRoot)
 
 fun loadImages() = Files.list(imagesRoot)
         .filter {
-            val validExtensions = setOf("jpg", "jpeg", "png", "bmp")
+            val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
             !Files.isHidden(it) && it.fileName.extension in validExtensions
         }
         .map {
             val fileName = it.fileName.toString()
-            val extension = if (it.fileName.extension == "jpg") "jpeg" else it.fileName.extension // jpg is not a valid mime-type
+            val extension = when(it.fileName.extension) {
+                "jpg" -> "jpeg"// jpg is not a valid mime-type
+                "svg" -> "svg+xml"
+                else -> it.fileName.extension
+            }
             val base64string = base64encoder.encodeToString(Files.readAllBytes(it))
             val base64 = "data:image/$extension;base64,$base64string"
             fileName to base64
+        }
+        .toList()
+        .toMap()
+
+fun loadResources() = Files.list(imagesRoot)
+        .filter {
+            val validExtensions = setOf("svg")
+            !Files.isHidden(it) && it.fileName.extension in validExtensions
+        }
+        .map {
+            it.fileName.toString() to Files.readAllBytes(it)
         }
         .toList()
         .toMap()
