@@ -222,8 +222,8 @@ fun loadImages() = Files.list(imagesRoot)
         }
         .map {
             val fileName = it.fileName.toString()
-            val extension = when(it.fileName.extension) {
-                "jpg" -> "jpeg"// jpg is not a valid mime-type
+            val extension = when (it.fileName.extension) {
+                "jpg" -> "jpeg" // jpg is not a valid mime-type
                 "svg" -> "svg+xml"
                 else -> it.fileName.extension
             }

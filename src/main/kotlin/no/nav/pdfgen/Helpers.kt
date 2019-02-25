@@ -79,7 +79,7 @@ fun registerNavHelpers(handlebars: Handlebars) {
         registerHelper("doubleIf", Helper<Any> { a, options ->
             val operator = options.param(0, null as Any?)
             val b = options.param(1, null as Any?)
-            when(operator) {
+            when (operator) {
                 "||" -> if (options.isFalsy(a) && options.isFalsy(b)) { options.inverse() } else { options.fn() }
                 else -> options.inverse()
             }
