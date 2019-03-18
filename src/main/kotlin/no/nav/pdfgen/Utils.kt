@@ -8,7 +8,7 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.common.PDRectangle
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.apache.pdfbox.util.Matrix
 import org.w3c.dom.Document
@@ -58,7 +58,9 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
         document.addPage(page)
         val image = toPortait(ImageIO.read(imageStream))
 
-        val pdImage = LosslessFactory.createFromImage(document, image)
+        val quality = 1.0f
+
+        val pdImage = JPEGFactory.createFromImage(document, image, quality)
         val imageSize = scale(pdImage, page)
 
         PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false).use {
