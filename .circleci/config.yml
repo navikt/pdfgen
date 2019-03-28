@@ -16,15 +16,23 @@ jobs:
       - run:
           name: Build JAR file
           command: ./gradlew shadowJar
+      - run:
+          name: Copy jars to workspace
+          command: cp build/*.jar /tmp/workspace
       - persist_to_workspace:
           root: /tmp/workspace
-          paths: build/*.jar
+          paths: "*.jar"
   release:
     <<: *defaults
     steps:
       - checkout
       - attach_workspace:
           at: /tmp/workspace
+      - run:
+          name: Copy jar to expected path
+          command: |
+            mkdir build
+            cp /tmp/workspace/*.jar build/
       - run:
           name: Build and push to docker hub
           command: |
