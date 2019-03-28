@@ -7,9 +7,9 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          name: Run tests
-          command: ./gradlew test
+      #- run:
+      #    name: Run tests
+      #    command: ./gradlew test
       - run:
           name: Build JAR file
           command: ./gradlew shadowJar
