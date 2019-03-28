@@ -12,12 +12,13 @@ jobs:
           command: ./gradlew shadowJar
   release:
     <<: *defaults
-    - run:
-        name: Build and push to docker hub
-        command: scripts/docker_push
-        requires:
-          branches:
-            only: master
+    steps:
+      - run:
+          name: Build and push to docker hub
+          command: scripts/docker_push
+          requires:
+            branches:
+              only: master
 
 workflows:
     version: 2
