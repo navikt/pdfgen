@@ -11,6 +11,9 @@ jobs:
       #    name: Run tests
       #    command: ./gradlew test
       - run:
+          name: Create workspace
+      command: mkdir -p /tmp/workspace
+      - run:
           name: Build JAR file
           command: ./gradlew shadowJar
       - persist_to_workspace:
