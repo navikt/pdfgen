@@ -1,10 +1,21 @@
 language: java
-jdk: oraclejdk8
-script: "./gradlew clean build"
+jdk: openjdk11
+script: "./gradlew clean shadowJar"
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+deploy:
+  provider: script
+  script: travis_scripts/docker_push
+  on:
+    branch: master
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+services:
+- docker
+env:
+  global:
+  - secure: VXJO5THSN9j/6KUtE0hmEwHrCV2I384DZ2hKanyfjDjAQvL+KKAnYQ0PfORgqfOaKl1/UONo0yuyleV1opYdy7kqhJn6ok9rSBMP/uvMly7/3fARQPwoN7fOZ9XwICtZJrs4HNyewmzy3oESCs58IHsZePAIFQQWDYZ7iKqNpFTnxKvGtIl6r7+mn6WjoaGn4VQH26zk6VkmNMSAxbUnAGzfDkpcnPVffQGzBIq36CFuaJJaVoW4fByx/NtmJgbNKk4H4h38s/X4B0Fk6uHK09vvS3yNnxy2Kor8p1e7pjuGy6Zv/zV8WneExab8D8Xgk42/uxvnXf/dEPphe93m52qW+lTSJEOFPoOPu+bVk3L1EPoyOw2QWQdrv3lXoHyA5oMrlRTXMmzReLPhyrVF/8wtUt1S1tN3WWK+XXyg5iTNI0vBOCPrK/VUQG1J4yoOvfqs0Bp7Cn8qlsRWLb9J5MSRAySaY+Kzvou/UmEAUcbWYEL9C9sglYXZJpJLwPVIoEuZ0KAIH/8zP9lrroag5VOOznapyrsMYN81XDa+4KsBg6oOw2djvn6hbPLBd4U/5kab4DmBkTK5o+hB/6758LPK5/IwbRIqfrhVgHboUYByix40dKekkbqAX1DR848c/RNxsZ6So78FtYLbvQUpXLsTXB0qBnEO8AOECYdjHQQ=
+  - secure: pHe69Xx4ZyYv2G1XzHFVqtchVdeyfa2BP+sibLPO8uZWE9GxHY0aoMr5X74hsz0tUg3vYC1Agy4ysBFwY2cTlP/ybeS3PBGO7Xj0cijIiCi6toginhd6En7BqkrlyowUCZ6yasEKG4mFDJKO6HOdAPhgU3+kIdyjllJhhaENm7U0xFBfzAKCGiwtEdxXoLTl3QrPSz0JVDPntooBgCrQLyUu9YDxan0Xb9BG53ZYdJk2glkbEFV53j2XE7UZ1YcP+Ql94cI3wqrR6Nd0GNZf8Li82ZhgCQU7DEW0AYEl1oHbjJisoxRW9QpmNeGC0aJM7KvdzvAB05VR2fvtJrGmwTOTemeDaFMyUSPAV7a2JDf+zd1OTt7ie0SOnNiiP1YEl8KL1EEIH5i6x3jTHIYDUAfJLDuBASL/V63lZJXioEEpHmoiiH/iOaWw34fYS88UGa5srdFk9qhnQcgKNuYnc0/n/Fiqu5nVFn0N2/m3rg6QrjKG2wAbqi7iieUJpY5QIkzwDxF0rI1C1jc5hXtXHGtTyVmH+xmiGN/PkZgOvq4EBDMYng4yjQe+qXvu7m7iaOon7wCMXu7m+qWZsRElLrETS80Xwyb9ULki5Oc1ioyGYBz/DCEsp6iQrZUU8c1X2PKW0fkLT94B84F2+hexhgqLRoLTWjc5boJPwPjZfng=

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+VERSION="$(./gradlew -q printVersion)"
+GIT_HASH="$(git rev-parse HEAD)"
+
+echo "Extracted version = \"$VERSION\""
+echo "Extracted git hash = \"$GIT_HASH\""
+
+docker build -t navikt/pdfgen:latest .
+docker tag navikt/pdfgen:latest "navikt/pdfgen:$VERSION"
+docker tag navikt/pdfgen:latest "navikt/pdfgen:$GIT_HASH"
+
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+docker push "navikt/pdfgen:latest"
+docker push "navikt/pdfgen:$VERSION"
+docker push "navikt/pdfgen:$GIT_HASH"
