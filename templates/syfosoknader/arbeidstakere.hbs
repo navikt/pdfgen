@@ -13,30 +13,33 @@
 </div>
 <div class="container">
     <div class="personinfo">
-        <img class="personikon" src="{{ image "Personikon.png" }}"/>
         <div class="persontekst">
-            <div class="sendt">
-                {{# if korrigerer}}
-                    <p class="korrigert">Korrigert</p>
-                {{/if}}
-                {{# if innsendtDato}}
-                    <p>
-                        Sendt til NAV<br/>{{ iso_to_date innsendtDato }}
+            <div class="persontekst__sidetopp">
+                <img class="personikon" src="{{ image "Personikon.png" }}"/>
+                <div class="persontekst__personalia">
+                    <p class="navn">
+                        {{ navn }}
                     </p>
-                {{/if}}
-                {{# if sendtArbeidsgiver}}
-                    <p>
-                        Sendt til arbeidsgiver<br/>{{ iso_to_date sendtArbeidsgiver }}
+                    <p class="id">
+                        {{ insert_at fnr 6 }}
                     </p>
-                {{/if}}
+                </div>
+                <div class="sendt">
+                    {{# if korrigerer}}
+                        <p class="korrigert">Korrigert</p>
+                    {{/if}}
+                    {{# if innsendtDato}}
+                        <p>
+                            Sendt til NAV<br/>{{ iso_to_date innsendtDato }}
+                        </p>
+                    {{/if}}
+                    {{# if sendtArbeidsgiver}}
+                        <p>
+                            Sendt til arbeidsgiver<br/>{{ iso_to_date sendtArbeidsgiver }}
+                        </p>
+                    {{/if}}
+                </div>
             </div>
-
-            <p class="navn">
-                {{ navn }}
-            </p>
-            <p class="id">
-                {{ insert_at fnr 6 }}
-            </p>
 
             {{# each soknadPerioder as |periode|~}}
                 <p class="header__tittel">
