@@ -12,7 +12,7 @@ jobs:
       #    command: ./gradlew test
       - run:
           name: Create workspace
-      command: mkdir -p /tmp/workspace
+          command: mkdir -p /tmp/workspace
       - run:
           name: Build JAR file
           command: ./gradlew shadowJar
