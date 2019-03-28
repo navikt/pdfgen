@@ -1,0 +1,32 @@
+version: 2
+defaults:
+  docker:
+    - image: "circleci/openjdk:11-jdk"
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Build JAR file
+          command: ./gradlew shadowJar
+      - run:
+          name: Build and push to docker hub
+          command: scripts/docker_push
+          requires:
+            branches:
+              only: master
+  release:
+    <<: *defaults
+
+workflows:
+    version: 2
+    build_and_deploy:
+      jobs:
+        - build
+        - release:
+            requires:
+              - build
+            filters:
+              branches:
+                only: master
