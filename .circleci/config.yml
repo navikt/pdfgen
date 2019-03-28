@@ -10,14 +10,14 @@ jobs:
       - run:
           name: Build JAR file
           command: ./gradlew shadowJar
+  release:
+    <<: *defaults
       - run:
           name: Build and push to docker hub
           command: scripts/docker_push
           requires:
             branches:
               only: master
-  release:
-    <<: *defaults
 
 workflows:
     version: 2
