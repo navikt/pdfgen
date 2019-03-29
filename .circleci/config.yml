@@ -40,10 +40,10 @@ jobs:
             - gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
             - gradle-repo-v1-{{ .Branch }}-
             - gradle-repo-v1-
-            - save_cache:
-                paths:
-                  - ~/.gradle
-                key: gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
       - setup_remote_docker:
           docker_layer_caching: true
       - attach_workspace:
