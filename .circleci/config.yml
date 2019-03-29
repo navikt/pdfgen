@@ -43,7 +43,7 @@ jobs:
             echo "Extracted version = \"$VERSION\""
             echo "Extracted git hash = \"$GIT_HASH\""
 
-            docker build -t navikt/pdfgen:latest Dockerhub.dockerfile .
+            docker build -t navikt/pdfgen:latest -f Dockerhub.dockerfile .
             docker tag navikt/pdfgen:latest "navikt/pdfgen:$VERSION"
             docker tag navikt/pdfgen:latest "navikt/pdfgen:$GIT_HASH"
 
