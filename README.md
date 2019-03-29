@@ -1,6 +1,6 @@
 # PdfGen
 
-[![Build Status](https://travis-ci.org/navikt/pdfgen.svg?branch=master)](https://travis-ci.org/navikt/pdfgen)
+[![CircleCI](https://img.shields.io/circleci/project/github/navikt/pdfgen/master.svg)](https://circleci.com/gh/navikt/pdfgen)
 
 Repository for PdfGen, an application written in Kotlin used to create PDFs
 
