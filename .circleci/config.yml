@@ -51,8 +51,7 @@ jobs:
       - run:
           name: Copy jar to expected path
           command: |
-            mkdir -p build/libs
-            cp /tmp/workspace/*.jar build/libs/
+            cp /tmp/workspace/*.jar .
       - run:
           name: Build and push to docker hub
           command: |
@@ -62,7 +61,7 @@ jobs:
             echo "Extracted version = \"$VERSION\""
             echo "Extracted git hash = \"$GIT_HASH\""
 
-            docker build -t navikt/pdfgen:latest .
+            docker build -t navikt/pdfgen:latest Dockerhub.dockerfile .
             docker tag navikt/pdfgen:latest "navikt/pdfgen:$VERSION"
             docker tag navikt/pdfgen:latest "navikt/pdfgen:$GIT_HASH"
 
