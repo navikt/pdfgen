@@ -18,7 +18,7 @@ jobs:
           command: ./gradlew shadowJar
       - run:
           name: Copy jars to workspace
-          command: cp build/*.jar /tmp/workspace
+          command: cp build/libs/*.jar /tmp/workspace
       - persist_to_workspace:
           root: /tmp/workspace
           paths: "*.jar"
