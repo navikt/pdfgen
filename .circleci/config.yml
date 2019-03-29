@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Copy jar to expected path
           command: |
-            mkdir build
+            mkdir -p build/libs
             cp /tmp/workspace/*.jar build/libs/
       - run:
           name: Build and push to docker hub
