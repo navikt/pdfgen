@@ -39,7 +39,7 @@ object HelperSpek : Spek({
             template.apply(jsonContext(jsonNode)).trim() shouldEqual "IT_CONTAINS"
         }
 
-        it ("A array containing the field fish, but its a false boolean should result in NO_CONTAINS") {
+        it("A array containing the field fish, but its a false boolean should result in NO_CONTAINS") {
             val jsonNode = jsonNodeFactory.objectNode().apply {
                 putArray("list")
                         .addObject().put("fish", false)
