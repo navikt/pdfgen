@@ -346,7 +346,7 @@
                 <p>&#8211; {{ sykmelding.behandler.adresse.gate }}, {{ sykmelding.behandler.adresse.postnummer }} {{ sykmelding.behandler.adresse.kommune }}</p>
             </div>
         </div>
-        {{#doubleIf prognose.arbeidsutsikter.harEgetArbeidPaaSikt "||" prognose.arbeidsutsikter.harAnnetArbeidPaaSikt }}
+        {{#any prognose.arbeidsutsikter.harEgetArbeidPaaSikt prognose.arbeidsutsikter.harAnnetArbeidPaaSikt }}
             <div class="sykmelding-seksjon">
                 <div class="sykmelding-nokkelopplysning">
                     <h2>Friskmelding</h2>
@@ -372,7 +372,7 @@
                     {{/if}}
                 </div>
             </div>
-        {{/doubleIf}}
+        {{/any}}
         {{#if tiltak.tiltakArbeidsplassen }}
             <div class="sykmelding-seksjon">
                 <div class="sykmelding-nokkelopplysning">

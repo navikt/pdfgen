@@ -97,4 +97,31 @@ object HelperSpek : Spek({
             template.apply(jsonContext(jsonNode)).trim() shouldEqual "IT_CONTAINS"
         }
     }
+
+    describe("Any operator") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("a", "a")
+            put("b", "b")
+            put("c", "c")
+        })
+        it("Should result in empty result when a single statement fails") {
+            handlebars.compileInline("{{#any d}}YES{{/any}}").apply(context) shouldEqual ""
+        }
+
+        it("Should result in a YES when a single statement is ok") {
+            handlebars.compileInline("{{#any a}}YES{{/any}}").apply(context) shouldEqual "YES"
+        }
+
+        it("Should result in a YES when one of multiple statements is ok") {
+            handlebars.compileInline("{{#any d e f a}}YES{{/any}}").apply(context) shouldEqual "YES"
+        }
+
+        it("Should result in a YES when the first of multiple statements is ok") {
+            handlebars.compileInline("{{#any a d e f}}YES{{/any}}").apply(context) shouldEqual "YES"
+        }
+
+        it("Should result in empty result when many statements fails") {
+            handlebars.compileInline("{{#any d e f g}}YES{{/any}}").apply(context) shouldEqual ""
+        }
+    }
 })

@@ -77,13 +77,8 @@ fun registerNavHelpers(handlebars: Handlebars) {
             if (context == null) "" else context.toString().replace(".", ",")
         })
 
-        registerHelper("doubleIf", Helper<Any> { a, options ->
-            val operator = options.param(0, null as Any?)
-            val b = options.param(1, null as Any?)
-            when (operator) {
-                "||" -> if (options.isFalsy(a) && options.isFalsy(b)) { options.inverse() } else { options.fn() }
-                else -> options.inverse()
-            }
+        registerHelper("any", Helper<Any> { first, options ->
+            if ((listOf(first) + options.params).all { options.isFalsy(it) }) { options.inverse() } else { options.fn() }
         })
 
         registerHelper("contains_field", Helper<Iterable<Any>?> { list, options ->
