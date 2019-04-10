@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import no.nav.pdfgen.domain.syfosoknader.Periode
@@ -82,6 +83,21 @@ fun registerNavHelpers(handlebars: Handlebars) {
             when (operator) {
                 "||" -> if (options.isFalsy(a) && options.isFalsy(b)) { options.inverse() } else { options.fn() }
                 else -> options.inverse()
+            }
+        })
+
+        registerHelper("contains", Helper<Iterable<Any>?> { list, options ->
+            val checkfor = options.param(0, null as String?)
+
+            val contains = list
+                    ?.map { Context.newContext(options.context, it) }
+                    ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
+                    ?: false
+
+            if (contains) {
+                options.fn()
+            } else {
+                options.inverse()
             }
         })
     }
