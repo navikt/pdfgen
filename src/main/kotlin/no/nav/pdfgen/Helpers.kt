@@ -86,7 +86,7 @@ fun registerNavHelpers(handlebars: Handlebars) {
             }
         })
 
-        registerHelper("contains", Helper<Iterable<Any>?> { list, options ->
+        registerHelper("contains_field", Helper<Iterable<Any>?> { list, options ->
             val checkfor = options.param(0, null as String?)
 
             val contains = list
