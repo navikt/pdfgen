@@ -64,5 +64,37 @@ object HelperSpek : Spek({
 
             template.apply(jsonContext(jsonNode)).trim() shouldEqual "NO_CONTAINS"
         }
+
+        it("A array a null fish field results in IT_CONTAINS") {
+            val jsonNode = jsonNodeFactory.objectNode().apply {
+                putArray("list").apply {
+                    addObject().putNull("fish")
+                }
+            }
+
+            template.apply(jsonContext(jsonNode)).trim() shouldEqual "NO_CONTAINS"
+        }
+
+        it("A array with two nodes, where the second contains the field fish results in IT_CONTAINS") {
+            val jsonNode = jsonNodeFactory.objectNode().apply {
+                putArray("list").apply {
+                    addObject().put("shark", "something")
+                    addObject().put("fish", "test")
+                }
+            }
+
+            template.apply(jsonContext(jsonNode)).trim() shouldEqual "IT_CONTAINS"
+        }
+
+        it("A array with two nodes, where the field fish contains null on the first and a normal value on the second results in IT_CONTAINS") {
+            val jsonNode = jsonNodeFactory.objectNode().apply {
+                putArray("list").apply {
+                    addObject().putNull("fish")
+                    addObject().put("fish", "test")
+                }
+            }
+
+            template.apply(jsonContext(jsonNode)).trim() shouldEqual "IT_CONTAINS"
+        }
     }
 })
