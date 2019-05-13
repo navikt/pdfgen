@@ -150,6 +150,24 @@
     {{/each}}
 {{/eq}}
 
+{{#eq svartype "LAND"}}
+    {{#if this.sporsmalstekst}}
+        <h3 class="sporsmalstekst">
+            {{ this.sporsmalstekst }}
+        </h3>
+    {{/if}}
+    {{#if this.undertekst}}
+        <p class="undertekst">
+            {{ this.undertekst }}
+        </p>
+    {{/if }}
+    {{# each svar }}
+        <p class="svar svar--land">
+            {{ verdi}}
+        </p>
+    {{/each}}
+{{/eq}}
+
 {{#eq svartype "FRITEKST"}}
     {{#if this.sporsmalstekst}}
         <h3 class="sporsmalstekst">
