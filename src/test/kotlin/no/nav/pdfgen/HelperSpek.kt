@@ -124,4 +124,18 @@ object HelperSpek : Spek({
             handlebars.compileInline("{{#any d e f g}}YES{{/any}}").apply(context) shouldEqual ""
         }
     }
+
+    describe("Datetime formatting") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("timestamp", "2020-03-03T10:15:30")
+        })
+
+        it("should format as Norwegian short date and time") {
+            handlebars.compileInline("{{ iso_to_nor_datetime timestamp }}").apply(context) shouldEqual "03.03.2020 10:15"
+        }
+
+        it("should format as Norwegian short date") {
+            handlebars.compileInline("{{ iso_to_nor_date timestamp }}").apply(context) shouldEqual "03.03.2020"
+        }
+    }
 })

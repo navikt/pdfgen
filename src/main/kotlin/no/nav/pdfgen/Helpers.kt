@@ -19,6 +19,16 @@ fun registerNavHelpers(handlebars: Handlebars) {
                 dateFormat.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
             }
         })
+
+        registerHelper("iso_to_nor_datetime", Helper<String> { context, _ ->
+            if (context == null) return@Helper ""
+            try {
+                datetimeFormat.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
+            } catch (e: Exception) {
+                datetimeFormat.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
+            }
+        })
+
         registerHelper("iso_to_date", Helper<String> { context, _ ->
             if (context == null) return@Helper ""
             dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
