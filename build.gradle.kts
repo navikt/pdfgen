@@ -1,26 +1,25 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "1.1.9-SNAPSHOT"
+version = "1.0.0"
 
 val handlebarsVersion = "4.1.2"
 val jacksonVersion = "2.9.8"
 val jaxbVersion = "2.3.1"
 val jsoupVersion = "1.11.3"
 val kluentVersion = "1.49"
-val ktorVersion = "1.1.3"
-val kotlinVersion = "1.3.10"
+val ktorVersion = "1.2.6"
 val logbackVersion = "1.2.3"
 val logstashEncoderVersion = "5.2"
 val openHtmlToPdfVersion = "0.0.1-RC17"
 val prometheusVersion = "0.6.0"
-val spekVersion = "2.0.1"
+val spekVersion = "2.0.9"
 val verapdfVersion = "1.12.1"
 
 plugins {
-    kotlin("jvm") version "1.3.21"
-    id("org.jmailen.kotlinter") version "1.22.0"
-    id("com.github.johnrengelman.shadow") version "5.0.0"
+    kotlin("jvm") version "1.3.71"
+    id("org.jmailen.kotlinter") version "2.2.0"
+    id("com.github.johnrengelman.shadow") version "5.2.0"
     id("com.github.ben-manes.versions") version "0.21.0"
 }
 

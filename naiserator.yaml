@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamsykefravr
 spec:
-  image: "repo.adeo.no:5443/integrasjon/pdf-gen:@@VERSION@@"
+  image: {{ image }}
   port: 8080
   team: teamsykefravr
   replicas:
@@ -37,6 +37,6 @@ spec:
       memory: 1Gi
     requests:
       cpu: 50m
-      memory: 128Mi
+      memory: 512Mi
   ingress:
     disabled: false

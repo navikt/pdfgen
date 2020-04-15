@@ -1,6 +1,6 @@
 # PdfGen
 
-[![CircleCI](https://img.shields.io/circleci/project/github/navikt/pdfgen/master.svg)](https://circleci.com/gh/navikt/pdfgen)
+[![Build status](https://github.com/navikt/pdfgen/workflows/Deploy%20to%20dev%20and%20prod/badge.svg)](https://github.com/navikt/pdfgen/workflows/Deploy%20to%20dev%20and%20prod/badge.svg)
 
 Repository for PdfGen, an application written in Kotlin used to create PDFs
 
@@ -9,7 +9,7 @@ Repository for PdfGen, an application written in Kotlin used to create PDFs
 * Kotlin
 * Gradle
 * Ktor
-* JUnit
+* Spek
 * Handlebars
 
 ## Getting started
@@ -31,6 +31,12 @@ templates will look like in production.
 ## Contact us
 ### Code/project related questions can be sent to
 * Kevin Sillerud, `kevin.sillerud@nav.no`
+* Joakim Kartveit, `joakim.kartveit@nav.no`
+* Andreas Nilsen, `andreas.nilsen@nav.no`
+* Sebastian Knudsen, `sebastian.knudsen@nav.no`
+* Tia Firing, `tia.firing@nav.no`
+* Jonas Henie, `jonas.henie@nav.no`
+* Mathias Hellevang, `mathias.hellevang@nav.no`
 
 ### For NAV employees
-We are also available on the slack channel #integrasjon for internal communication.
+We are also available on the slack channel #integrasjon or #team-sykmelding for internal communication.

@@ -3,15 +3,6 @@ package no.nav.pdfgen
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
-import org.apache.pdfbox.io.IOUtils
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.PDPageContentStream
-import org.apache.pdfbox.pdmodel.common.PDRectangle
-import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
-import org.apache.pdfbox.util.Matrix
-import org.w3c.dom.Document
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.AffineTransformOp.TYPE_BILINEAR
@@ -21,6 +12,15 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
 import javax.imageio.ImageIO
+import org.apache.pdfbox.io.IOUtils
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.PDPageContentStream
+import org.apache.pdfbox.pdmodel.common.PDRectangle
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
+import org.apache.pdfbox.util.Matrix
+import org.w3c.dom.Document
 
 class Utils
 

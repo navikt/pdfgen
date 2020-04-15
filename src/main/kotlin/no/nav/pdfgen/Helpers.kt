@@ -3,11 +3,11 @@ package no.nav.pdfgen
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import no.nav.pdfgen.domain.syfosoknader.Periode
-import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import no.nav.pdfgen.domain.syfosoknader.Periode
+import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 
 fun registerNavHelpers(handlebars: Handlebars) {
     handlebars.apply {

@@ -38,14 +38,6 @@ import io.ktor.server.netty.Netty
 import io.ktor.util.extension
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
-import kotlinx.coroutines.io.ByteWriteChannel
-import kotlinx.coroutines.io.jvm.javaio.toOutputStream
-import net.logstash.logback.argument.StructuredArguments.keyValue
-import org.jsoup.Jsoup
-import org.jsoup.helper.W3CDom
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.w3c.dom.Document
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -54,6 +46,14 @@ import java.time.format.DateTimeFormatter
 import java.util.Base64
 import java.util.Base64.Encoder
 import kotlin.streams.toList
+import kotlinx.coroutines.io.ByteWriteChannel
+import kotlinx.coroutines.io.jvm.javaio.toOutputStream
+import net.logstash.logback.argument.StructuredArguments.keyValue
+import org.jsoup.Jsoup
+import org.jsoup.helper.W3CDom
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.w3c.dom.Document
 
 val APPLICATION_PDF = ContentType.parse("application/pdf")
 
