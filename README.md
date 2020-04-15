@@ -9,7 +9,7 @@ Repository for PdfGen, an application written in Kotlin used to create PDFs
 * Kotlin
 * Gradle
 * Ktor
-* JUnit
+* Spek
 * Handlebars
 
 ## Getting started

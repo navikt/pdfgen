@@ -9,6 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
+import io.ktor.util.KtorExperimentalAPI
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
@@ -28,6 +29,7 @@ import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.spekframework.spek2.style.specification.xdescribe
 
+@KtorExperimentalAPI
 object PdfGenITSpek : Spek({
     val applicationPort = getRandomPort()
     val application = initializeApplication(applicationPort)
@@ -119,7 +121,7 @@ object PdfGenITSpek : Spek({
         mapOf(
                 ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
                 ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf"
-        ).forEach { payload, outputFile ->
+        ).forEach { (payload, outputFile) ->
 
             it("Should render a document using input image, $outputFile") {
                 runBlocking<HttpResponse> {
