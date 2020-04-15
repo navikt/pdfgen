@@ -50,7 +50,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: naiserator-dev.yaml
+          RESOURCE: naiserator.yaml
       - name: Deploy to Prod
         uses: nais/deploy/actions/deploy@master
         env:
