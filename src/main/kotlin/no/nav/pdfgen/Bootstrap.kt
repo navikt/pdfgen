@@ -97,7 +97,10 @@ fun initializeApplication(port: Int): ApplicationEngine {
     val templates = loadTemplates()
     val disablePdfGet = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
 
-    return embeddedServer(Netty, port) {
+    return embeddedServer(Netty, port, configure = {
+        // Increase timeout of Netty to handle large content bodies
+        responseWriteTimeoutSeconds = 60
+    }) {
         install(ContentNegotiation) {
             jackson {}
         }
