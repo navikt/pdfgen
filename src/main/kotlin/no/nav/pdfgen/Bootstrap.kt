@@ -15,13 +15,18 @@ import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
 import io.ktor.application.call
+import io.ktor.application.feature
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
+import io.ktor.http.content.TextContent
+import io.ktor.http.withCharset
 import io.ktor.jackson.jackson
 import io.ktor.request.contentType
+import io.ktor.request.path
 import io.ktor.request.receive
 import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
@@ -29,6 +34,9 @@ import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
+import io.ktor.routing.HttpMethodRouteSelector
+import io.ktor.routing.Route
+import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
@@ -105,6 +113,15 @@ fun initializeApplication(port: Int): ApplicationEngine {
             jackson {}
         }
 
+        install(StatusPages) {
+            status(HttpStatusCode.NotFound) {
+                call.respond(TextContent(
+                        messageFor404(templates, feature(Routing), call.request.path()),
+                        ContentType.Text.Plain.withCharset(Charsets.UTF_8),
+                        it
+                ))
+            }
+        }
         routing {
             get("/is_ready") {
                 call.respondText("I'm ready")
@@ -175,6 +192,21 @@ fun initializeApplication(port: Int): ApplicationEngine {
         }
     }
 }
+
+private fun messageFor404(templates: Map<Pair<String, String>, Template>, routing: Routing, path: String) =
+        "Unkown path '$path'. Known paths:" + templates.map { (app, _) ->
+            val (applicationName, template) = app
+            apiRoutes(routing)
+                    .map { it.replace("{applicationName}", applicationName) }
+                    .map { it.replace("{template}", template) }
+                    .joinToString("\n")
+        }.joinToString("\n")
+
+private fun apiRoutes(routing: Routing) = allRoutes(routing).filter {
+    it.selector is HttpMethodRouteSelector && it.toString().startsWith("/api")
+}.map { it.toString() }
+
+private fun allRoutes(route: Route): List<Route> = listOf(route) + route.children.flatMap(::allRoutes)
 
 fun fromHtmlToDocument(html: String): Document = JSOUP_PARSE_SUMMARY.startTimer().use {
     val doc = Jsoup.parse(html)
