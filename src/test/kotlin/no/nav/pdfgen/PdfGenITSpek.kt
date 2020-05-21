@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.post
 import io.ktor.client.response.HttpResponse
 import io.ktor.client.response.readBytes
+import io.ktor.client.response.readText
 import io.ktor.http.ContentType
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeGreaterThan
 import org.amshove.kluent.shouldBeTrue
+import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeEmpty
 import org.amshove.kluent.shouldNotBeNull
@@ -138,6 +140,18 @@ object PdfGenITSpek : Spek({
                     document.shouldNotBeNull()
                     document.pages.count shouldBeGreaterThan 0
                 }
+            }
+        }
+    }
+
+    describe("Calls to unknown endpoints") {
+        it("Should respond with helpful information") {
+            runBlocking<HttpResponse> {
+                client.config { expectSuccess = false }.post("http://localhost:$applicationPort/whodis")
+            }.use { response ->
+                response.status.value shouldEqual 404
+                val text = runBlocking { response.readText() }
+                text shouldContain "Known paths:/api/v1/genpdf"
             }
         }
     }
