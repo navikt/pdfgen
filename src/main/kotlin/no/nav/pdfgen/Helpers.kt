@@ -3,11 +3,11 @@ package no.nav.pdfgen
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import no.nav.pdfgen.domain.syfosoknader.Periode
+import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import no.nav.pdfgen.domain.syfosoknader.Periode
-import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 
 fun registerNavHelpers(handlebars: Handlebars) {
     handlebars.apply {
@@ -35,7 +35,10 @@ fun registerNavHelpers(handlebars: Handlebars) {
         })
 
         registerHelper("duration", Helper<String> { context, options ->
-            ChronoUnit.DAYS.between(LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)), LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0))))
+            ChronoUnit.DAYS.between(
+                LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
+                LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0)))
+            )
         })
 
         // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
@@ -51,8 +54,8 @@ fun registerNavHelpers(handlebars: Handlebars) {
             if (context == null) return@Helper ""
             val divider = options.hash<String>("divider", " ")
             options.params
-                    .map { it as Int }
-                    .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
+                .map { it as Int }
+                .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
         })
 
         registerHelper("eq", Helper<String> { context, options ->
@@ -88,22 +91,37 @@ fun registerNavHelpers(handlebars: Handlebars) {
         })
 
         registerHelper("any", Helper<Any> { first, options ->
-            if ((listOf(first) + options.params).all { options.isFalsy(it) }) { options.inverse() } else { options.fn() }
+            if ((listOf(first) + options.params).all { options.isFalsy(it) }) {
+                options.inverse()
+            } else {
+                options.fn()
+            }
         })
 
         registerHelper("contains_field", Helper<Iterable<Any>?> { list, options ->
             val checkfor = options.param(0, null as String?)
 
             val contains = list
-                    ?.map { Context.newContext(options.context, it) }
-                    ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
-                    ?: false
+                ?.map { Context.newContext(options.context, it) }
+                ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
+                ?: false
 
             if (contains) {
                 options.fn()
             } else {
                 options.inverse()
             }
+        })
+
+        registerHelper("currency_no", Helper<Any> { context, _ ->
+            if (context == null) return@Helper ""
+
+            val splitNumber = context.toString().split(".")
+
+            val formatedNumber = splitNumber.first().reversed().chunked(3).joinToString(" ").reversed()
+            val decimals = splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) } ?: "00"
+
+            "$formatedNumber,$decimals"
         })
     }
 }

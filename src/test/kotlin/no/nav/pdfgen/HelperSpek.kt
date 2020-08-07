@@ -138,4 +138,20 @@ object HelperSpek : Spek({
             handlebars.compileInline("{{ iso_to_nor_date timestamp }}").apply(context) shouldEqual "03.03.2020"
         }
     }
+
+    describe("Currency formatting") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("beløp", 1337.69)
+            put("beløp_single_decimal", 1337.6)
+            put("beløp_integer", 9001)
+            put("beløp_stort", 1337420.69)
+        })
+
+        it("should format number as currency") {
+            handlebars.compileInline("{{ currency_no beløp }}").apply(context) shouldEqual "1 337,69"
+            handlebars.compileInline("{{ currency_no beløp_single_decimal }}").apply(context) shouldEqual "1 337,60"
+            handlebars.compileInline("{{ currency_no beløp_integer }}").apply(context) shouldEqual "9 001,00"
+            handlebars.compileInline("{{ currency_no beløp_stort }}").apply(context) shouldEqual "1 337 420,69"
+        }
+    }
 })
