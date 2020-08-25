@@ -59,7 +59,7 @@ jobs:
           docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${GITHUB_SHA}
           docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${version}
           docker push ${DOCKERHUB_IMAGE}:latest
-          docker push ${DOCKERHUB_IMAGE}:${githug.sha}
+          docker push ${DOCKERHUB_IMAGE}:${GITHUB_SHA}
           docker push ${DOCKERHUB_IMAGE}:${version}
 
   deployDev:
