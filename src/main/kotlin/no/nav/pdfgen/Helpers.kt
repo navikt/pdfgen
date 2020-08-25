@@ -113,15 +113,19 @@ fun registerNavHelpers(handlebars: Handlebars) {
             }
         })
 
-        registerHelper("currency_no", Helper<Any> { context, _ ->
+        registerHelper("currency_no", Helper<Any> { context, options ->
             if (context == null) return@Helper ""
+            val withoutDecimals = options.param(0, false)
 
             val splitNumber = context.toString().split(".")
 
-            val formatedNumber = splitNumber.first().reversed().chunked(3).joinToString(" ").reversed()
-            val decimals = splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) } ?: "00"
-
-            "$formatedNumber,$decimals"
+            val formattedNumber = splitNumber.first().reversed().chunked(3).joinToString(" ").reversed()
+            if(withoutDecimals){
+               formattedNumber
+            } else {
+                val decimals = splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) } ?: "00"
+                "$formattedNumber,$decimals"
+            }
         })
     }
 }

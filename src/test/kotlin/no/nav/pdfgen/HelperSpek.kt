@@ -153,5 +153,10 @@ object HelperSpek : Spek({
             handlebars.compileInline("{{ currency_no beløp_integer }}").apply(context) shouldEqual "9 001,00"
             handlebars.compileInline("{{ currency_no beløp_stort }}").apply(context) shouldEqual "1 337 420,69"
         }
+
+        it("should format number as currency without decimals") {
+            handlebars.compileInline("{{ currency_no beløp true }}").apply(context) shouldEqual "1 337"
+            handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context) shouldEqual "1 337 420"
+        }
     }
 })
