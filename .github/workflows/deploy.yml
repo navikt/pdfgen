@@ -55,7 +55,7 @@ jobs:
         run: |
           docker login -u martinsolheim -p ${DOCKERHUB_TOKEN}
           docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:latest
-          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${githug.sha}
+          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${github.sha}
           docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${version}
           docker push ${DOCKERHUB_IMAGE}:latest
           docker push ${DOCKERHUB_IMAGE}:${githug.sha}
