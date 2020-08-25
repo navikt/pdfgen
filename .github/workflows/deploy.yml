@@ -61,6 +61,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: naiserator.yaml
+          IMAGE: ${{ image }}
 
   deployProd:
     name: Deploy to prod
@@ -73,3 +74,4 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: naiserator.yaml
+          IMAGE: ${{ image }}
