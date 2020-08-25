@@ -50,16 +50,16 @@ jobs:
           docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
           docker push ${IMAGE}
       - name: Push docker image to Dockerhub
-          env:
-            DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          run: |
-            docker login -u martinsolheim -p ${DOCKERHUB_TOKEN}
-            docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:latest
-            docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${githug.sha}
-            docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${version}
-            docker push ${DOCKERHUB_IMAGE}:latest
-            docker push ${DOCKERHUB_IMAGE}:${githug.sha}
-            docker push ${DOCKERHUB_IMAGE}:${version}
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          docker login -u martinsolheim -p ${DOCKERHUB_TOKEN}
+          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:latest
+          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${githug.sha}
+          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${version}
+          docker push ${DOCKERHUB_IMAGE}:latest
+          docker push ${DOCKERHUB_IMAGE}:${githug.sha}
+          docker push ${DOCKERHUB_IMAGE}:${version}
 
   deployDev:
     name: Deploy to dev
