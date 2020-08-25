@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "1.2.0"
+version = "1.2.1"
 
 val handlebarsVersion = "4.1.2"
 val jacksonVersion = "2.9.8"
