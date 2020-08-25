@@ -6,6 +6,7 @@ on:
 
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/pdfgen:${{ github.sha }}
+  GITHUB_SHA: ${{ github.sha }}
   DOCKERHUB_IMAGE: ${{ github.repository }}/pdfgen
 
 jobs:
@@ -55,7 +56,7 @@ jobs:
         run: |
           docker login -u martinsolheim -p ${DOCKERHUB_TOKEN}
           docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:latest
-          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${github.sha}
+          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${GITHUB_SHA}
           docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${version}
           docker push ${DOCKERHUB_IMAGE}:latest
           docker push ${DOCKERHUB_IMAGE}:${githug.sha}
