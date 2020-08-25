@@ -1,4 +1,4 @@
-name: Deploy to dev and prod
+name: Bygg og deploy
 on:
   push:
     branches:
@@ -39,7 +39,7 @@ jobs:
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew shadowJar -x test
-          echo ::set-env name=version::${./gradlew -q printVersion}
+          echo ::set-env name=version::$(./gradlew -q printVersion)
       - name: Build Docker images
         run: |
           docker build --tag ${image} .
