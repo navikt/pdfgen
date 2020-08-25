@@ -7,7 +7,7 @@ on:
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/pdfgen:${{ github.sha }}
   GITHUB_SHA: ${{ github.sha }}
-  DOCKERHUB_IMAGE: ${{ github.repository }}/pdfgen
+  DOCKERHUB_IMAGE: navikt/pdfgen
 
 jobs:
   build:
