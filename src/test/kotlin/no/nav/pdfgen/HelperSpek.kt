@@ -159,4 +159,18 @@ object HelperSpek : Spek({
             handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context) shouldEqual "1 337 420"
         }
     }
+
+    describe("Is defined") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("someProperty", false)
+        })
+
+        it("should output IS DEFINED if someProperty is defined") {
+            handlebars.compileInline("{{#is_defined someProperty }}IS DEFINED{{/is_defined }}").apply(context) shouldEqual "IS DEFINED"
+        }
+
+        it("should output empty string if someOtherProperty is not defined") {
+            handlebars.compileInline("{{#is_defined someOtherProperty }}IS DEFINED{{/is_defined }}").apply(context) shouldEqual ""
+        }
+    }
 })
