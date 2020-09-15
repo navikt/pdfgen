@@ -127,5 +127,9 @@ fun registerNavHelpers(handlebars: Handlebars) {
                 "$formattedNumber,$decimals"
             }
         })
+
+        registerHelper("is_defined", Helper<Any> { context, options ->
+            if (context != null) options.fn() else options.inverse()
+        });
     }
 }
