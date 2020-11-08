@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
@@ -36,8 +37,8 @@ fun registerNavHelpers(handlebars: Handlebars) {
 
         registerHelper("duration", Helper<String> { context, options ->
             ChronoUnit.DAYS.between(
-                LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
-                LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0)))
+                    LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
+                    LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0)))
             )
         })
 
@@ -54,8 +55,8 @@ fun registerNavHelpers(handlebars: Handlebars) {
             if (context == null) return@Helper ""
             val divider = options.hash<String>("divider", " ")
             options.params
-                .map { it as Int }
-                .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
+                    .map { it as Int }
+                    .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
         })
 
         registerHelper("eq", Helper<String> { context, options ->
@@ -102,9 +103,22 @@ fun registerNavHelpers(handlebars: Handlebars) {
             val checkfor = options.param(0, null as String?)
 
             val contains = list
-                ?.map { Context.newContext(options.context, it) }
-                ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
-                ?: false
+                    ?.map { Context.newContext(options.context, it) }
+                    ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
+                    ?: false
+
+            if (contains) {
+                options.fn()
+            } else {
+                options.inverse()
+            }
+        })
+
+        registerHelper("contains_all", Helper<ArrayNode> { list, options ->
+            val textValues = list.map { it.textValue() }
+
+            val params = options.params.toList()
+            val contains = if (params.isEmpty()) false else textValues.containsAll(params)
 
             if (contains) {
                 options.fn()
@@ -120,8 +134,8 @@ fun registerNavHelpers(handlebars: Handlebars) {
             val splitNumber = context.toString().split(".")
 
             val formattedNumber = splitNumber.first().reversed().chunked(3).joinToString(" ").reversed()
-            if(withoutDecimals){
-               formattedNumber
+            if (withoutDecimals) {
+                formattedNumber
             } else {
                 val decimals = splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) } ?: "00"
                 "$formattedNumber,$decimals"

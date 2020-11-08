@@ -8,7 +8,10 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
+import org.amshove.kluent.AnyException
+import org.amshove.kluent.invoking
 import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldThrow
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -171,6 +174,44 @@ object HelperSpek : Spek({
 
         it("should output empty string if someOtherProperty is not defined") {
             handlebars.compileInline("{{#is_defined someOtherProperty }}IS DEFINED{{/is_defined }}").apply(context) shouldEqual ""
+        }
+    }
+
+    describe("contains_all") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            putArray("myList")
+                    .add("FIRST_VAL")
+                    .add("SECOND_VAL")
+                    .add("THIRD_VAL")
+            putArray("emptyList")
+        })
+
+        it("should find single param that matches") {
+            handlebars.compileInline("{{#contains_all myList \"FIRST_VAL\"}}FOUND!{{else}}NOTHING!{{/contains_all }}").apply(context) shouldEqual "FOUND!"
+        }
+
+        it("should find all values without order") {
+            handlebars.compileInline("""{{#contains_all myList "FIRST_VAL" "THIRD_VAL" "SECOND_VAL"}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) shouldEqual "FOUND!"
+        }
+
+        it("should not find if at least one did not match") {
+            handlebars.compileInline("""{{#contains_all myList "FIRST_VAL" "THIRD_VAL" "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) shouldEqual "NOTHING!"
+        }
+
+        it("should not find if empty parameter") {
+            handlebars.compileInline("""{{#contains_all myList ""}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) shouldEqual "NOTHING!"
+        }
+
+        it("should not find if no parameter") {
+            handlebars.compileInline("""{{#contains_all myList}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) shouldEqual "NOTHING!"
+        }
+
+        it("should not fail if list is empty") {
+            handlebars.compileInline("""{{#contains_all emptyList "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) shouldEqual "NOTHING!"
+        }
+
+        it("should throw exception if unknown list") {
+            invoking { handlebars.compileInline("""{{#contains_all dontexist "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) } shouldThrow AnyException
         }
     }
 })
