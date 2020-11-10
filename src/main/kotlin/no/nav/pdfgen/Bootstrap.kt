@@ -51,7 +51,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
-import java.util.Base64
 import java.util.Base64.Encoder
 import kotlin.streams.toList
 import kotlinx.coroutines.io.ByteWriteChannel
@@ -62,6 +61,7 @@ import org.jsoup.helper.W3CDom
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
+import java.util.*
 
 val APPLICATION_PDF = ContentType.parse("application/pdf")
 
@@ -71,6 +71,7 @@ val objectMapper: ObjectMapper = ObjectMapper()
 val base64encoder: Encoder = Base64.getEncoder()
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val dateFormatLong: DateTimeFormatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy")
+        .withLocale(Locale("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
