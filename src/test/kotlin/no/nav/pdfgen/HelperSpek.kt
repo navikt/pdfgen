@@ -148,7 +148,7 @@ object HelperSpek : Spek({
         }
 
         it("should format date as Norwegian long date") {
-            handlebars.compileInline("{{ iso_to_long_date dateLong }}").apply(context) shouldEqual "01. februar 2020"
+            handlebars.compileInline("{{ iso_to_long_date date }}").apply(context) shouldEqual "01. februar 2020"
         }
     }
 
