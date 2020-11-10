@@ -131,6 +131,8 @@ object HelperSpek : Spek({
     describe("Datetime formatting") {
         val context = jsonContext(jsonNodeFactory.objectNode().apply {
             put("timestamp", "2020-03-03T10:15:30")
+            put("timestampLong", "2020-10-03T10:15:30")
+            put("date", "2020-02-01")
         })
 
         it("should format as Norwegian short date and time") {
@@ -139,6 +141,14 @@ object HelperSpek : Spek({
 
         it("should format as Norwegian short date") {
             handlebars.compileInline("{{ iso_to_nor_date timestamp }}").apply(context) shouldEqual "03.03.2020"
+        }
+
+        it("should format timestamp as Norwegian long date") {
+            handlebars.compileInline("{{ iso_to_long_date timestampLong }}").apply(context) shouldEqual "03. oktober 2020"
+        }
+
+        it("should format date as Norwegian long date") {
+            handlebars.compileInline("{{ iso_to_long_date dateLong }}").apply(context) shouldEqual "01. februar 2020"
         }
     }
 

@@ -35,6 +35,15 @@ fun registerNavHelpers(handlebars: Handlebars) {
             dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
         })
 
+        registerHelper("iso_to_long_date", Helper<String> { context, _ ->
+            if (context == null) return@Helper ""
+            try {
+                dateFormatLong.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
+            } catch (e: Exception) {
+                dateFormatLong.format(DateTimeFormatter.ISO_DATE.parse(context))
+            }
+        })
+
         registerHelper("duration", Helper<String> { context, options ->
             ChronoUnit.DAYS.between(
                     LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
