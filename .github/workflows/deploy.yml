@@ -40,7 +40,7 @@ jobs:
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew shadowJar -x test
-          echo ::set-env name=version::$(./gradlew -q printVersion)
+          echo "version=$(./gradlew -q printVersion)" >> $GITHUB_ENV
       - name: Build Docker images
         run: |
           docker build --tag ${IMAGE} .
