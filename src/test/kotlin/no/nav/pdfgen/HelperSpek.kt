@@ -224,4 +224,37 @@ object HelperSpek : Spek({
             invoking { handlebars.compileInline("""{{#contains_all dontexist "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""").apply(context) } shouldThrow AnyException
         }
     }
+
+    describe("Capitilize all") {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+
+        it("should capitalize all uppers") {
+            handlebars.compileInline("{{capitalize_all \"BRAGE BRUKER OLSEN\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should capitalize all lower") {
+            handlebars.compileInline("{{capitalize_all \"brage bruker olsen\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should capitalize all when mixed upper then lower") {
+            handlebars.compileInline("{{capitalize_all \"BRage BRUker OLSEn\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should capitalize all when mixed lower then upper") {
+            handlebars.compileInline("{{capitalize_all \"brAGE bruKer oLsEn\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should handle multiple space") {
+            handlebars.compileInline("{{capitalize_all \"   BRAGE   BRUKER   OLSEN    \"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should do nothing if already capitilized") {
+            handlebars.compileInline("{{capitalize_all \"Brage Bruker Olsen\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should do nothing if already capitilized - single word") {
+            handlebars.compileInline("{{capitalize_all \"Brage\"}}").apply(context) shouldEqual "Brage"
+        }
+
+    }
 })

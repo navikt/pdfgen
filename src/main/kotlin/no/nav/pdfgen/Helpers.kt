@@ -92,6 +92,13 @@ fun registerNavHelpers(handlebars: Handlebars) {
             if (context == null) "" else context.toLowerCase().capitalize()
         })
 
+        registerHelper("capitalize_all", Helper<String> { context, _ ->
+            if (context == null) "" else context.trim()
+                    .split("\\s+".toRegex())
+                    .map { it.toLowerCase().capitalize().trim() }
+                    .joinToString(" ")
+        })
+
         registerHelper("inc", Helper<Int> { context, _ ->
             context + 1
         })
