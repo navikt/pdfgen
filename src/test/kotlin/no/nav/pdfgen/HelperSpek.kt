@@ -229,31 +229,43 @@ object HelperSpek : Spek({
         val context = jsonContext(jsonNodeFactory.objectNode())
 
         it("should capitalize all uppers") {
-            handlebars.compileInline("{{capitalize_all \"BRAGE BRUKER OLSEN\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+            handlebars.compileInline("{{capitalize_names \"BRAGE BRUKER OLSEN\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
         }
 
         it("should capitalize all lower") {
-            handlebars.compileInline("{{capitalize_all \"brage bruker olsen\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+            handlebars.compileInline("{{capitalize_names \"brage bruker olsen\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
         }
 
         it("should capitalize all when mixed upper then lower") {
-            handlebars.compileInline("{{capitalize_all \"BRage BRUker OLSEn\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+            handlebars.compileInline("{{capitalize_names \"BRage BRUker OLSEn\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
         }
 
         it("should capitalize all when mixed lower then upper") {
-            handlebars.compileInline("{{capitalize_all \"brAGE bruKer oLsEn\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+            handlebars.compileInline("{{capitalize_names \"brAGE bruKer oLsEn\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
         }
 
         it("should handle multiple space") {
-            handlebars.compileInline("{{capitalize_all \"   BRAGE   BRUKER   OLSEN    \"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+            handlebars.compileInline("{{capitalize_names \"   BRAGE   BRUKER   OLSEN    \"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+        }
+
+        it("should capitalize names splitted by dash ") {
+            handlebars.compileInline("{{capitalize_names \" BRAGE-BRUKER OLSEN \"}}").apply(context) shouldEqual "Brage-Bruker Olsen"
+        }
+
+        it("should capitalize names splitted by dash with spacec in between ") {
+            handlebars.compileInline("{{capitalize_names \" BRAGE - BRUKER OLSEN \"}}").apply(context) shouldEqual "Brage-Bruker Olsen"
+        }
+
+        it("should capitalize names splitted by apostrophe") {
+            handlebars.compileInline("{{capitalize_names \" O'SHEA OLSEN \"}}").apply(context) shouldEqual "O'Shea Olsen"
         }
 
         it("should do nothing if already capitilized") {
-            handlebars.compileInline("{{capitalize_all \"Brage Bruker Olsen\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
+            handlebars.compileInline("{{capitalize_names \"Brage Bruker Olsen\"}}").apply(context) shouldEqual "Brage Bruker Olsen"
         }
 
         it("should do nothing if already capitilized - single word") {
-            handlebars.compileInline("{{capitalize_all \"Brage\"}}").apply(context) shouldEqual "Brage"
+            handlebars.compileInline("{{capitalize_names \"Brage\"}}").apply(context) shouldEqual "Brage"
         }
 
     }
