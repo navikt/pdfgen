@@ -257,4 +257,16 @@ object HelperSpek : Spek({
         }
 
     }
+
+    describe("breaklines") {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+
+        it("Should replace \\r\\n with newline") {
+            handlebars.compileInline("{{breaklines \"I pitty the fool \\r\\n Who doesn't br\"}}").apply(context) shouldEqual "I pitty the fool <br> Who doesn&#x27;t br"
+        }
+
+        it("Should replace \\n with newline") {
+            handlebars.compileInline("{{breaklines \"I pitty the fool \\n Who doesn't br\"}}").apply(context) shouldEqual "I pitty the fool <br> Who doesn&#x27;t br"
+        }
+    }
 })
