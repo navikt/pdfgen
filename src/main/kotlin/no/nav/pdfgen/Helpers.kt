@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import no.nav.pdfgen.domain.syfosoknader.Periode
-import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import no.nav.pdfgen.domain.syfosoknader.Periode
+import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 
 fun registerNavHelpers(handlebars: Handlebars) {
     handlebars.apply {
@@ -165,7 +165,22 @@ fun registerNavHelpers(handlebars: Handlebars) {
 
         registerHelper("is_defined", Helper<Any> { context, options ->
             if (context != null) options.fn() else options.inverse()
-        });
+        })
+
+        registerHelper("breaklines", Helper<String> { context, _ ->
+            if (context == null) {
+                 ""
+            } else {
+                val santizedText = Handlebars.Utils.escapeExpression(context)
+                val withLineBreak = santizedText.toString()
+                        .replace("\r\n",  "<br>")
+                        .replace("\\r\\n", "<br>")
+                        .replace("\n", "<br>")
+                        .replace("\\n", "<br>")
+                Handlebars.SafeString(withLineBreak)
+            }
+        })
+
     }
 }
 
