@@ -152,6 +152,214 @@ object HelperSpek : Spek({
         }
     }
 
+    describe("eq") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("an_int", 1337)
+            put("a_double", 1337.67)
+            put("string_with_int", "1337")
+            put("string_with_double", "1337.67")
+            put("a_string", "imma string")
+        })
+
+        it("should equal self") {
+            handlebars.compileInline("{{#eq an_int an_int }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#eq string_with_int string_with_int }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#eq string_with_double string_with_double }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#eq a_string a_string }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#eq a_double a_double }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+
+        }
+
+        it("should equal to content") {
+            handlebars.compileInline("{{#eq an_int \"1337\" }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should equal to content - reverse") {
+            handlebars.compileInline("{{#eq \"1337\" an_int }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should equal int to string if string has same content") {
+            handlebars.compileInline("{{#eq an_int string_with_int }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should equal int to string if string has same content - reverse") {
+            handlebars.compileInline("{{#eq string_with_int an_int }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should equal double to string if string has same content") {
+            handlebars.compileInline("{{#eq a_double string_with_double }}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should equal double to string if string has same content - reverse") {
+            handlebars.compileInline("{{#eq string_with_double a_double}}TRUE{{/eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should not equal if not equal") {
+            handlebars.compileInline("{{#eq an_int a_double}}TRUE{{else}}FALSE{{/eq}}").apply(context) shouldEqual "FALSE"
+        }
+
+        it("should not equal if null or empty") {
+            handlebars.compileInline("{{#eq an_int doesnt_exist}}TRUE{{else}}FALSE{{/eq}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#eq an_int null}}TRUE{{else}}FALSE{{/eq}}").apply(context) shouldEqual "FALSE"
+        }
+    }
+
+    describe("not_eq") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("an_int", 1337)
+            put("a_double", 1337.67)
+            put("string_with_int", "1337")
+            put("string_with_double", "1337.67")
+            put("a_string", "imma string")
+        })
+
+        it("should return false when compared to one self") {
+            handlebars.compileInline("{{#not_eq an_int an_int }}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#not_eq string_with_int string_with_int }}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#not_eq string_with_double string_with_double }}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#not_eq a_string a_string }}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#not_eq a_double a_double }}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "FALSE"
+
+        }
+
+        it("should return true if different content") {
+            handlebars.compileInline("{{#not_eq an_int \"1338\" }}TRUE{{/not_eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should return true if different content - reverse") {
+            handlebars.compileInline("{{#not_eq \"1338\" an_int }}TRUE{{/not_eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should return true if different values") {
+            handlebars.compileInline("{{#not_eq an_int a_double}}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "TRUE"
+        }
+
+        it("should return true compared two null or empty") {
+            handlebars.compileInline("{{#not_eq an_int doesnt_exist}}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#not_eq an_int null}}TRUE{{else}}FALSE{{/not_eq}}").apply(context) shouldEqual "TRUE"
+        }
+    }
+
+    describe("gt - greater than") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("small_int", -1)
+            put("large_int", 1337)
+            put("small_double", -1.67)
+            put("large_double", 1337.67)
+            put("a_string", "Adam")
+            put("z_string", "Zorro")
+        })
+
+        it("should return false when compared to one self") {
+            handlebars.compileInline("{{#gt small_int small_int }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#gt small_double small_double }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#gt a_string a_string }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "FALSE"
+
+        }
+
+        it("should return true when first param greater than second param") {
+            handlebars.compileInline("{{#gt large_int small_int }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#gt large_double small_double }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#gt z_string a_string }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "TRUE"
+
+        }
+
+        it("should return false when first param less than second param") {
+            handlebars.compileInline("{{#gt small_int large_int }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#gt small_double large_double }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#gt a_string z_string }}TRUE{{else}}FALSE{{/gt}}").apply(context) shouldEqual "FALSE"
+
+
+        }
+
+        it("should fail if argument are not of same type") {
+            invoking {
+                handlebars.compileInline("{{#gt int_string large_int }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double a_string }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double small_int }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+
+        }
+
+        it("should fail if comparing two null or empty") {
+            invoking {
+                handlebars.compileInline("{{#gt int_string noexists }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double null }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+
+        }
+
+    }
+
+    describe("lt - less than") {
+        val context = jsonContext(jsonNodeFactory.objectNode().apply {
+            put("small_int", -1)
+            put("large_int", 1337)
+            put("small_double", -1.67)
+            put("large_double", 1337.67)
+            put("a_string", "Adam")
+            put("z_string", "Zorro")
+        })
+
+        it("should return false when compared to one self") {
+            handlebars.compileInline("{{#lt small_int small_int }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#lt small_double small_double }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#lt a_string a_string }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "FALSE"
+
+        }
+
+        it("should return false when first param greater than second param") {
+            handlebars.compileInline("{{#lt large_int small_int }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#lt large_double small_double }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "FALSE"
+            handlebars.compileInline("{{#lt z_string a_string }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "FALSE"
+
+        }
+
+        it("should return true when first param less than second param") {
+            handlebars.compileInline("{{#lt small_int large_int }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#lt small_double large_double }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "TRUE"
+            handlebars.compileInline("{{#lt a_string z_string }}TRUE{{else}}FALSE{{/lt}}").apply(context) shouldEqual "TRUE"
+
+
+        }
+
+        it("should fail if argument are not of same type") {
+            invoking {
+                handlebars.compileInline("{{#gt int_string large_int }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double a_string }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double small_int }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+
+        }
+
+        it("should fail if comparing two null or empty") {
+            invoking {
+                handlebars.compileInline("{{#gt int_string noexists }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double null }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+            invoking {
+                handlebars.compileInline("{{#gt small_double }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            } shouldThrow AnyException
+
+        }
+
+    }
+
     describe("Currency formatting") {
         val context = jsonContext(jsonNodeFactory.objectNode().apply {
             put("beløp", 1337.69)
