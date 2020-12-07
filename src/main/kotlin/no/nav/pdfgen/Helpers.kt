@@ -68,12 +68,22 @@ fun registerNavHelpers(handlebars: Handlebars) {
                     .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
         })
 
-        registerHelper("eq", Helper<String> { context, options ->
-            if (context == options.param(0)) options.fn() else options.inverse()
+        registerHelper("eq", Helper<Any?> { context, options ->
+            if (context.toString() == options.param<Any?>(0).toString()) options.fn() else options.inverse()
         })
 
-        registerHelper("not_eq", Helper<String> { context, options ->
-            if (context != options.param(0)) options.fn() else options.inverse()
+        registerHelper("not_eq", Helper<Any?> { context, options ->
+            if (context.toString() != options.param<Any?>(0).toString()) options.fn() else options.inverse()
+        })
+
+        registerHelper("gt", Helper<Comparable<Any>> { context, options ->
+            val param = options.param(0) as Comparable<Any>
+            if (context > param) options.fn() else options.inverse()
+        })
+
+        registerHelper("lt", Helper<Comparable<Any>> { context, options ->
+            val param = options.param(0) as Comparable<Any>
+            if (context < param) options.fn() else options.inverse()
         })
 
         registerHelper("safe", Helper<String> { context, _ ->
@@ -169,7 +179,7 @@ fun registerNavHelpers(handlebars: Handlebars) {
 
         registerHelper("breaklines", Helper<String> { context, _ ->
             if (context == null) {
-                 ""
+                ""
             } else {
                 val santizedText = Handlebars.Utils.escapeExpression(context)
                 val withLineBreak = santizedText.toString()
