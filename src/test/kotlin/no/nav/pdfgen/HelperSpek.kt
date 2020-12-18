@@ -132,7 +132,7 @@ object HelperSpek : Spek({
         val context = jsonContext(jsonNodeFactory.objectNode().apply {
             put("timestamp", "2020-03-03T10:15:30")
             put("timestampLong", "2020-10-03T10:15:30")
-            put("date", "2020-02-01")
+            put("date", "2020-02-12")
         })
 
         it("should format as Norwegian short date and time") {
@@ -144,11 +144,11 @@ object HelperSpek : Spek({
         }
 
         it("should format timestamp as Norwegian long date") {
-            handlebars.compileInline("{{ iso_to_long_date timestampLong }}").apply(context) shouldEqual "03. oktober 2020"
+            handlebars.compileInline("{{ iso_to_long_date timestampLong }}").apply(context) shouldEqual "3. oktober 2020"
         }
 
         it("should format date as Norwegian long date") {
-            handlebars.compileInline("{{ iso_to_long_date date }}").apply(context) shouldEqual "01. februar 2020"
+            handlebars.compileInline("{{ iso_to_long_date date }}").apply(context) shouldEqual "12. februar 2020"
         }
     }
 
