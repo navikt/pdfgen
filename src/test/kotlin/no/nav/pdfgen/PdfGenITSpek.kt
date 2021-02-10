@@ -1,46 +1,41 @@
+@file:Suppress("BlockingMethodInNonBlockingContext")
+
 package no.nav.pdfgen
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.post
-import io.ktor.client.response.HttpResponse
-import io.ktor.client.response.readBytes
-import io.ktor.client.response.readText
+import io.ktor.client.statement.*
 import io.ktor.http.ContentType
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
 import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.*
+import no.nav.pdfgen.template.loadTemplates
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.shouldBeGreaterThan
-import org.amshove.kluent.shouldBeTrue
-import org.amshove.kluent.shouldContain
-import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldNotBeEmpty
-import org.amshove.kluent.shouldNotBeNull
-import org.amshove.kluent.shouldNotEqual
+import org.amshove.kluent.*
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.spekframework.spek2.style.specification.xdescribe
+import kotlin.io.use
 
 @KtorExperimentalAPI
 object PdfGenITSpek : Spek({
     val applicationPort = getRandomPort()
     val application = initializeApplication(applicationPort)
     val client = HttpClient(CIO)
-    val templates = loadTemplates()
+    val env = Environment()
+    val templates = loadTemplates(env)
+    val timeoutSeconds: Long = 10
     application.start()
 
     afterGroup {
-        application.stop(10, 10, TimeUnit.SECONDS)
+        application.stop(timeoutSeconds*1000, timeoutSeconds*1000)
     }
 
     describe("POST to /api/v1/genpdf/{applicationName}/{templateName}") {
@@ -48,22 +43,22 @@ object PdfGenITSpek : Spek({
             val (applicationName, templateName) = it
             it("With $templateName for $applicationName results in a valid PDF") {
                 val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
-                        ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
+                    ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
                         body = TextContent(json, contentType = ContentType.Application.Json)
                     }
                 }
-                response.status.isSuccess() shouldEqual true
+                response.status.isSuccess() shouldBeEqualTo true
                 val bytes = runBlocking { response.readBytes() }
-                bytes shouldNotEqual null
-                // Load the document in pdfbox to ensure its valid
+                bytes shouldNotBeEqualTo null
+                // Load the document in pdfbox to ensure it's valid
                 val document = PDDocument.load(bytes)
-                document shouldNotEqual null
+                document shouldNotBeEqualTo null
                 document.pages.count shouldBeGreaterThan 0
                 println(document.documentInformation.title)
-                response.close()
+                document.close()
             }
         }
     }
@@ -73,7 +68,7 @@ object PdfGenITSpek : Spek({
             val (applicationName, templateName) = it
             it("$templateName for $applicationName generates a sample PDF") {
                 val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
-                        ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
+                    ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
@@ -81,11 +76,10 @@ object PdfGenITSpek : Spek({
                     }
                 }
 
-                response.status.isSuccess() shouldEqual true
+                response.status.isSuccess() shouldBeEqualTo true
                 val bytes = runBlocking { response.readBytes() }
-                bytes shouldNotEqual null
+                bytes shouldNotBeEqualTo null
                 Files.write(Paths.get("build", "${it.first}-${it.second}.pdf"), bytes)
-                response.close()
             }
         }
     }
@@ -97,16 +91,15 @@ object PdfGenITSpek : Spek({
                     body = testTemplateIncludedFonts
                 }
             }
-            response.status.isSuccess() shouldEqual true
+            response.status.isSuccess() shouldBeEqualTo true
             val bytes = runBlocking { response.readBytes() }
-            bytes shouldNotEqual null
+            bytes shouldNotBeEqualTo null
             Files.write(Paths.get("build", "html.pdf"), bytes)
             // Load the document in pdfbox to ensure its valid
             val document = PDDocument.load(bytes)
-            document shouldNotEqual null
+            document shouldNotBeEqualTo null
             document.pages.count shouldBeGreaterThan 0
             println(document.documentInformation.title)
-            response.close()
         }
 
         it("Should return non OK status code when rendering templates with invalid font names") {
@@ -115,30 +108,32 @@ object PdfGenITSpek : Spek({
                     body = TextContent(testTemplateInvalidFonts, contentType = ContentType.Application.Json)
                 }
             }
-            response.status.isSuccess() shouldEqual false
+            response.status.isSuccess() shouldBeEqualTo false
         }
     }
 
     describe("Using the image convert endpoint") {
         mapOf(
-                ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
-                ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf"
+            ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
+            ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf"
         ).forEach { (payload, outputFile) ->
 
             it("Should render a document using input image, $outputFile") {
-                runBlocking<HttpResponse> {
-                    client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
-                        body = payload
+                runBlocking {
+                    runBlocking<HttpStatement> {
+                        client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
+                            body = payload
+                        }
+                    }.execute { response ->
+                        response.status.isSuccess().shouldBeTrue()
+                        val bytes = response.readBytes()
+                        bytes.shouldNotBeEmpty()
+                        Files.write(Paths.get("build", outputFile), bytes)
+                        // Load the document in pdfbox to ensure its valid
+                        val document = PDDocument.load(bytes)
+                        document.shouldNotBeNull()
+                        document.pages.count shouldBeGreaterThan 0
                     }
-                }.use { response ->
-                    response.status.isSuccess().shouldBeTrue()
-                    val bytes = runBlocking { response.readBytes() }
-                    bytes.shouldNotBeEmpty()
-                    Files.write(Paths.get("build", outputFile), bytes)
-                    // Load the document in pdfbox to ensure its valid
-                    val document = PDDocument.load(bytes)
-                    document.shouldNotBeNull()
-                    document.pages.count shouldBeGreaterThan 0
                 }
             }
         }
@@ -146,12 +141,14 @@ object PdfGenITSpek : Spek({
 
     describe("Calls to unknown endpoints") {
         it("Should respond with helpful information") {
-            runBlocking<HttpResponse> {
-                client.config { expectSuccess = false }.post("http://localhost:$applicationPort/whodis")
-            }.use { response ->
-                response.status.value shouldEqual 404
-                val text = runBlocking { response.readText() }
-                text shouldContain "Known paths:/api/v1/genpdf"
+            runBlocking {
+                runBlocking<HttpStatement> {
+                    client.config { expectSuccess = false }.post("http://localhost:$applicationPort/whodis")
+                }.execute { response ->
+                    response.status.value shouldBeEqualTo 404
+                    val text = runBlocking { response.readText() }
+                    text shouldContain "Known paths:/api/v1/genpdf"
+                }
             }
         }
     }
@@ -173,8 +170,8 @@ object PdfGenITSpek : Spek({
                     val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
                         body = TextContent(json, contentType = ContentType.Application.Json)
                     }
-                    response.readBytes() shouldNotEqual null
-                    response.status.isSuccess() shouldEqual true
+                    response.readBytes() shouldNotBeEqualTo null
+                    response.status.isSuccess() shouldBeEqualTo true
                 }
             }.toList().forEach { it.join() }
         }
@@ -191,8 +188,8 @@ object PdfGenITSpek : Spek({
                             val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
                                 body = TextContent(json, contentType = ContentType.Application.Json)
                             }
-                            response.readBytes() shouldNotEqual null
-                            response.status.isSuccess() shouldEqual true
+                            response.readBytes() shouldNotBeEqualTo null
+                            response.status.isSuccess() shouldBeEqualTo true
                         }
                     }.toList()
                     tasks.forEach { it.join() }
@@ -210,8 +207,8 @@ object PdfGenITSpek : Spek({
                         val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
                             body = TextContent(json, contentType = ContentType.Application.Json)
                         }
-                        response.readBytes() shouldNotEqual null
-                        response.status.isSuccess() shouldEqual true
+                        response.readBytes() shouldNotBeEqualTo null
+                        response.status.isSuccess() shouldBeEqualTo true
                     }
                 }
                 println("Single-thread performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")

@@ -3,22 +3,23 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.pdfgen"
 version = "1.2.1"
 
-val handlebarsVersion = "4.1.2"
-val jacksonVersion = "2.9.8"
-val jaxbVersion = "2.3.1"
-val jsoupVersion = "1.11.3"
-val kluentVersion = "1.49"
-val ktorVersion = "1.2.6"
+val handlebarsVersion = "4.2.0"
+val jacksonVersion = "2.12.0"
+val jaxbVersion = "3.0.0"
+val jaxbApiVersion = "2.3.1"
+val jsoupVersion = "1.13.1"
+val kluentVersion = "1.65"
+val ktorVersion = "1.5.1"
 val logbackVersion = "1.2.3"
-val logstashEncoderVersion = "5.2"
-val openHtmlToPdfVersion = "0.0.1-RC17"
-val prometheusVersion = "0.6.0"
-val spekVersion = "2.0.9"
-val verapdfVersion = "1.12.1"
+val logstashEncoderVersion = "6.6"
+val openHtmlToPdfVersion = "1.0.6"
+val prometheusVersion = "0.10.0"
+val spekVersion = "2.0.15"
+val verapdfVersion = "1.16.1"
 
 plugins {
-    kotlin("jvm") version "1.3.71"
-    id("org.jmailen.kotlinter") version "2.2.0"
+    kotlin("jvm") version "1.4.30"
+    id("org.jmailen.kotlinter") version "3.3.0"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("com.github.ben-manes.versions") version "0.21.0"
 }
@@ -39,7 +40,7 @@ tasks {
         }
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "14"
     }
     withType<Jar> {
         manifest.attributes("Main-Class" to "no.nav.pdfgen.BootstrapKt")
@@ -49,12 +50,12 @@ tasks {
 repositories {
     mavenCentral()
     jcenter()
-    maven(url="https://dl.bintray.com/kotlin/ktor")
-    maven(url= "https://dl.bintray.com/spekframework/spek-dev")
+    maven(url = "https://dl.bintray.com/kotlin/ktor")
+    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
 }
 
 dependencies {
-    compile(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
@@ -66,7 +67,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("javax.xml.bind:jaxb-api:2.1")
+    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")

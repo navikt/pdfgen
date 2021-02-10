@@ -1,0 +1,643 @@
+{
+  "soknadsId": "498b4f1a-47e3-4549-9e27-923efc246281",
+  "fnr": "16086801683",
+  "navn": "Karina Mostad",
+  "innsendtDato": "2019-09-09",
+  "sendtArbeidsgiver": "2019-09-09",
+  "sykmeldingUtskrevet": "2019-09-01",
+  "arbeidsgiver": "LØNNS- OG REGNSKAPSSENTERET",
+  "korrigerer": null,
+  "egenmeldtSykmelding": true,
+  "avsendertype": "BRUKER",
+  "soknadPerioder": [
+    {
+      "fom": "2019-09-02",
+      "tom": "2019-09-08",
+      "grad": 100,
+      "faktiskGrad": 97,
+      "avtaltTimer": 37.5,
+      "faktiskTimer": null
+    }
+  ],
+  "sporsmal": [
+    {
+      "id": "660076",
+      "tag": "EGENMELDINGER",
+      "sporsmalstekst": "Vi har registrert at du ble sykmeldt mandag 10. februar 2020. Var du syk og borte fra jobb i perioden 25. januar - 9. februar 2020?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "pavirkerAndreSporsmal": false,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [{
+        "verdi": "JA",
+        "avgittAv": null
+      }],
+      "undersporsmal": [{
+        "id": "660077",
+        "tag": "TIDLIGERE_SYK",
+        "sporsmalstekst": null,
+        "undertekst": null,
+        "svartype": "CHECKBOX_GRUPPE",
+        "min": null,
+        "max": null,
+        "pavirkerAndreSporsmal": false,
+        "kriterieForVisningAvUndersporsmal": null,
+        "svar": [],
+        "undersporsmal": [{
+          "id": "660078",
+          "tag": "TIDLIGERE_EGENMELDING",
+          "sporsmalstekst": "Jeg var syk med egenmelding",
+          "undertekst": null,
+          "svartype": "CHECKBOX",
+          "min": null,
+          "max": null,
+          "pavirkerAndreSporsmal": false,
+          "kriterieForVisningAvUndersporsmal": "CHECKED",
+          "svar": [{
+            "verdi": "CHECKED",
+            "avgittAv": null
+          }],
+          "undersporsmal": [{
+            "id": "660079",
+            "tag": "EGENMELDINGER_NAR",
+            "sporsmalstekst": "Hvilke dager var du syk med egenmelding? Du trenger bare oppgi dager før 10. februar 2020.",
+            "undertekst": null,
+            "svartype": "PERIODER",
+            "min": "2019-08-10",
+            "max": "2020-02-09",
+            "pavirkerAndreSporsmal": false,
+            "kriterieForVisningAvUndersporsmal": null,
+            "svar": [{
+              "verdi": "{\"fom\":\"2020-01-23\",\"tom\":\"2020-02-09\"}",
+              "avgittAv": null
+            }],
+            "undersporsmal": []
+          }]
+        }, {
+          "id": "660080",
+          "tag": "TIDLIGERE_PAPIRSYKMELDING",
+          "sporsmalstekst": "Jeg var syk med papirsykmelding",
+          "undertekst": null,
+          "svartype": "CHECKBOX",
+          "min": null,
+          "max": null,
+          "pavirkerAndreSporsmal": false,
+          "kriterieForVisningAvUndersporsmal": "CHECKED",
+          "svar": [{
+            "verdi": "CHECKED",
+            "avgittAv": null
+          }],
+          "undersporsmal": [{
+            "id": "660081",
+            "tag": "PAPIRSYKMELDING_NAR",
+            "sporsmalstekst": "Hvilke dager var du syk med papirsykmelding? Du trenger bare oppgi dager før 10. februar 2020.",
+            "undertekst": null,
+            "svartype": "PERIODER",
+            "min": "2019-08-10",
+            "max": "2020-02-09",
+            "pavirkerAndreSporsmal": false,
+            "kriterieForVisningAvUndersporsmal": null,
+            "svar": [{
+              "verdi": "{\"fom\":\"2020-01-23\",\"tom\":\"2020-02-09\"}",
+              "avgittAv": null
+            }],
+            "undersporsmal": []
+          }]
+        }]
+      }]
+    },
+    {
+      "id": "308903",
+      "tag": "TILBAKE_I_ARBEID",
+      "sporsmalstekst": "Var du tilbake i fullt arbeid hos LØNNS- OG REGNSKAPSSENTERET i løpet av perioden 2. - 8. september 2019?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308904",
+          "tag": "TILBAKE_NAR",
+          "sporsmalstekst": "Når begynte du å jobbe igjen?",
+          "undertekst": null,
+          "svartype": "DATO",
+          "min": "2019-09-02",
+          "max": "2019-09-08",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "2019-09-07"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "308905",
+      "tag": "FERIE_V2",
+      "sporsmalstekst": "Tok du ut ferie mens du var sykmeldt 2. - 6. september 2019?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308906",
+          "tag": "FERIE_NAR_V2",
+          "sporsmalstekst": "Når tok du ut ferie?",
+          "undertekst": null,
+          "svartype": "PERIODER",
+          "min": "2019-09-02",
+          "max": "2019-09-06",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "{\"fom\":\"2019-09-03\",\"tom\":\"2019-09-04\"}"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "308907",
+      "tag": "PERMISJON_V2",
+      "sporsmalstekst": "Tok du permisjon mens du var sykmeldt 2. - 6. september 2019?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308908",
+          "tag": "PERMISJON_NAR_V2",
+          "sporsmalstekst": "Når tok du permisjon?",
+          "undertekst": null,
+          "svartype": "PERIODER",
+          "min": "2019-09-02",
+          "max": "2019-09-06",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "{\"fom\":\"2019-09-02\",\"tom\":\"2019-09-03\"}"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "308909",
+      "tag": "UTLAND_V2",
+      "sporsmalstekst": "Var du på reise utenfor Norge mens du var sykmeldt 2. - 6. september 2019?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308910",
+          "tag": "UTLAND_NAR_V2",
+          "sporsmalstekst": "Når var du utenfor Norge?",
+          "undertekst": null,
+          "svartype": "PERIODER",
+          "min": "2019-09-02",
+          "max": "2019-09-06",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "{\"fom\":\"2019-09-05\",\"tom\":\"2019-09-06\"}"
+            },
+            {
+              "verdi": "{\"fom\":\"2019-09-02\",\"tom\":\"2019-09-03\"}"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "308911",
+      "tag": "UTLANDSOPPHOLD_SOKT_SYKEPENGER",
+      "sporsmalstekst": "Har du søkt om å beholde sykepengene for de dagene du var i utlandet?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "308912",
+      "tag": "JOBBET_DU_100_PROSENT_0",
+      "sporsmalstekst": "I perioden 2. - 6. september 2019 var du 100 % sykmeldt fra LØNNS- OG REGNSKAPSSENTERET. Jobbet du noe i denne perioden?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308913",
+          "tag": "HVOR_MANGE_TIMER_PER_UKE_0",
+          "sporsmalstekst": "Hvor mange timer i uken jobber du vanligvis? Varierer det, kan du oppgi gjennomsnittet.",
+          "undertekst": "timer per uke",
+          "svartype": "TALL",
+          "min": "1",
+          "max": "150",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "37,5"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": "308914",
+          "tag": "HVOR_MYE_HAR_DU_JOBBET_0",
+          "sporsmalstekst": "Hvor mye jobbet du totalt 2. - 6. september 2019 hos LØNNS- OG REGNSKAPSSENTERET?",
+          "undertekst": null,
+          "svartype": "RADIO_GRUPPE_TIMER_PROSENT",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "308915",
+              "tag": "HVOR_MYE_PROSENT_0",
+              "sporsmalstekst": "prosent",
+              "undertekst": null,
+              "svartype": "RADIO",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "308916",
+                  "tag": "HVOR_MYE_PROSENT_VERDI_0",
+                  "sporsmalstekst": null,
+                  "undertekst": "prosent",
+                  "svartype": "TALL",
+                  "min": "1",
+                  "max": "99",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "97"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "308917",
+              "tag": "HVOR_MYE_TIMER_0",
+              "sporsmalstekst": "timer",
+              "undertekst": null,
+              "svartype": "RADIO",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "308918",
+                  "tag": "HVOR_MYE_TIMER_VERDI_0",
+                  "sporsmalstekst": null,
+                  "undertekst": "timer totalt",
+                  "svartype": "TALL",
+                  "min": "1",
+                  "max": "107",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "308919",
+      "tag": "ANDRE_INNTEKTSKILDER",
+      "sporsmalstekst": "Har du andre inntektskilder enn LØNNS- OG REGNSKAPSSENTERET?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308920",
+          "tag": "HVILKE_ANDRE_INNTEKTSKILDER",
+          "sporsmalstekst": "Hvilke andre inntektskilder har du?",
+          "undertekst": "Du trenger ikke oppgi penger fra NAV",
+          "svartype": "CHECKBOX_GRUPPE",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "308921",
+              "tag": "INNTEKTSKILDE_ANDRE_ARBEIDSFORHOLD",
+              "sporsmalstekst": "andre arbeidsforhold",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "308922",
+                  "tag": "INNTEKTSKILDE_ANDRE_ARBEIDSFORHOLD_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "308923",
+              "tag": "INNTEKTSKILDE_SELVSTENDIG",
+              "sporsmalstekst": "selvstendig næringsdrivende",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "308924",
+                  "tag": "INNTEKTSKILDE_SELVSTENDIG_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "NEI"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "308925",
+              "tag": "INNTEKTSKILDE_SELVSTENDIG_DAGMAMMA",
+              "sporsmalstekst": "dagmamma",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "308926",
+                  "tag": "INNTEKTSKILDE_SELVSTENDIG_DAGMAMMA_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "308927",
+              "tag": "INNTEKTSKILDE_JORDBRUKER",
+              "sporsmalstekst": "jordbruk / fiske / reindrift",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "308928",
+                  "tag": "INNTEKTSKILDE_JORDBRUKER_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "JA"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "308929",
+              "tag": "INNTEKTSKILDE_FRILANSER",
+              "sporsmalstekst": "frilanser",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "308930",
+                  "tag": "INNTEKTSKILDE_FRILANSER_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "308931",
+              "tag": "INNTEKTSKILDE_ANNET",
+              "sporsmalstekst": "annet",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [],
+              "undersporsmal": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "308932",
+      "tag": "UTDANNING",
+      "sporsmalstekst": "Har du vært under utdanning i løpet av perioden 2. - 6. september 2019?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "308933",
+          "tag": "UTDANNING_START",
+          "sporsmalstekst": "Når startet du på utdanningen?",
+          "undertekst": null,
+          "svartype": "DATO",
+          "min": null,
+          "max": "2019-09-06",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "2019-09-01"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": "308934",
+          "tag": "FULLTIDSSTUDIUM",
+          "sporsmalstekst": "Er utdanningen et fulltidsstudium?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "JA"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "308900",
+      "tag": "ANSVARSERKLARING",
+      "sporsmalstekst": "Jeg vet at jeg kan miste retten til sykepenger hvis opplysningene jeg gir ikke er riktige eller fullstendige. Jeg vet også at NAV kan holde igjen eller kreve tilbake penger, og at å gi feil opplysninger kan være straffbart.",
+      "undertekst": null,
+      "svartype": "CHECKBOX_PANEL",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "CHECKED"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "308936",
+      "tag": "BEKREFT_OPPLYSNINGER",
+      "sporsmalstekst": "Jeg har lest all informasjonen jeg har fått i søknaden og bekrefter at opplysningene jeg har gitt er korrekte.",
+      "undertekst": null,
+      "svartype": "CHECKBOX_PANEL",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "CHECKED"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "308935",
+      "tag": "VAER_KLAR_OVER_AT",
+      "sporsmalstekst": "Viktig å være klar over:",
+      "undertekst": "<ul><li>Du kan bare få sykepenger hvis det er din egen sykdom eller skade som hindrer deg i å jobbe. Sosiale eller økonomiske problemer gir ikke rett til sykepenger.</li><li>Du kan miste retten til sykepenger hvis du nekter å opplyse om din egen arbeidsevne, eller hvis du ikke tar imot behandling eller tilrettelegging.</li><li>Retten til sykepenger gjelder bare inntekt du har mottatt som lønn og betalt skatt av på sykmeldingstidspunktet.</li><li>NAV kan innhente opplysninger som er nødvendige for å behandle søknaden.</li><li>Du må melde fra til NAV hvis du satt i varetekt, sonet straff eller var under forvaring i sykmeldingsperioden.</li><li>Fristen for å søke sykepenger er som hovedregel 3 måneder</li></ul><p>Du kan lese mer om rettigheter og plikter på <a href=\"https://www.nav.no/sykepenger\" target=\"_blank\">nav.no/sykepenger</a>.</p>",
+      "svartype": "IKKE_RELEVANT",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    }
+  ]
+}

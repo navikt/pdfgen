@@ -1,0 +1,133 @@
+{
+  "soknadsId": "c982ce69-07f4-4fa3-bb2b-6474f18c099e",
+  "sykmeldingId": "sykmeldingId",
+  "fnr": "13026928499",
+  "navn": "Luguber Muldvarp",
+  "fom": "2018-01-01",
+  "tom": "2018-10-01",
+  "innsendtDato": "2019-12-14",
+  "sendtArbeidsgiver": null,
+  "sykmeldingUtskrevet": "2018-01-01",
+  "soknadstype": "BEHANDLINGSDAGER",
+  "status": "NY",
+  "arbeidsgiver": "Bedrift AS",
+  "arbeidssituasjon": "ARBEIDSTAKER",
+  "soknadPerioder": [
+    {
+      "fom": "2018-01-01",
+      "tom": "2018-10-01",
+      "grad": 100,
+      "sykmeldingstype": "BEHANDLINGSDAGER"
+    }
+  ],
+  "sporsmal": [
+    {
+      "id": "15406",
+      "tag": "ANSVARSERKLARING",
+      "sporsmalstekst": "Jeg vet at jeg kan miste retten til sykepenger hvis opplysningene jeg gir ikke er riktige eller fullstendige. Jeg vet også at NAV kan holde igjen eller kreve tilbake penger, og at å gi feil opplysninger kan være straffbart.",
+      "undertekst": null,
+      "svartype": "CHECKBOX_PANEL",
+      "min": null,
+      "max": null,
+      "pavirkerAndreSporsmal": false,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "CHECKED"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "53983",
+      "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_0",
+      "sporsmalstekst": "Var du til behandling mellom 26. desember 2017 - 10. januar 2018?",
+      "undertekst": null,
+      "svartype": "INFO_BEHANDLINGSDAGER",
+      "min": null,
+      "max": null,
+      "pavirkerAndreSporsmal": false,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": [
+        {
+          "id": "2549",
+          "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0",
+          "sporsmalstekst": "26. desember - 29. desember 2017",
+          "undertekst": null,
+          "svartype": "RADIO_GRUPPE_UKEKALENDER",
+          "min": "2017-12-26",
+          "max": "2017-12-29",
+          "pavirkerAndreSporsmal": false,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "2017-12-27"
+            }
+          ],
+          "undersporsmal": []
+         },
+        {
+          "id": "6894",
+          "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_1",
+          "sporsmalstekst": "1. januar - 5. januar 2018",
+          "undertekst": null,
+          "svartype": "RADIO_GRUPPE_UKEKALENDER",
+          "min": null,
+          "max": null,
+          "pavirkerAndreSporsmal": false,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+              {
+                "verdi": "2018-01-02"
+              }
+            ],
+          "undersporsmal": []
+        },
+        {
+          "id": "46116",
+          "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_2",
+          "sporsmalstekst": "8. januar - 10. januar 2018",
+          "undertekst": null,
+          "svartype": "RADIO_GRUPPE_UKEKALENDER",
+          "min": null,
+          "max": null,
+          "pavirkerAndreSporsmal": false,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+                        {
+                          "verdi": ""
+                        }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "50766",
+      "tag": "VAER_KLAR_OVER_AT",
+      "sporsmalstekst": "Viktig å være klar over:",
+      "undertekst": "<ul><li>Du kan bare få sykepenger hvis det er din egen sykdom eller skade som hindrer deg i å jobbe. Sosiale eller økonomiske problemer gir ikke rett til sykepenger.</li><li>Du kan miste retten til sykepenger hvis du nekter å opplyse om din egen arbeidsevne, eller hvis du ikke tar imot behandling eller tilrettelegging.</li><li>Retten til sykepenger gjelder bare inntekt du har mottatt som lønn og betalt skatt av på sykmeldingstidspunktet.</li><li>NAV kan innhente opplysninger som er nødvendige for å behandle søknaden.</li><li>Du må melde fra til NAV hvis du satt i varetekt, sonet straff eller var under forvaring i sykmeldingsperioden.</li><li>Fristen for å søke sykepenger er som hovedregel 3 måneder</li></ul><p>Du kan lese mer om rettigheter og plikter på <a href=\"https://www.nav.no/sykepenger\" target=\"_blank\">nav.no/sykepenger</a>.</p>",
+      "svartype": "IKKE_RELEVANT",
+      "min": null,
+      "max": null,
+      "pavirkerAndreSporsmal": false,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    },
+    {
+      "id": "62882",
+      "tag": "BEKREFT_OPPLYSNINGER",
+      "sporsmalstekst": "Jeg har lest all informasjonen jeg har fått i søknaden og bekrefter at opplysningene jeg har gitt er korrekte.",
+      "undertekst": null,
+      "svartype": "CHECKBOX_PANEL",
+      "min": null,
+      "max": null,
+      "pavirkerAndreSporsmal": false,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    }
+  ]
+}
