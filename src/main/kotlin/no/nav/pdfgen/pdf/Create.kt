@@ -7,7 +7,6 @@ import io.ktor.http.content.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import no.nav.pdfgen.Environment
-import no.nav.pdfgen.api.render
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -43,8 +42,8 @@ fun createPDFA(w3doc: Document, outputStream: OutputStream, env: Environment) {
 
     renderer.createPDFWithoutClosing()
     renderer.pdfDocument.conform(env)
-    // checks to see if there are no embedded fonts
-    if (renderer.pdfDocument.pages.flatMap { page -> page.resources.fontNames.map(page.resources::getFont) }.none { it.isEmbedded }) {
+    // verifies that all fonts are embedded/verifies that no fonts are not embedded ;)
+    if (renderer.pdfDocument.pages.flatMap { page -> page.resources.fontNames.map(page.resources::getFont) }.any { !it.isEmbedded }) {
         throw RuntimeException("Font list is empty.")
     }
     renderer.pdfDocument.save(outputStream)
