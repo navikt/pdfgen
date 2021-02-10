@@ -7,6 +7,7 @@ import io.ktor.http.content.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.api.render
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -43,6 +44,7 @@ fun createPDFA(w3doc: Document, outputStream: OutputStream, env: Environment) {
     renderer.createPDFWithoutClosing()
     renderer.pdfDocument.conform(env)
     renderer.pdfDocument.save(outputStream)
+    renderer.pdfDocument.close()
 }
 
 fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Environment) {
@@ -61,6 +63,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Enviro
         }
         document.conform(env)
         document.save(outputStream)
+        document.close()
     }
 }
 
