@@ -43,6 +43,10 @@ fun createPDFA(w3doc: Document, outputStream: OutputStream, env: Environment) {
 
     renderer.createPDFWithoutClosing()
     renderer.pdfDocument.conform(env)
+    // checks to see if there are no embedded fonts
+    if (renderer.pdfDocument.pages.flatMap { page -> page.resources.fontNames.map(page.resources::getFont) }.none { it.isEmbedded }) {
+        throw RuntimeException("Font list is empty.")
+    }
     renderer.pdfDocument.save(outputStream)
     renderer.pdfDocument.close()
 }

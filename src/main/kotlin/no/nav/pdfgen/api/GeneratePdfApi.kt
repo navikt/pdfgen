@@ -64,15 +64,9 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
             val html = call.receiveText()
 
             ByteArrayOutputStream().use { bytes ->
-                try {
-                    createPDFA(fromHtmlToDocument(html), bytes, env)
-                    call.respondBytes(bytes.toByteArray(), contentType = ContentType.Application.Pdf)
-                } catch (e: Exception) {
-                    log.error("Font list is empty.")
-                    call.respondText("Font list is empty.", status = HttpStatusCode.InternalServerError)
-                }
+                createPDFA(fromHtmlToDocument(html), bytes, env)
+                call.respondBytes(bytes.toByteArray(), contentType = ContentType.Application.Pdf)
             }
-
             log.info("Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms")
         }
         post("/image/{applicationName}") {

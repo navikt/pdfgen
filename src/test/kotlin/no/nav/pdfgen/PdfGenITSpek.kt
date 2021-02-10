@@ -28,7 +28,9 @@ import kotlin.io.use
 object PdfGenITSpek : Spek({
     val applicationPort = getRandomPort()
     val application = initializeApplication(applicationPort)
-    val client = HttpClient(CIO)
+    val client = HttpClient(CIO) {
+        expectSuccess = false
+    }
     val env = Environment()
     val templates = loadTemplates(env)
     val timeoutSeconds: Long = 10
