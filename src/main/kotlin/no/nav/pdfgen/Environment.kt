@@ -20,7 +20,7 @@ val fontsRoot: Path = Paths.get("fonts/")
 data class Environment(
     val images: Map<String, String> = loadImages(),
     val resources: Map<String, ByteArray> = loadResources(),
-    val colorProfile: ByteArray = IOUtils.toByteArray(Utils::class.java.getResourceAsStream("/sRGB2014.icc")),
+    val colorProfile: ByteArray = IOUtils.toByteArray(Environment::class.java.getResourceAsStream("/sRGB2014.icc")),
     val fonts: List<FontMetadata> = objectMapper.readValue(Files.newInputStream(fontsRoot.resolve("config.json"))),
     val disablePdfGet: Boolean = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
 )
