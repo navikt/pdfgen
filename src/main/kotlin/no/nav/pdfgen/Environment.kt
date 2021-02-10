@@ -16,14 +16,28 @@ val templateRoot: Path = Paths.get("templates/")
 val imagesRoot: Path = Paths.get("resources/")
 val fontsRoot: Path = Paths.get("fonts/")
 
-
 data class Environment(
     val images: Map<String, String> = loadImages(),
     val resources: Map<String, ByteArray> = loadResources(),
     val colorProfile: ByteArray = IOUtils.toByteArray(Environment::class.java.getResourceAsStream("/sRGB2014.icc")),
     val fonts: List<FontMetadata> = objectMapper.readValue(Files.newInputStream(fontsRoot.resolve("config.json"))),
     val disablePdfGet: Boolean = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Environment
+
+        if (!colorProfile.contentEquals(other.colorProfile)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return colorProfile.contentHashCode()
+    }
+}
 
 
 fun loadImages() = Files.list(imagesRoot)
