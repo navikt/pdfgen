@@ -7,6 +7,8 @@ import io.ktor.http.content.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.util.scale
+import no.nav.pdfgen.util.toPortait
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -22,8 +24,6 @@ import org.apache.xmpbox.XMPMetadata
 import org.apache.xmpbox.type.BadFieldValueException
 import org.apache.xmpbox.xml.XmpSerializer
 import org.w3c.dom.Document
-import no.nav.pdfgen.util.scale
-import no.nav.pdfgen.util.toPortait
 import java.io.*
 import java.lang.IllegalArgumentException
 import java.util.*

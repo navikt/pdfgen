@@ -5,11 +5,11 @@ import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.domain.syfosoknader.Periode
+import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import no.nav.pdfgen.domain.syfosoknader.Periode
-import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.util.*
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")

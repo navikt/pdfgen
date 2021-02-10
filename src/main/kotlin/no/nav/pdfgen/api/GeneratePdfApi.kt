@@ -21,7 +21,6 @@ import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
 import org.w3c.dom.Document
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Paths

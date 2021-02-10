@@ -1,9 +1,7 @@
 package no.nav.pdfgen
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.jknack.handlebars.Template
 import io.ktor.util.*
-import no.nav.pdfgen.template.loadTemplates
 import no.nav.pdfgen.util.FontMetadata
 import org.apache.pdfbox.io.IOUtils
 import java.nio.file.Files
@@ -38,7 +36,6 @@ data class Environment(
         return colorProfile.contentHashCode()
     }
 }
-
 
 fun loadImages() = Files.list(imagesRoot)
     .filter {

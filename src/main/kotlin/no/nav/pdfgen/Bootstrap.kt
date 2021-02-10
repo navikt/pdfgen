@@ -30,17 +30,15 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import java.util.*
 import kotlinx.coroutines.launch
 import no.nav.pdfgen.api.setupGeneratePdfApi
 import no.nav.pdfgen.template.loadTemplates
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
+import java.util.*
 
 val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
-
 
 val log: Logger = LoggerFactory.getLogger("pdf-gen")
 

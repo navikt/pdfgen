@@ -7,8 +7,6 @@ import no.nav.pdfgen.api.fromHtmlToDocument
 import no.nav.pdfgen.api.render
 import no.nav.pdfgen.pdf.createPDFA
 import no.nav.pdfgen.template.loadTemplates
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import org.amshove.kluent.shouldBe
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -16,6 +14,8 @@ import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 @KtorExperimentalAPI
 object RenderingSpek : Spek({

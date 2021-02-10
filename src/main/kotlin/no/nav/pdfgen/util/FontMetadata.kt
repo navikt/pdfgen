@@ -4,7 +4,6 @@ import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
 import no.nav.pdfgen.fontsRoot
 import java.nio.file.Files
 
-
 data class FontMetadata(
     val family: String,
     val path: String,
