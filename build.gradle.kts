@@ -75,6 +75,8 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
+    implementation("org.verapdf:validation-model:$verapdfVersion")
+
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
@@ -83,6 +85,6 @@ dependencies {
     testRuntimeOnly("org.spekframework.spek2:spek-runtime-jvm:$spekVersion")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion")
 
-    testImplementation("org.verapdf:validation-model:$verapdfVersion")
+
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
 }

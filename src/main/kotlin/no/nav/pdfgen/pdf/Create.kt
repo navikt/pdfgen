@@ -7,6 +7,7 @@ import io.ktor.http.content.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.log
 import no.nav.pdfgen.util.scale
 import no.nav.pdfgen.util.toPortait
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -23,6 +24,10 @@ import org.apache.pdfbox.util.Matrix
 import org.apache.xmpbox.XMPMetadata
 import org.apache.xmpbox.type.BadFieldValueException
 import org.apache.xmpbox.xml.XmpSerializer
+import org.verapdf.pdfa.Foundries
+import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
+import org.verapdf.pdfa.flavours.PDFAFlavour
+import org.verapdf.pdfa.results.TestAssertion
 import org.w3c.dom.Document
 import java.io.*
 import java.lang.IllegalArgumentException
@@ -111,6 +116,21 @@ fun PDDocument.conform(env: Environment) {
     catalog.markInfo = PDMarkInfo(page.cosObject)
     catalog.structureTreeRoot = PDStructureTreeRoot()
     catalog.markInfo.isMarked = true
+}
+
+fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavour.PDFA_2_U): Boolean {
+    val pdf = ByteArrayInputStream(input)
+    val validator = Foundries.defaultInstance().createValidator(flavour, false)
+    val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
+    val failures = result.testAssertions
+        .filter { it.status != TestAssertion.Status.PASSED }
+    failures.forEach { test ->
+            log.warn(test.message)
+            log.warn("Location ${test.location.context} ${test.location.level}")
+            log.warn("Status ${test.status}")
+            log.warn("Test number ${test.ruleId.testNumber}")
+    }
+    return failures.isEmpty()
 }
 
 class PdfContent(

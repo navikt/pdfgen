@@ -16,6 +16,7 @@ import net.logstash.logback.argument.StructuredArguments
 import no.nav.pdfgen.*
 import no.nav.pdfgen.pdf.PdfContent
 import no.nav.pdfgen.pdf.createPDFA
+import no.nav.pdfgen.pdf.verifyCompliance
 import no.nav.pdfgen.template.TemplateMap
 import org.jsoup.Jsoup
 import org.jsoup.helper.W3CDom
@@ -41,7 +42,12 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
                     JsonNode::class.java
                 )
                 render(applicationName, template, templates, data)?.let { document ->
-                    call.respond(PdfContent(document, env))
+                    val pdf = ByteArrayOutputStream().apply {
+                        createPDFA(document, this, env)
+                    }.toByteArray()
+                    val result = verifyCompliance(pdf)
+                    log.info("Valid PDF/A-2U: $result")
+                    call.respondBytes(pdf, contentType = ContentType.Application.Pdf)
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
         }

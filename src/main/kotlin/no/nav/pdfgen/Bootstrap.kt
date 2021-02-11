@@ -35,6 +35,7 @@ import no.nav.pdfgen.api.setupGeneratePdfApi
 import no.nav.pdfgen.template.loadTemplates
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
 import java.util.*
 
 val objectMapper: ObjectMapper = ObjectMapper()
@@ -49,6 +50,9 @@ fun main() {
 fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     val env = Environment()
+    if (!env.disablePdfGet) {
+        VeraGreenfieldFoundryProvider.initialise() // to enable validation of PDF/A while developing templates
+    }
     val templates = loadTemplates(env)
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
