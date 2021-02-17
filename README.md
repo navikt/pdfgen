@@ -1,6 +1,6 @@
 # PdfGen
 
-![Bygg og deploy](https://github.com/navikt/pdfgen/workflows/Bygg%20og%20deploy/badge.svg)
+![Build and publish](https://github.com/navikt/pdfgen/workflows/Build%20and%20publish/badge.svg)
 
 Repository for PdfGen, an application written in Kotlin used to create PDFs
 

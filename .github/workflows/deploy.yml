@@ -1,4 +1,4 @@
-name: Bygg and publish
+name: Build and publish
 on:
   push:
     branches:
