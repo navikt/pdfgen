@@ -30,22 +30,19 @@ import java.util.*
 import javax.imageio.ImageIO
 
 fun createPDFA(html: String, env: Environment): ByteArray {
-    val outputStream = ByteArrayOutputStream()
-    val renderer = PdfRendererBuilder()
-        .apply {
-            for (font in env.fonts) {
-                useFont({ ByteArrayInputStream(font.bytes) }, font.family, font.weight, font.style, font.subset)
+    val pdf = ByteArrayOutputStream().apply {
+        PdfRendererBuilder()
+            .apply {
+                for (font in env.fonts) {
+                    useFont({ ByteArrayInputStream(font.bytes) }, font.family, font.weight, font.style, font.subset)
+                }
             }
-        }
-        .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
-        .useColorProfile(env.colorProfile)
-        .withHtmlContent(html, null)
-        .buildPdfRenderer()
-
-    renderer.createPDFWithoutClosing()
-    renderer.pdfDocument.save(outputStream)
-    renderer.pdfDocument.close()
-    val pdf = outputStream.toByteArray()
+            .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
+            .useColorProfile(env.colorProfile)
+            .withHtmlContent(html, null)
+            .toStream(this)
+            .run()
+    }.toByteArray()
     require(verifyCompliance(pdf)) { "Non-compliant PDF/A :(" }
     return pdf
 }
