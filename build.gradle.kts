@@ -61,7 +61,7 @@ dependencies {
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    // implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
     implementation("org.jsoup:jsoup:$jsoupVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
@@ -84,7 +84,6 @@ dependencies {
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testRuntimeOnly("org.spekframework.spek2:spek-runtime-jvm:$spekVersion")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion")
-
 
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
 }

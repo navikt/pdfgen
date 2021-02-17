@@ -1,11 +1,8 @@
 package no.nav.pdfgen.pdf
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
-import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.jvm.javaio.*
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.log
 import no.nav.pdfgen.util.scale
@@ -25,34 +22,32 @@ import org.apache.xmpbox.XMPMetadata
 import org.apache.xmpbox.type.BadFieldValueException
 import org.apache.xmpbox.xml.XmpSerializer
 import org.verapdf.pdfa.Foundries
-import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
-import org.w3c.dom.Document
 import java.io.*
 import java.lang.IllegalArgumentException
 import java.util.*
 import javax.imageio.ImageIO
 
-fun createPDFA(w3doc: Document, outputStream: OutputStream, env: Environment) {
+fun createPDFA(html: String, env: Environment): ByteArray {
+    val outputStream = ByteArrayOutputStream()
     val renderer = PdfRendererBuilder()
         .apply {
             for (font in env.fonts) {
                 useFont({ ByteArrayInputStream(font.bytes) }, font.family, font.weight, font.style, font.subset)
             }
         }
-        .useSVGDrawer(BatikSVGDrawer())
-        .withW3cDocument(w3doc, "")
+        .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
+        .useColorProfile(env.colorProfile)
+        .withHtmlContent(html, null)
         .buildPdfRenderer()
 
     renderer.createPDFWithoutClosing()
-    renderer.pdfDocument.conform(env)
-    // verifies that all fonts are embedded/verifies that no fonts are not embedded ;)
-    if (renderer.pdfDocument.pages.flatMap { page -> page.resources.fontNames.map(page.resources::getFont) }.any { !it.isEmbedded }) {
-        throw RuntimeException("Font list is empty.")
-    }
     renderer.pdfDocument.save(outputStream)
     renderer.pdfDocument.close()
+    val pdf = outputStream.toByteArray()
+    require(verifyCompliance(pdf)) { "Non-compliant PDF/A :(" }
+    return pdf
 }
 
 fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Environment) {
@@ -69,78 +64,71 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Enviro
         PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false).use {
             it.drawImage(pdImage, Matrix(imageSize.width, 0f, 0f, imageSize.height, 0f, 0f))
         }
-        document.conform(env)
+
+        val xmp = XMPMetadata.createXMPMetadata()
+        val catalog = document.documentCatalog
+        val cal = Calendar.getInstance()
+
+        try {
+            val dc = xmp.createAndAddDublinCoreSchema()
+            dc.addCreator("pdfgen")
+            dc.addDate(cal)
+
+            val id = xmp.createAndAddPFAIdentificationSchema()
+            id.part = 2
+            id.conformance = "U"
+
+            val serializer = XmpSerializer()
+            val baos = ByteArrayOutputStream()
+            serializer.serialize(xmp, baos, true)
+
+            val metadata = PDMetadata(document)
+            metadata.importXMPMetadata(baos.toByteArray())
+            catalog.metadata = metadata
+        } catch (e: BadFieldValueException) {
+            throw IllegalArgumentException(e)
+        }
+
+        val intent = PDOutputIntent(document, env.colorProfile.inputStream())
+        intent.info = "sRGB IEC61966-2.1"
+        intent.outputCondition = "sRGB IEC61966-2.1"
+        intent.outputConditionIdentifier = "sRGB IEC61966-2.1"
+        intent.registryName = "http://www.color.org"
+        catalog.addOutputIntent(intent)
+        catalog.language = "nb-NO"
+
+        val pdViewer = PDViewerPreferences(page.cosObject)
+        pdViewer.setDisplayDocTitle(true)
+        catalog.viewerPreferences = pdViewer
+
+        catalog.markInfo = PDMarkInfo(page.cosObject)
+        catalog.structureTreeRoot = PDStructureTreeRoot()
+        catalog.markInfo.isMarked = true
+
         document.save(outputStream)
         document.close()
     }
 }
 
-fun PDDocument.conform(env: Environment) {
-    val xmp = XMPMetadata.createXMPMetadata()
-    val catalog = this.documentCatalog
-    val cal = Calendar.getInstance()
-    val page = PDPage(PDRectangle.A4)
-
-    try {
-        val dc = xmp.createAndAddDublinCoreSchema()
-        dc.addCreator("pdfgen")
-        dc.addDate(cal)
-
-        val id = xmp.createAndAddPFAIdentificationSchema()
-        id.part = 2
-        id.conformance = "U"
-
-        val serializer = XmpSerializer()
-        val baos = ByteArrayOutputStream()
-        serializer.serialize(xmp, baos, true)
-
-        val metadata = PDMetadata(this)
-        metadata.importXMPMetadata(baos.toByteArray())
-        catalog.metadata = metadata
-    } catch (e: BadFieldValueException) {
-        throw IllegalArgumentException(e)
-    }
-
-    val intent = PDOutputIntent(this, env.colorProfile.inputStream())
-    intent.info = "sRGB IEC61966-2.1"
-    intent.outputCondition = "sRGB IEC61966-2.1"
-    intent.outputConditionIdentifier = "sRGB IEC61966-2.1"
-    intent.registryName = "http://www.color.org"
-    catalog.addOutputIntent(intent)
-    catalog.language = "nb-NO"
-
-    val pdViewer = PDViewerPreferences(page.cosObject)
-    pdViewer.setDisplayDocTitle(true)
-    catalog.viewerPreferences = pdViewer
-
-    catalog.markInfo = PDMarkInfo(page.cosObject)
-    catalog.structureTreeRoot = PDStructureTreeRoot()
-    catalog.markInfo.isMarked = true
-}
-
-fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavour.PDFA_2_U): Boolean {
+private fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavour.PDFA_2_U): Boolean {
     val pdf = ByteArrayInputStream(input)
     val validator = Foundries.defaultInstance().createValidator(flavour, false)
     val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
     val failures = result.testAssertions
         .filter { it.status != TestAssertion.Status.PASSED }
     failures.forEach { test ->
-            log.warn(test.message)
-            log.warn("Location ${test.location.context} ${test.location.level}")
-            log.warn("Status ${test.status}")
-            log.warn("Test number ${test.ruleId.testNumber}")
+        log.warn(test.message)
+        log.warn("Location ${test.location.context} ${test.location.level}")
+        log.warn("Status ${test.status}")
+        log.warn("Test number ${test.ruleId.testNumber}")
     }
     return failures.isEmpty()
 }
 
 class PdfContent(
-    private val w3Doc: Document,
+    private val html: String,
     private val env: Environment,
     override val contentType: ContentType = ContentType.Application.Pdf
-) : OutgoingContent.WriteChannelContent() {
-    override suspend fun writeTo(channel: ByteWriteChannel) {
-        channel.toOutputStream().use {
-            createPDFA(w3Doc, it, env)
-        }
-    }
+) : OutgoingContent.ByteArrayContent() {
+    override fun bytes(): ByteArray = createPDFA(html, env)
 }

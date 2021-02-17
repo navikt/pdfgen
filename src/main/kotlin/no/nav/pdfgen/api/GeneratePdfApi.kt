@@ -16,11 +16,7 @@ import net.logstash.logback.argument.StructuredArguments
 import no.nav.pdfgen.*
 import no.nav.pdfgen.pdf.PdfContent
 import no.nav.pdfgen.pdf.createPDFA
-import no.nav.pdfgen.pdf.verifyCompliance
 import no.nav.pdfgen.template.TemplateMap
-import org.jsoup.Jsoup
-import org.jsoup.helper.W3CDom
-import org.w3c.dom.Document
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.nio.file.Files
@@ -42,12 +38,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
                     JsonNode::class.java
                 )
                 render(applicationName, template, templates, data)?.let { document ->
-                    val pdf = ByteArrayOutputStream().apply {
-                        createPDFA(document, this, env)
-                    }.toByteArray()
-                    val result = verifyCompliance(pdf)
-                    log.info("Valid PDF/A-2U: $result")
-                    call.respondBytes(pdf, contentType = ContentType.Application.Pdf)
+                    call.respond(PdfContent(document, env))
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
         }
@@ -68,10 +59,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
 
             val html = call.receiveText()
 
-            ByteArrayOutputStream().use { bytes ->
-                createPDFA(fromHtmlToDocument(html), bytes, env)
-                call.respondBytes(bytes.toByteArray(), contentType = ContentType.Application.Pdf)
-            }
+            call.respond(PdfContent(html, env))
             log.info("Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms")
         }
         post("/image/{applicationName}") {
@@ -96,12 +84,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
     }
 }
 
-fun fromHtmlToDocument(html: String): Document = JSOUP_PARSE_SUMMARY.startTimer().use {
-    val doc = Jsoup.parse(html)
-    W3CDom().fromJsoup(doc)
-}
-
-fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): Document? {
+fun render(applicationName: String, template: String, templates: Map<Pair<String, String>, Template>, jsonNode: JsonNode): String? {
     return HANDLEBARS_RENDERING_SUMMARY.startTimer().use {
         templates[applicationName to template]?.apply(
             Context
@@ -120,6 +103,6 @@ fun render(applicationName: String, template: String, templates: Map<Pair<String
 *            out.write(html)
 *        }
 */
-        fromHtmlToDocument(html)
+        html
     }
 }

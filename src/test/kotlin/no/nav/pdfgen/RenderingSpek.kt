@@ -3,7 +3,6 @@ package no.nav.pdfgen
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.util.*
-import no.nav.pdfgen.api.fromHtmlToDocument
 import no.nav.pdfgen.api.render
 import no.nav.pdfgen.pdf.createPDFA
 import no.nav.pdfgen.template.loadTemplates
@@ -15,7 +14,6 @@ import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 
 @KtorExperimentalAPI
 object RenderingSpek : Spek({
@@ -47,9 +45,8 @@ object RenderingSpek : Spek({
             } ?: objectMapper.createObjectNode()
             it("Renders the template $templateName for application $applicationName to a PDF/A compliant document") {
                 val doc = render(applicationName, templateName, templates, node)
-                val bytesOut = ByteArrayOutputStream()
-                createPDFA(doc!!, bytesOut, env)
-                Foundries.defaultInstance().createParser(ByteArrayInputStream(bytesOut.toByteArray())).use { that ->
+                val pdf = createPDFA(doc!!, env)
+                Foundries.defaultInstance().createParser(ByteArrayInputStream(pdf)).use { that ->
                     val validationResult = validator.validate(that)
                     validationResult.testAssertions
                         .filter { test -> test.status != TestAssertion.Status.PASSED }
@@ -65,10 +62,9 @@ object RenderingSpek : Spek({
         }
 
         it("Renders a HTML payload to a PDF/A compliant document") {
-            val doc = fromHtmlToDocument(testTemplateIncludedFonts)
-            val bytesOut = ByteArrayOutputStream()
-            createPDFA(doc, bytesOut, env)
-            Foundries.defaultInstance().createParser(ByteArrayInputStream(bytesOut.toByteArray())).use {
+            val doc = testTemplateIncludedFonts
+            val pdf = createPDFA(doc, env)
+            Foundries.defaultInstance().createParser(ByteArrayInputStream(pdf)).use {
                 val validationResult = validator.validate(it)
                 validationResult.testAssertions
                     .filter { test -> test.status != TestAssertion.Status.PASSED }
