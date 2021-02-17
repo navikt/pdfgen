@@ -1,0 +1,136 @@
+{
+  "aktorId": "1556025402895",
+  "soknadsId": "67ad2c2b-95ea-450e-94b8-efb6a20868df",
+  "fnr": "16086801683",
+  "navn": "Karina Mostad",
+  "soknadstype": "OPPHOLD_UTLAND",
+  "fom": null,
+  "tom": null,
+  "innsendtDato": "2019-09-06",
+  "sendtArbeidsgiver": null,
+  "startSykeforlop": null,
+  "sykmeldingUtskrevet": null,
+  "arbeidsgiver": null,
+  "korrigerer": null,
+  "korrigertAv": null,
+  "arbeidssituasjon": null,
+  "soknadPerioder": null,
+  "sporsmal": [
+    {
+      "id": "280361",
+      "tag": "PERIODEUTLAND",
+      "sporsmalstekst": "Når skal du være utenfor Norge?",
+      "undertekst": null,
+      "svartype": "PERIODER",
+      "min": "2019-06-06",
+      "max": "2020-03-06",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "{\"fom\":\"2019-09-02\",\"tom\":\"2019-09-19\"}"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "280362",
+      "tag": "LAND",
+      "sporsmalstekst": "Hvilket land skal du reise til?",
+      "undertekst": null,
+      "svartype": "LAND",
+      "min": null,
+      "max": "50",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "Sverige"
+        },
+        {
+          "verdi": "Kina"
+        },
+        {
+          "verdi": "Portugal"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "280363",
+      "tag": "ARBEIDSGIVER",
+      "sporsmalstekst": "Har du arbeidsgiver?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "280364",
+          "tag": "SYKMELDINGSGRAD",
+          "sporsmalstekst": "Er du 100 % sykmeldt?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "JA"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": "280365",
+          "tag": "FERIE",
+          "sporsmalstekst": "Har du avtalt med arbeidsgiveren din at du skal ha ferie i hele perioden?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "NEI"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "280366",
+      "tag": "BEKREFT_OPPLYSNINGER_UTLAND_INFO",
+      "sporsmalstekst": "Før du reiser ber vi deg bekrefte:",
+      "undertekst": "<ul>\n    <li>Jeg har avklart med legen at reisen ikke vil forlenge sykefraværet</li>\n    <li>Reisen hindrer ikke planlagt behandling eller avtaler med NAV</li>\n<li>Reisen er avklart med arbeidsgiveren min</li></ul>",
+      "svartype": "IKKE_RELEVANT",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": [
+        {
+          "id": "280367",
+          "tag": "BEKREFT_OPPLYSNINGER_UTLAND",
+          "sporsmalstekst": "Jeg bekrefter de tre punktene ovenfor",
+          "undertekst": null,
+          "svartype": "CHECKBOX_PANEL",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "CHECKED"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    }
+  ]
+}

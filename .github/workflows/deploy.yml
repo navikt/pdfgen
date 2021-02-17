@@ -61,27 +61,3 @@ jobs:
           docker push ${DOCKERHUB_IMAGE}:latest
           docker push ${DOCKERHUB_IMAGE}:${GITHUB_SHA}
           docker push ${DOCKERHUB_IMAGE}:${version}
-
-  deployDev:
-    name: Deploy to dev
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: naiserator.yaml
-
-  deployProd:
-    name: Deploy to prod
-    needs: [build, deployDev]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-fss
-          RESOURCE: naiserator.yaml

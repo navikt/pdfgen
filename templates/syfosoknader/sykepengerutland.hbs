@@ -1,44 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-    <title>Søknad sykepenger utland</title>
-    {{#block 'syfosoknader/partials/style' }}
-    {{/block}}
-</head>
-<body>
-  <div id="header">
-    <img class="navlogo" src="{{ image "Navlogo.png" }}" />
-    <h1 class="title">Søknad om å beholde sykepenger utenfor Norge</h1>
-  </div>
-  <div class="container">
-    <div class="personinfo">
-
-      <img class="personikon" src="{{ image "Personikon.png" }}" />
-
-      <div class="persontekst">
-          <p class="sendt">
-            Sendt til NAV {{ iso_to_date innsendtDato }}
-        </p>
-        <p class="navn">
-          {{ navn }}
-        </p>
-        <p class="id">
-          {{ insert_at fnr 6 }}
-        </p>
-      </div>
-    </div>
-    <div class="sporsmalcontainer">
-        {{# each sporsmal as |spm index| ~}}
-            <div class="hovedsporsmal">
-                {{> syfosoknader/partials/spmpartial spm }}
-            </div>
-        {{/each}}
-    </div>
-  </div>
-  <p id="footer">
-      <span class="sidetall">side <span id="pagenumber"></span> av <span id="pagecount"></span></span>
-      <span class="soknadsid">{{ soknadsId }}</span>
-  </p>
-</body>
-</html>
+{{#> syfosoknader/partials/base }}
+    {{#*inline "doctitle"}}Søknad om å beholde sykepenger utenfor EØS{{/inline}}
+    {{#*inline "title"}}Søknad om å beholde sykepenger utenfor EØS{{/inline}}
+{{/syfosoknader/partials/base}}

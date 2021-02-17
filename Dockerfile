@@ -1,5 +1,5 @@
-FROM navikt/java:11
-COPY build/libs/pdfgen-*-all.jar app.jar
+FROM navikt/java:14
+COPY build/libs/pdfgen-1.3.1-all.jar app.jar
 COPY fonts fonts
 COPY templates templates
 COPY resources resources

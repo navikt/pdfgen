@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>{{> doctitle}}</title>
+    {{#block 'syfosoknader/partials/style' }}
+    {{/block}}
+</head>
+<body>
+<div id="header">
+    <img class="navlogo" src="{{ image "Navlogo.png" }}"/>
+    <h1 class="title">{{> title}}</h1>
+</div>
+<div class="container">
+    <div class="personinfo">
+        <div class="persontekst">
+            <div class="persontekst__sidetopp">
+                <img class="personikon" src="{{ image "Personikon.png" }}"/>
+                <div class="persontekst__personalia">
+                    <p class="navn">
+                        {{ navn }}
+                    </p>
+                    <p class="id">
+                        {{ insert_at fnr 6 }}
+                    </p>
+                </div>
+                <div class="sendt">
+                    {{# if korrigerer}}
+                        <p class="korrigert">Korrigert</p>
+                    {{/if}}
+                    {{# if innsendtDato}}
+                        <p>
+                            Sendt til NAV<br/>{{ iso_to_date innsendtDato }}
+                        </p>
+                    {{/if}}
+                    {{# if sendtArbeidsgiver}}
+                        <p>
+                            Sendt til arbeidsgiver<br/>{{ iso_to_date sendtArbeidsgiver }}
+                        </p>
+                    {{/if}}
+                </div>
+                {{#eq soknadstype "SELVSTENDIGE_OG_FRILANSERE"}}
+                  {{#if egenmeldtSykmelding }}
+                    <p class="header__tittel">
+                      Denne søknaden hører til en egenmelding for selvstendig næringsdrivende eller frilanser
+                    </p>
+                  {{/if}}
+                {{/eq}}
+                {{#eq avsendertype "SYSTEM" }}
+                  <p class="header__tittel">
+                    Denne søknaden er autogenerert på grunn av et registrert dødsfall
+                  </p>
+                {{/eq}}
+            </div>
+
+            {{# each soknadPerioder as |periode|~}}
+                <p class="header__tittel">
+                    {{ iso_to_date periode.fom }} - {{ iso_to_date periode.tom }}
+                </p>
+                <p>
+                    {{#eq periode.sykmeldingstype "BEHANDLINGSDAGER" }}
+                      Behandlingsdager
+                    {{/eq}}
+                    {{#not_eq periode.sykmeldingstype "BEHANDLINGSDAGER" }}
+                      {{ periode.grad }} % sykmeldt
+                    {{/not_eq}}
+                </p>
+                {{# if periode.faktiskGrad }}
+                    <p>
+                        Oppgitt faktisk arbeidsgrad {{ periode.faktiskGrad }} %
+                    </p>
+                {{/if}}
+            {{/each}}
+
+            {{# if sykmeldingUtskrevet }}
+                <p class="header__tittel">
+                    Dato sykmeldingen ble skrevet
+                </p>
+                <p>
+                    {{ iso_to_date sykmeldingUtskrevet }}
+                </p>
+            {{/if}}
+            {{# if arbeidsgiver }}
+            <p class="header__tittel">
+                Arbeidsgiver
+            </p>
+            <p>
+                {{ arbeidsgiver }}
+            </p>
+            {{/if}}
+        </div>
+    </div>
+    <div class="sporsmalcontainer">
+        {{# each sporsmal as |spm|~}}
+            <div class="oppsummering__seksjon">
+                {{> syfosoknader/partials/spmpartial spm}}
+            </div>
+        {{/each}}
+    </div>
+</div>
+<div id="footer">
+    <span class="soknadsid">{{ soknadsId }}</span>
+    <span class="sidetall">side <span id="pagenumber"></span> av <span id="pagecount"></span></span>
+</div>
+</body>
+</html>
