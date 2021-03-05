@@ -260,10 +260,10 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 } else {
                     val santizedText = Handlebars.Utils.escapeExpression(context)
                     val withLineBreak = santizedText.toString()
-                        .replace("\\r\\n", "<br>")
-                        .replace("\\n", "<br>")
-                        .replace("\r\n", "<br>")
-                        .replace("\n", "<br>")
+                        .replace("\\r\\n", "<br/>")
+                        .replace("\\n", "<br/>")
+                        .replace("\r\n", "<br/>")
+                        .replace("\n", "<br/>")
                     Handlebars.SafeString(withLineBreak)
                 }
             }
