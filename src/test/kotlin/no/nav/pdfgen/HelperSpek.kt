@@ -364,6 +364,10 @@ object HelperSpek : Spek({
                 put("beløp_single_decimal", 1337.6)
                 put("beløp_integer", 9001)
                 put("beløp_stort", 1337420.69)
+                put("beløp_ganske_liten_integer", 1)
+                put("beløp_kjempeliten_integer", 0)
+                put("beløp_liten_integer", 10)
+                put("beløp_stor_integer", 1000001)
             }
         )
 
@@ -377,6 +381,14 @@ object HelperSpek : Spek({
         it("should format number as currency without decimals") {
             handlebars.compileInline("{{ currency_no beløp true }}").apply(context) shouldBeEqualTo "1 337"
             handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context) shouldBeEqualTo "1 337 420"
+        }
+
+        it("should format integer to currency") {
+            handlebars.compileInline("{{ int_as_currency_no beløp_integer }}").apply(context) shouldBeEqualTo "90,01"
+            handlebars.compileInline("{{ int_as_currency_no beløp_liten_integer }}").apply(context) shouldBeEqualTo "0,10"
+            handlebars.compileInline("{{ int_as_currency_no beløp_kjempeliten_integer }}").apply(context) shouldBeEqualTo "0,00"
+            handlebars.compileInline("{{ int_as_currency_no beløp_ganske_liten_integer }}").apply(context) shouldBeEqualTo "0,01"
+            handlebars.compileInline("{{ int_as_currency_no beløp_stor_integer }}").apply(context) shouldBeEqualTo "10 000,01"
         }
     }
 

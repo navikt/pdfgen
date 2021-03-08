@@ -246,6 +246,28 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
         )
 
         registerHelper(
+            "int_as_currency_no",
+            Helper<Int> { context, _ ->
+                val currency = context.toString().reversed().chunked(2) // 100050 -> "050001" -> ["05", "00", "01"]
+                val øre = currency.first().reversed().let {
+                    if (it.length == 1) {
+                        "0$it" // if we're receiving a number like 1 at the top, we should equal 0,01 and not 0,10
+                    } else {
+                        it
+                    }
+                } // "05" -> "50"
+                val kr = currency.drop(1).let {
+                    if (it.isEmpty()) {
+                        "0" // if we're receiving a number like 1 at the top, we need our 0 here
+                    } else {
+                        it.joinToString("").chunked(3).joinToString(" ").reversed() // ["00", "01"] -> "0001" -> ["000", "1"] -> "000 1" -> "1 000"
+                    }
+                }
+                "$kr,$øre" // 1 000,50
+            }
+        )
+
+        registerHelper(
             "is_defined",
             Helper<Any> { context, options ->
                 if (context != null) options.fn() else options.inverse()
