@@ -249,7 +249,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             "int_as_currency_no",
             Helper<Int> { context, _ ->
                 val kr = context / 100
-                val øre = context - kr * 100
+                val øre = context % 100
 
                 "%,d,%02d".format(locale = Locale("nb"), kr, øre)
             }
