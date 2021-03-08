@@ -368,6 +368,7 @@ object HelperSpek : Spek({
                 put("beløp_kjempeliten_integer", 0)
                 put("beløp_liten_integer", 10)
                 put("beløp_stor_integer", 1000001)
+                put("beløp_kjempestor_integer", Int.MAX_VALUE)
             }
         )
 
@@ -388,7 +389,8 @@ object HelperSpek : Spek({
             handlebars.compileInline("{{ int_as_currency_no beløp_liten_integer }}").apply(context) shouldBeEqualTo "0,10"
             handlebars.compileInline("{{ int_as_currency_no beløp_kjempeliten_integer }}").apply(context) shouldBeEqualTo "0,00"
             handlebars.compileInline("{{ int_as_currency_no beløp_ganske_liten_integer }}").apply(context) shouldBeEqualTo "0,01"
-            handlebars.compileInline("{{ int_as_currency_no beløp_stor_integer }}").apply(context) shouldBeEqualTo "10 000,01"
+            handlebars.compileInline("{{ int_as_currency_no beløp_stor_integer }}").apply(context) shouldBeEqualTo "10 000,01"
+            handlebars.compileInline("{{ int_as_currency_no beløp_kjempestor_integer }}").apply(context) shouldBeEqualTo "21 474 836,47"
         }
     }
 
