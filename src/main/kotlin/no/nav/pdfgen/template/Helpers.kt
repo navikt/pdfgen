@@ -256,6 +256,17 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
         )
 
         registerHelper(
+            "string_as_currency_no",
+            Helper<String> { context, _ ->
+                val value = context.filter { c -> c.isDigit() }.toInt()
+                val kr = value / 100
+                val øre = value % 100
+
+                "%,d,%02d".format(locale = Locale("nb"), kr, øre)
+            }
+        )
+
+        registerHelper(
             "is_defined",
             Helper<Any> { context, options ->
                 if (context != null) options.fn() else options.inverse()
