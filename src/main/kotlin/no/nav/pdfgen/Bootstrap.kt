@@ -50,7 +50,7 @@ fun main() {
 fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     VeraGreenfieldFoundryProvider.initialise()
-    
+
     val env = Environment()
     val templates = loadTemplates(env)
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry

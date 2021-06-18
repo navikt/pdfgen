@@ -1,21 +1,21 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "1.3.1"
+version = "1.3.2"
 
 val handlebarsVersion = "4.2.0"
-val jacksonVersion = "2.12.0"
-val jaxbVersion = "3.0.0"
+val jacksonVersion = "2.12.3"
+val jaxbVersion = "3.0.1"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.13.1"
-val kluentVersion = "1.65"
-val ktorVersion = "1.5.1"
+val kluentVersion = "1.66"
+val ktorVersion = "1.5.4"
 val logbackVersion = "1.2.3"
 val logstashEncoderVersion = "6.6"
-val openHtmlToPdfVersion = "1.0.6"
-val prometheusVersion = "0.10.0"
+val openHtmlToPdfVersion = "1.0.8"
+val prometheusVersion = "0.11.0"
 val spekVersion = "2.0.15"
-val verapdfVersion = "1.16.1"
+val verapdfVersion = "1.18.8"
 
 plugins {
     kotlin("jvm") version "1.4.30"
@@ -49,9 +49,6 @@ tasks {
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven(url = "https://dl.bintray.com/kotlin/ktor")
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
 }
 
 dependencies {
@@ -61,7 +58,7 @@ dependencies {
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
-    // implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
     implementation("org.jsoup:jsoup:$jsoupVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
