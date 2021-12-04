@@ -17,6 +17,7 @@ import no.nav.pdfgen.*
 import no.nav.pdfgen.pdf.PdfContent
 import no.nav.pdfgen.pdf.createPDFA
 import no.nav.pdfgen.template.TemplateMap
+import no.nav.pdfgen.template.loadTemplates
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.nio.file.Files
@@ -26,6 +27,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
     route("/api/v1/genpdf") {
         if (!env.disablePdfGet) {
             get("/{applicationName}/{template}") {
+                val hotTemplates = loadTemplates(env)
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
                 val dataFile = Paths.get("data", applicationName, "$template.json")
@@ -37,7 +39,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
                     },
                     JsonNode::class.java
                 )
-                render(applicationName, template, templates, data)?.let { document ->
+                render(applicationName, template, hotTemplates, data)?.let { document ->
                     call.respond(PdfContent(document, env))
                 } ?: call.respondText("Template or application not found", status = HttpStatusCode.NotFound)
             }
