@@ -10,12 +10,15 @@ import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.*
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val dateFormatLong: DateTimeFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy")
     .withLocale(Locale("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+
 
 fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String = try {
     formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
@@ -235,7 +238,8 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
 
                 val splitNumber = context.toString().split(".")
 
-                val formattedNumber = splitNumber.first().reversed().chunked(3).joinToString(" ").reversed()
+                // we're joining with a non-breaking space since currency values should not be split across several lines
+                val formattedNumber = splitNumber.first().reversed().chunked(3).joinToString("\u00A0").reversed()
                 if (withoutDecimals) {
                     formattedNumber
                 } else {
@@ -251,7 +255,10 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 val kr = context / 100
                 val øre = context % 100
 
-                "%,d,%02d".format(locale = Locale("nb"), kr, øre)
+                // using .format(locale = Locale("nb")) should also do the trick, but it appears this no longer works
+                // so we just reuse the string-based code from above to get the format we want :)
+                val formattedKr = kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
+                "$formattedKr,%02d".format(øre)
             }
         )
 
@@ -262,7 +269,8 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 val kr = value / 100
                 val øre = value % 100
 
-                "%,d,%02d".format(locale = Locale("nb"), kr, øre)
+                val formattedKr = kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
+                "$formattedKr,%02d".format(øre)
             }
         )
 
