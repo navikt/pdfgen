@@ -151,7 +151,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
         registerHelper(
             "capitalize",
             Helper<String> { context, _ ->
-                context?.toLowerCase()?.capitalize() ?: ""
+                context?.lowercase()?.replaceFirstChar{ it.uppercase() } ?: ""
             }
         )
 
@@ -163,7 +163,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                         context
                             .trim()
                             .replace("\\s+".toRegex(), " ")
-                            .toLowerCase()
+                            .lowercase()
                             .capitalizeWords(" ")
                             .capitalizeWords("-")
                             .capitalizeWords("'")
@@ -301,4 +301,4 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
 }
 
 private fun String.capitalizeWords(wordSplitter: String) =
-    this.split(wordSplitter).joinToString(wordSplitter) { it.trim().capitalize() }
+    this.split(wordSplitter).joinToString(wordSplitter) { it.trim().replaceFirstChar{ it.uppercase() } }
