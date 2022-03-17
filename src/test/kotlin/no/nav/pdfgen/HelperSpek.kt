@@ -375,15 +375,15 @@ object HelperSpek : Spek({
         )
 
         it("should format number as currency") {
-            handlebars.compileInline("{{ currency_no beløp }}").apply(context) shouldBeEqualTo "1 337,69"
-            handlebars.compileInline("{{ currency_no beløp_single_decimal }}").apply(context) shouldBeEqualTo "1 337,60"
-            handlebars.compileInline("{{ currency_no beløp_integer }}").apply(context) shouldBeEqualTo "9 001,00"
-            handlebars.compileInline("{{ currency_no beløp_stort }}").apply(context) shouldBeEqualTo "1 337 420,69"
+            handlebars.compileInline("{{ currency_no beløp }}").apply(context) shouldBeEqualTo "1 337,69"
+            handlebars.compileInline("{{ currency_no beløp_single_decimal }}").apply(context) shouldBeEqualTo "1 337,60"
+            handlebars.compileInline("{{ currency_no beløp_integer }}").apply(context) shouldBeEqualTo "9 001,00"
+            handlebars.compileInline("{{ currency_no beløp_stort }}").apply(context) shouldBeEqualTo "1 337 420,69"
         }
 
         it("should format number as currency without decimals") {
-            handlebars.compileInline("{{ currency_no beløp true }}").apply(context) shouldBeEqualTo "1 337"
-            handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context) shouldBeEqualTo "1 337 420"
+            handlebars.compileInline("{{ currency_no beløp true }}").apply(context) shouldBeEqualTo "1 337"
+            handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context) shouldBeEqualTo "1 337 420"
         }
 
         it("should format integer to currency") {

@@ -1,6 +1,7 @@
 package no.nav.pdfgen.pdf
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
+import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.ktor.http.*
 import io.ktor.http.content.*
 import no.nav.pdfgen.Environment
@@ -39,6 +40,7 @@ fun createPDFA(html: String, env: Environment): ByteArray {
             }
             .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
             .useColorProfile(env.colorProfile)
+            .useSVGDrawer(BatikSVGDrawer())
             .withHtmlContent(html, null)
             .toStream(this)
             .run()
