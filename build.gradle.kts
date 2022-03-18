@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "1.4.1"
+version = "1.4.2"
 
 val handlebarsVersion = "4.3.0"
 val jacksonVersion = "2.13.2"
@@ -9,7 +9,7 @@ val jaxbVersion = "3.0.2"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.14.3"
 val kluentVersion = "1.68"
-val ktorVersion = "1.5.4"
+val ktorVersion = "1.6.8"
 val logbackVersion = "1.2.11"
 val logstashEncoderVersion = "7.0.1"
 val openHtmlToPdfVersion = "1.0.10"
