@@ -47,10 +47,10 @@ jobs:
           echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
       - name: Build Docker images
         run: |
-          docker build --tag ${IMAGE}:${VERSION}
+          docker build --tag ${IMAGE}:${{ env.VERSION }}
       - name: Push docker image to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker login ghcr.io -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
-          docker push ${IMAGE}:${VERSION}
+          docker push ${IMAGE}:${{ env.VERSION }}
