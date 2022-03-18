@@ -4,8 +4,6 @@ on:
     branches:
       - '*'
       - '!master'
-env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/pdfgen:${{ github.sha }}
 
 jobs:
   build:
@@ -37,9 +35,3 @@ jobs:
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew test
-      - name: Build jar
-        env:
-          ORG_GRADLE_PROJECT_githubUser: x-access-token
-          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ./gradlew shadowJar -x test

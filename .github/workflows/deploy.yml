@@ -3,12 +3,11 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+     - README.md
 
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/pdfgen:${{ github.sha }}
-  GITHUB_SHA: ${{ github.sha }}
-  DOCKERHUB_IMAGE: navikt/pdfgen
-
+  IMAGE: ghcr.io/${{ github.repository }}
 jobs:
   build:
     name: Build and push docker image
@@ -45,24 +44,13 @@ jobs:
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew shadowJar -x test
-          echo "version=$(./gradlew -q printVersion)" >> $GITHUB_ENV
+          echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
       - name: Build Docker images
         run: |
-          docker build --tag ${IMAGE} .
+          docker build --tag ${IMAGE}:${VERSION}
       - name: Push docker image to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
-          docker push ${IMAGE}
-      - name: Push docker image to Dockerhub
-        env:
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: |
-          docker login -u martinsolheim -p ${DOCKERHUB_TOKEN}
-          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:latest
-          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${GITHUB_SHA}
-          docker tag ${IMAGE} ${DOCKERHUB_IMAGE}:${version}
-          docker push ${DOCKERHUB_IMAGE}:latest
-          docker push ${DOCKERHUB_IMAGE}:${GITHUB_SHA}
-          docker push ${DOCKERHUB_IMAGE}:${version}
+          docker login ghcr.io -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
+          docker push ${IMAGE}:${VERSION}
