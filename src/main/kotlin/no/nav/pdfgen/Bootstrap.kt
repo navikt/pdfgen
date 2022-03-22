@@ -53,12 +53,14 @@ fun main() {
 fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     VeraGreenfieldFoundryProvider.initialise()
-    
-    XRLog.listRegisteredLoggers().forEach{logger -> XRLog.setLevel(logger, Level.SEVERE) }
 
     val env = Environment()
     val templates = loadTemplates(env)
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
+
+    if (env.disablePdfGet) {
+        XRLog.listRegisteredLoggers().forEach{logger -> XRLog.setLevel(logger, Level.SEVERE) }
+    }
 
     return embeddedServer(
         Netty, port,
