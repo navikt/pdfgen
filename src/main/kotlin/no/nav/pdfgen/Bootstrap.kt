@@ -6,6 +6,7 @@ package no.nav.pdfgen
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Template
+import com.openhtmltopdf.util.XRLog
 import io.ktor.application.call
 import io.ktor.application.feature
 import io.ktor.application.install
@@ -37,11 +38,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
 import java.util.*
+import java.util.logging.Level
+
 
 val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
 
-val log: Logger = LoggerFactory.getLogger("pdf-gen")
+val log: Logger = LoggerFactory.getLogger("pdfgen")
 
 fun main() {
     initializeApplication(8080).start(wait = true)
@@ -50,6 +53,8 @@ fun main() {
 fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     VeraGreenfieldFoundryProvider.initialise()
+    
+    XRLog.listRegisteredLoggers().forEach{logger -> XRLog.setLevel(logger, Level.SEVERE) }
 
     val env = Environment()
     val templates = loadTemplates(env)
