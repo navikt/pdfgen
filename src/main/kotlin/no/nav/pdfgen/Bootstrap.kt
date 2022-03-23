@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Template
 import com.openhtmltopdf.util.XRLog
+import com.openhtmltopdf.slf4j.Slf4jLogger
 import io.ktor.application.call
 import io.ktor.application.feature
 import io.ktor.application.install
@@ -58,9 +59,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
     val templates = loadTemplates(env)
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
-    if (env.disablePdfGet) {
-        XRLog.listRegisteredLoggers().forEach{logger -> XRLog.setLevel(logger, Level.SEVERE) }
-    }
+    XRLog.setLoggerImpl(Slf4jLogger());
 
     return embeddedServer(
         Netty, port,
