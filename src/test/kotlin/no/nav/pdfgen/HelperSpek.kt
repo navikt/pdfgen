@@ -501,6 +501,22 @@ object HelperSpek : Spek({
         }
     }
 
+    describe("uppercase") {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+
+        it("should uppercase all letters") {
+            handlebars.compileInline("{{uppercase \"brage bruker olsen\"}}").apply(context) shouldBeEqualTo "BRAGE BRUKER OLSEN"
+        }
+
+        it("should uppercase all lower letters") {
+            handlebars.compileInline("{{uppercase \"Brage Bruker Olsen\"}}").apply(context) shouldBeEqualTo "BRAGE BRUKER OLSEN"
+        }
+
+        it("should uppercase strings with numbers") {
+            handlebars.compileInline("{{uppercase \"0553 Oslo\"}}").apply(context) shouldBeEqualTo "0553 OSLO"
+        }
+    }
+
     describe("breaklines") {
         val context = jsonContext(jsonNodeFactory.objectNode())
 

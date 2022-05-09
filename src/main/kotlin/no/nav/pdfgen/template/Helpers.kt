@@ -172,6 +172,13 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
         )
 
         registerHelper(
+            "uppercase",
+            Helper<String> { context, _ ->
+                context?.uppercase() ?: ""
+            }
+        )
+
+        registerHelper(
             "inc",
             Helper<Int> { context, _ ->
                 context + 1
