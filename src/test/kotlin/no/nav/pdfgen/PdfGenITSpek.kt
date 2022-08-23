@@ -5,12 +5,13 @@ package no.nav.pdfgen
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.post
+import io.ktor.client.request.preparePost
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.*
 import io.ktor.http.ContentType
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
-import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import no.nav.pdfgen.template.loadTemplates
 import org.amshove.kluent.*
@@ -24,7 +25,6 @@ import java.nio.file.Paths
 import java.util.concurrent.Executors
 import kotlin.io.use
 
-@KtorExperimentalAPI
 object PdfGenITSpek : Spek({
     val applicationPort = getRandomPort()
     val application = initializeApplication(applicationPort)
@@ -49,7 +49,7 @@ object PdfGenITSpek : Spek({
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        body = TextContent(json, contentType = ContentType.Application.Json)
+                        setBody(TextContent(json, contentType = ContentType.Application.Json))
                     }
                 }
                 response.status.isSuccess() shouldBeEqualTo true
@@ -74,7 +74,7 @@ object PdfGenITSpek : Spek({
 
                 val response = runBlocking<HttpResponse> {
                     client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        body = TextContent(json, contentType = ContentType.Application.Json)
+                        setBody(TextContent(json, contentType = ContentType.Application.Json))
                     }
                 }
 
@@ -90,7 +90,7 @@ object PdfGenITSpek : Spek({
         it("Should render a document using default HTML") {
             val response = runBlocking<HttpResponse> {
                 client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
-                    body = testTemplateIncludedFonts
+                    setBody(testTemplateIncludedFonts)
                 }
             }
             response.status.isSuccess() shouldBeEqualTo true
@@ -125,8 +125,8 @@ object PdfGenITSpek : Spek({
             it("Should render a document using input image, $outputFile") {
                 runBlocking {
                     runBlocking<HttpStatement> {
-                        client.post("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
-                            body = payload
+                        client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
+                            setBody(payload)
                         }
                     }.execute { response ->
                         response.status.isSuccess().shouldBeTrue()
@@ -147,10 +147,11 @@ object PdfGenITSpek : Spek({
         it("Should respond with helpful information") {
             runBlocking {
                 runBlocking<HttpStatement> {
-                    client.config { expectSuccess = false }.post("http://localhost:$applicationPort/whodis")
+                    client.config { expectSuccess = false }.preparePost("http://localhost:$applicationPort/whodis")
                 }.execute { response ->
                     response.status.value shouldBeEqualTo 404
-                    val text = runBlocking { response.readText() }
+                    val text = runBlocking { response.bodyAsText() }
+                    println("Tekst: $text")
                     text shouldContain "Known paths:/api/v1/genpdf"
                 }
             }
@@ -171,9 +172,10 @@ object PdfGenITSpek : Spek({
                         IOUtils.toByteArray(it).toString(Charsets.UTF_8)
                     }!!
 
-                    val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        body = TextContent(json, contentType = ContentType.Application.Json)
-                    }
+                    val response =
+                        client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                            setBody(TextContent(json, contentType = ContentType.Application.Json))
+                        }.execute()
                     response.readBytes() shouldNotBeEqualTo null
                     response.status.isSuccess() shouldBeEqualTo true
                 }
@@ -189,9 +191,10 @@ object PdfGenITSpek : Spek({
                                 IOUtils.toByteArray(it).toString(Charsets.UTF_8)
                             } ?: "{}"
 
-                            val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                                body = TextContent(json, contentType = ContentType.Application.Json)
-                            }
+                            val response =
+                                client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                                    setBody(TextContent(json, contentType = ContentType.Application.Json))
+                                }.execute()
                             response.readBytes() shouldNotBeEqualTo null
                             response.status.isSuccess() shouldBeEqualTo true
                         }
@@ -208,9 +211,10 @@ object PdfGenITSpek : Spek({
                             IOUtils.toByteArray(it).toString(Charsets.UTF_8)
                         } ?: "{}"
 
-                        val response = client.post<HttpResponse>("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                            body = TextContent(json, contentType = ContentType.Application.Json)
-                        }
+                        val response =
+                            client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                                setBody(TextContent(json, contentType = ContentType.Application.Json))
+                            }.execute()
                         response.readBytes() shouldNotBeEqualTo null
                         response.status.isSuccess() shouldBeEqualTo true
                     }

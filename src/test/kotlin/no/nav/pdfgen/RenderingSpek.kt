@@ -15,7 +15,6 @@ import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
 import java.io.ByteArrayInputStream
 
-@KtorExperimentalAPI
 object RenderingSpek : Spek({
     val env = Environment()
     val templates = loadTemplates(env)

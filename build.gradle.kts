@@ -4,21 +4,21 @@ group = "no.nav.pdfgen"
 version = "1.5.0"
 
 val handlebarsVersion = "4.3.0"
-val jacksonVersion = "2.13.2"
+val jacksonVersion = "2.13.3"
 val jaxbVersion = "3.0.2"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.14.3"
 val kluentVersion = "1.68"
-val ktorVersion = "1.6.8"
+val ktorVersion = "2.1.0"
 val logbackVersion = "1.2.11"
-val logstashEncoderVersion = "7.0.1"
+val logstashEncoderVersion = "7.2"
 val openHtmlToPdfVersion = "1.0.10"
-val prometheusVersion = "0.15.0"
-val spekVersion = "2.0.17"
+val prometheusVersion = "0.16.0"
+val spekVersion = "2.0.18"
 val verapdfVersion = "1.20.1"
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.10"
     id("org.jmailen.kotlinter") version "3.9.0"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -68,7 +68,12 @@ dependencies {
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+
+
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 

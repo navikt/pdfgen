@@ -6,28 +6,29 @@ package no.nav.pdfgen
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Template
-import com.openhtmltopdf.util.XRLog
 import com.openhtmltopdf.slf4j.Slf4jLogger
-import io.ktor.application.call
-import io.ktor.application.feature
-import io.ktor.application.install
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.StatusPages
+import com.openhtmltopdf.util.XRLog
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.ktor.http.withCharset
-import io.ktor.jackson.jackson
-import io.ktor.request.path
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.response.respondTextWriter
-import io.ktor.routing.*
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.call
+import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.utils.io.*
-import io.ktor.utils.io.jvm.javaio.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.path
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.response.respondTextWriter
+import io.ktor.server.routing.HttpMethodRouteSelector
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.coroutines.CoroutineScope
@@ -38,9 +39,6 @@ import no.nav.pdfgen.template.loadTemplates
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
-import java.util.*
-import java.util.logging.Level
-
 
 val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
@@ -59,7 +57,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
     val templates = loadTemplates(env)
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
-    XRLog.setLoggerImpl(Slf4jLogger());
+    XRLog.setLoggerImpl(Slf4jLogger())
 
     return embeddedServer(
         Netty, port,
@@ -72,29 +70,32 @@ fun initializeApplication(port: Int): ApplicationEngine {
         }
 
         install(StatusPages) {
-            status(HttpStatusCode.NotFound) {
+            status(HttpStatusCode.NotFound) { call, _ ->
                 call.respond(
                     TextContent(
-                        messageFor404(templates, feature(Routing), call.request.path()),
+                        messageFor404(templates, Routing(this@embeddedServer), call.request.path()),
                         ContentType.Text.Plain.withCharset(Charsets.UTF_8),
-                        it
+                        HttpStatusCode.NotFound
                     )
                 )
             }
         }
         routing {
-            get("/is_ready") {
+            get("/internal/is_ready") {
                 call.respondText("I'm ready")
             }
-            get("/is_alive") {
+            get("/internal/is_alive") {
                 call.respondText("I'm alive")
             }
-            get("/prometheus") {
+            get("/internal/prometheus") {
                 val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
                 call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
                     CoroutineScope(Dispatchers.IO).launch {
                         runCatching {
-                            TextFormat.write004(this@respondTextWriter, collectorRegistry.filteredMetricFamilySamples(names))
+                            TextFormat.write004(
+                                this@respondTextWriter,
+                                collectorRegistry.filteredMetricFamilySamples(names)
+                            )
                         }
                     }
                 }
