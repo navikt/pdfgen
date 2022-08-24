@@ -21,7 +21,7 @@ In your own repository, create a Dockerfile with the following contents
 
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/navikt/pdfgen:1.4.6
+FROM ghcr.io/navikt/pdfgen:1.5.1
 
 COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
@@ -57,6 +57,11 @@ Additionally, the template folder will be fetched on every request, and reflect 
 making this ideal for developing new templates for your application.
 
 The template and data directory structure both follow the `<application>/<template>` structure.
+
+### Upgrading the gradle wrapper
+Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
+
+```./gradlew wrapper --gradle-version $gradleVersjon```
 
 ## 👥 Contact
 

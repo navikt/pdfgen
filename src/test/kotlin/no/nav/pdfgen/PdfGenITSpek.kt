@@ -151,8 +151,7 @@ object PdfGenITSpek : Spek({
                 }.execute { response ->
                     response.status.value shouldBeEqualTo 404
                     val text = runBlocking { response.bodyAsText() }
-                    println("Tekst: $text")
-                    text shouldContain "Known paths:/api/v1/genpdf"
+                    text shouldContain "Known templates:\n/api/v1/genpdf"
                 }
             }
         }

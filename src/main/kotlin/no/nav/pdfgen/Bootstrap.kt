@@ -24,9 +24,6 @@ import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.response.respondTextWriter
-import io.ktor.server.routing.HttpMethodRouteSelector
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.prometheus.client.CollectorRegistry
@@ -73,7 +70,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
             status(HttpStatusCode.NotFound) { call, _ ->
                 call.respond(
                     TextContent(
-                        messageFor404(templates, Routing(this@embeddedServer), call.request.path()),
+                        messageFor404(templates, call.request.path()),
                         ContentType.Text.Plain.withCharset(Charsets.UTF_8),
                         HttpStatusCode.NotFound
                     )
@@ -105,15 +102,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
     }
 }
 
-private fun messageFor404(templates: Map<Pair<String, String>, Template>, routing: Routing, path: String) =
-    "Unkown path '$path'. Known paths:" + templates.map { (app, _) ->
-        val (applicationName, template) = app
-        apiRoutes(routing)
-            .map { it.replace("{applicationName}", applicationName) }.joinToString("\n") { it.replace("{template}", template) }
+private fun messageFor404(templates: Map<Pair<String, String>, Template>, path: String) =
+    "Unkown path '$path'. Known templates:\n" + templates.map { (app, _) ->
+        "/api/v1/genpdf/%s/%s".format(app.first, app.second)
     }.joinToString("\n")
-
-private fun apiRoutes(routing: Routing) = allRoutes(routing).filter {
-    it.selector is HttpMethodRouteSelector && it.toString().startsWith("/api")
-}.map { it.toString() }
-
-private fun allRoutes(route: Route): List<Route> = listOf(route) + route.children.flatMap(::allRoutes)
