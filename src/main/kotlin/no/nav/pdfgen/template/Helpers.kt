@@ -10,15 +10,12 @@ import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.util.*
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val dateFormatLong: DateTimeFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy")
     .withLocale(Locale("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-
 
 fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String = try {
     formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
@@ -151,7 +148,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
         registerHelper(
             "capitalize",
             Helper<String> { context, _ ->
-                context?.lowercase()?.replaceFirstChar{ it.uppercase() } ?: ""
+                context?.lowercase()?.replaceFirstChar { it.uppercase() } ?: ""
             }
         )
 
@@ -308,4 +305,4 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
 }
 
 private fun String.capitalizeWords(wordSplitter: String) =
-    this.split(wordSplitter).joinToString(wordSplitter) { it.trim().replaceFirstChar{ it.uppercase() } }
+    this.split(wordSplitter).joinToString(wordSplitter) { it.trim().replaceFirstChar { it.uppercase() } }
