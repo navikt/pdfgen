@@ -19,7 +19,8 @@ data class Environment(
     val resources: Map<String, ByteArray> = loadResources(),
     val colorProfile: ByteArray = IOUtils.toByteArray(Environment::class.java.getResourceAsStream("/sRGB2014.icc")),
     val fonts: List<FontMetadata> = objectMapper.readValue(Files.newInputStream(fontsRoot.resolve("config.json"))),
-    val disablePdfGet: Boolean = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false
+    val disablePdfGet: Boolean = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false,
+    val enableHtmlEndpoint: Boolean = System.getenv("ENABLE_HTML_ENDPOINT")?.let { it == "true" } ?: false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
