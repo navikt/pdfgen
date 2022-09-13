@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/java17@sha256:51312565c020a77583a9c699eb4d92b99d9629f4109a333d49a7c4f7ed5f9f82
+FROM gcr.io/distroless/java17@sha256:2460346ea882bc4fb880363a4aa046c4567c4f095f89078a84965547d0794b15
 
 WORKDIR /app
 COPY build/libs/pdfgen-1.5.1-all.jar app.jar
