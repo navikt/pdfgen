@@ -2,7 +2,7 @@
 
 ![Build and publish](https://github.com/navikt/pdfgen/workflows/Build%20and%20publish/badge.svg)
 
-Repository for `pdfgen`, an application written in Kotlin used to create PDFs
+Repository for `pdfgen`, an application written in Kotlin used to create PDFs and HTMLs
 
 ## Technologies & Tools
 
@@ -21,7 +21,7 @@ In your own repository, create a Dockerfile with the following contents
 
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/navikt/pdfgen:1.5.1
+FROM ghcr.io/navikt/pdfgen:1.5.2
 
 COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
@@ -57,6 +57,9 @@ Additionally, the template folder will be fetched on every request, and reflect 
 making this ideal for developing new templates for your application.
 
 The template and data directory structure both follow the `<application>/<template>` structure.
+
+To enable HTML document support, use the environment variable `ENABLE_HTML_ENDPOINT=true`. This will enable the 
+HTML endpoints on `/api/v1/genhtml/<application>/<template>`. 
 
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
