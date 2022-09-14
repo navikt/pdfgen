@@ -21,7 +21,7 @@ In your own repository, create a Dockerfile with the following contents
 
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/navikt/pdfgen:1.5.2
+FROM ghcr.io/navikt/pdfgen:1.5.3
 
 COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
