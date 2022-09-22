@@ -39,6 +39,7 @@ fun createPDFA(html: String, env: Environment): ByteArray {
                 }
             }
             .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
+            .usePdfUaAccessbility(true)
             .useColorProfile(env.colorProfile)
             .useSVGDrawer(BatikSVGDrawer())
             .withHtmlContent(html, null)
