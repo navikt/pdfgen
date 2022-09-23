@@ -38,7 +38,7 @@ fun createPDFA(html: String, env: Environment): ByteArray {
                     useFont({ ByteArrayInputStream(font.bytes) }, font.family, font.weight, font.style, font.subset)
                 }
             }
-            .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_U)
+            .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
             .usePdfUaAccessbility(true)
             .useColorProfile(env.colorProfile)
             .useSVGDrawer(BatikSVGDrawer())
@@ -110,7 +110,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Enviro
     }
 }
 
-private fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavour.PDFA_2_U): Boolean {
+private fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavour.PDFA_2_A): Boolean {
     val pdf = ByteArrayInputStream(input)
     val validator = Foundries.defaultInstance().createValidator(flavour, false)
     val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
