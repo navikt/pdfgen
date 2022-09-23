@@ -2,7 +2,7 @@ FROM gcr.io/distroless/java17@sha256:2460346ea882bc4fb880363a4aa046c4567c4f095f8
 
 WORKDIR /app
 
-COPY build/libs/pdfgen-2.0.0-all.jar app.jar
+COPY build/libs/pdfgen-2.0.0-rc1-all.jar app.jar
 COPY fonts fonts
 COPY templates templates
 COPY resources resources
