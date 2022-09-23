@@ -5,6 +5,7 @@ on:
       - master
     paths-ignore:
      - README.md
+     - CODEOWNERS
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}
