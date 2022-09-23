@@ -2,20 +2,23 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <meta name="subject" content="{{> doctitle}}"/>
+    <meta name="author" content="pdfgen"/>
+    <meta name="description" content="{{> doctitle}}"/>
     <title>{{> doctitle}}</title>
     {{#block 'syfosoknader/partials/style' }}
     {{/block}}
 </head>
 <body>
 <div id="header">
-    <img class="navlogo" src="{{ image "Navlogo.png" }}"/>
+    <img class="navlogo" alt="Nav-logo" src="{{ image "Navlogo.png" }}"/>
     <h1 class="title">{{> title}}</h1>
 </div>
 <div class="container">
     <div class="personinfo">
         <div class="persontekst">
             <div class="persontekst__sidetopp">
-                <img class="personikon" src="{{ image "Personikon.png" }}"/>
+                <img class="personikon" alt="Personikon" src="{{ image "Personikon.png" }}"/>
                 <div class="persontekst__personalia">
                     <p class="navn">
                         {{ navn }}
