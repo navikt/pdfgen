@@ -96,7 +96,6 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
             }
         }
     }
-
 }
 
 private fun hotTemplateData(applicationName: String, template: String): JsonNode {
