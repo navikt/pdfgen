@@ -66,6 +66,26 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 
 ```./gradlew wrapper --gradle-version $gradleVersjon```
 
+
+## pdfgen 2.0 release candidate
+
+`pdfgen` 2.0 targets a new PDF standard, [PDF/A-2a](https://en.wikipedia.org/wiki/PDF/A#PDF/A-2), as well as [PDF/UA](https://en.wikipedia.org/wiki/PDF/UA).
+The primary goal is to produce PDFs that are not only valid for archival, but also valid according to Universal Accessibility standards.
+This introduces a few "breaking" changes, although they are not enforced by pdfgen; it is still possible to produce PDFs that don't achieve "Universal Accessibility" as defined by PDF/UA.
+
+There is a release candidate published, although none of the documentation exists to describe how to produce PDFs with proper UA for template writers as of yet.
+As such, here be dragons!
+A [licensed Adobe Acrobat DC](https://gist.github.com/karinaldw/1c4c321fe05bdc1e8996e00722d5317a#adobe-acrobat-dc-pdf) is one of the tools that can check the PDFs for proper UA, as well as [PAC 3](https://www.access-for-all.ch/en/pdf-accessibility-checker.html) (Windows only).
+
+```dockerfile
+# Dockerfile
+FROM ghcr.io/navikt/pdfgen:2.0.0-rc1
+
+COPY templates /app/templates # handlebars templates
+COPY fonts /app/fonts         # fonts to be embedded
+COPY resources /app/resources # additional resources
+```
+
 ## 👥 Contact
 
 This project is currently maintained by the organisation [@navikt](https://github.com/navikt).
