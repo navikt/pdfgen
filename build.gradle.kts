@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "2.0.0-rc1"
+version = "2.0.0-rc2"
 
 val handlebarsVersion = "4.3.0"
 val jacksonVersion = "2.14.1"
@@ -18,7 +18,7 @@ val spekVersion = "2.0.19"
 val verapdfVersion = "1.20.1"
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.22"
     id("org.jmailen.kotlinter") version "3.9.0"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.42.0"
