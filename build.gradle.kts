@@ -19,7 +19,7 @@ val verapdfVersion = "1.22.2"
 
 plugins {
     kotlin("jvm") version "1.7.22"
-    id("org.jmailen.kotlinter") version "3.9.0"
+    id("org.jmailen.kotlinter") version "3.12.0"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
