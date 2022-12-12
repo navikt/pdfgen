@@ -35,7 +35,7 @@ import no.nav.pdfgen.api.setupGeneratePdfApi
 import no.nav.pdfgen.template.loadTemplates
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 
 val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()

@@ -15,7 +15,7 @@ val logstashEncoderVersion = "7.2"
 val openHtmlToPdfVersion = "1.0.10"
 val prometheusVersion = "0.16.0"
 val spekVersion = "2.0.19"
-val verapdfVersion = "1.20.1"
+val verapdfVersion = "1.22.2"
 
 plugins {
     kotlin("jvm") version "1.7.22"
