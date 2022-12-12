@@ -79,7 +79,7 @@ A [licensed Adobe Acrobat DC](https://gist.github.com/karinaldw/1c4c321fe05bdc1e
 
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/navikt/pdfgen:2.0.0-rc1
+FROM ghcr.io/navikt/pdfgen:2.0.0-rc2
 
 COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
