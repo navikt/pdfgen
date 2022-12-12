@@ -4,7 +4,7 @@ group = "no.nav.pdfgen"
 version = "2.0.0-rc1"
 
 val handlebarsVersion = "4.3.0"
-val jacksonVersion = "2.13.3"
+val jacksonVersion = "2.14.1"
 val jaxbVersion = "4.0.1"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.14.3"
