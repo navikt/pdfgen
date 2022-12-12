@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "2.0.0"
+version = "2.0.0" //This will never change. See Github releases for docker image release
 
 val handlebarsVersion = "4.3.0"
 val jacksonVersion = "2.14.1"
