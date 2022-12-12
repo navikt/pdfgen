@@ -10,7 +10,7 @@ import org.amshove.kluent.shouldBe
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.verapdf.pdfa.Foundries
-import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
 import java.io.ByteArrayInputStream
