@@ -1,6 +1,6 @@
 name: Build PR
 on:
-  pull_request_target:
+  push:
     paths-ignore:
       - '**.md'
       - '**.MD'
