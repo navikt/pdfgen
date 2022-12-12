@@ -29,6 +29,7 @@ COPY resources /app/resources # additional resources
 ```
 
 Check Github releases to find the latest `release` version 
+Check [Github releases](https://github.com/navikt/pdfgen/releases) to find the latest `release` version
 
 Set up the basic folder structure
 ```bash
