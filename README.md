@@ -1,6 +1,6 @@
 # pdfgen
 
-![Build and publish](https://github.com/navikt/pdfgen/workflows/Build%20and%20publish/badge.svg)
+[![Build master](https://github.com/navikt/pdfgen/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/navikt/pdfgen/actions/workflows/build.yml)
 
 Repository for `pdfgen`, an application written in Kotlin used to create PDFs and HTMLs
 
