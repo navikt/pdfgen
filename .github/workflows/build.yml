@@ -1,8 +1,8 @@
-name: Build PR
+name: Build master
 on:
   push:
-    branches-ignore:
-      - master
+    branches:
+      - master         # Push events on master branch
     paths-ignore:
       - '**.md'
       - '**.MD'
@@ -29,4 +29,4 @@ jobs:
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./gradlew shadowJar 
+          ./gradlew shadowJar

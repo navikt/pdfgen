@@ -1,0 +1,42 @@
+name: Publish master
+on:
+  release:
+    types: [published]
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+  NEW_VERSION: ${{ github.event.release.tag_name }}
+
+jobs:
+  build:
+    name: Bygg pull-request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: 'master'
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          architecture: x64
+          cache: 'gradle'
+      - name: Build gradle artifacts
+        shell: bash
+        run: |
+          ./gradlew shadowJar
+        env:
+          ORG_GRADLE_PROJECT_githubUser: x-access-token
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker images
+        run: |
+          docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .
+      - name: Push docker image to GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker login ghcr.io -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
+          docker push ${{ env.IMAGE }}:${{ env.NEW_VERSION }}
+

@@ -21,12 +21,15 @@ In your own repository, create a Dockerfile with the following contents
 
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/navikt/pdfgen:2.0.0
+FROM ghcr.io/navikt/pdfgen:<release>
 
 COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
 COPY resources /app/resources # additional resources
 ```
+
+Check Github releases to find the latest `release` version 
+Check [Github releases](https://github.com/navikt/pdfgen/releases) to find the latest `release` version
 
 Set up the basic folder structure
 ```bash
@@ -79,7 +82,7 @@ A [licensed Adobe Acrobat DC](https://gist.github.com/karinaldw/1c4c321fe05bdc1e
 
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/navikt/pdfgen:2.0.0
+FROM ghcr.io/navikt/pdfgen:<release>
 
 COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
