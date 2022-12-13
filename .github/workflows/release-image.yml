@@ -9,7 +9,7 @@ env:
 
 jobs:
   build:
-    name: Bygg pull-request
+    name: Build and publish docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
