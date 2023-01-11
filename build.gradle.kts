@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.pdfgen"
-version = "2.0.0" //This will never change. See Github releases for docker image release
+version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.14.1"
@@ -14,7 +14,7 @@ val logbackVersion = "1.4.5"
 val logstashEncoderVersion = "7.2"
 val openHtmlToPdfVersion = "1.0.10"
 val prometheusVersion = "0.16.0"
-val spekVersion = "2.0.19"
+val junitJupiterVersion = "5.9.0"
 val verapdfVersion = "1.22.2"
 
 plugins {
@@ -31,9 +31,7 @@ tasks {
         }
     }
     withType<Test> {
-        useJUnitPlatform {
-            includeEngines("spek2")
-        }
+        useJUnitPlatform {}
         testLogging {
             events("passed", "skipped", "failed")
             showStandardStreams = true
@@ -73,7 +71,6 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 
-
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
@@ -82,10 +79,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
-    testRuntimeOnly("org.spekframework.spek2:spek-runtime-jvm:$spekVersion")
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
 }

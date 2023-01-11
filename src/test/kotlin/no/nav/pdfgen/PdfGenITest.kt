@@ -14,18 +14,15 @@ import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.*
 import no.nav.pdfgen.template.loadTemplates
-import org.amshove.kluent.*
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import org.spekframework.spek2.style.specification.xdescribe
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
+import org.junit.jupiter.api.AfterEach
 import kotlin.io.use
 
-object PdfGenITSpek : Spek({
+object PdfGenITest {
     val applicationPort = getRandomPort()
     val application = initializeApplication(applicationPort)
     val client = HttpClient(CIO) {
@@ -36,7 +33,8 @@ object PdfGenITSpek : Spek({
     val timeoutSeconds: Long = 10
     application.start()
 
-    afterGroup {
+    @AfterEach stop()
+    {
         application.stop(timeoutSeconds * 1000, timeoutSeconds * 1000)
     }
 

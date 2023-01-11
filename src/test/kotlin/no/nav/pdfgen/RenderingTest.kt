@@ -6,21 +6,31 @@ import io.ktor.util.*
 import no.nav.pdfgen.api.render
 import no.nav.pdfgen.pdf.createPDFA
 import no.nav.pdfgen.template.loadTemplates
-import org.amshove.kluent.shouldBe
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import org.verapdf.pdfa.Foundries
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
 import java.io.ByteArrayInputStream
+import org.junit.jupiter.api.Test
 
-object RenderingSpek : Spek({
+object RenderingTest {
     val env = Environment()
     val templates = loadTemplates(env)
     val objectMapper = ObjectMapper()
     VeraGreenfieldFoundryProvider.initialise()
 
+    @Test
+    internal fun `All pdfs should render with default values`() {
+        templates.map { it.key }.forEach { it ->
+            val (applicationName, templateName) = it
+            val node = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use { that ->
+                objectMapper.readValue(that, JsonNode::class.java)
+            } ?: objectMapper.createObjectNode()
+            it("Renders the template $templateName for application $applicationName without exceptions") {
+                render(applicationName, templateName, templates, node)
+            }
+        }
+    }
     describe("All pdfs should render with default values") {
         templates.map { it.key }.forEach { it ->
             val (applicationName, templateName) = it
@@ -77,4 +87,4 @@ object RenderingSpek : Spek({
             }
         }
     }
-})
+}
