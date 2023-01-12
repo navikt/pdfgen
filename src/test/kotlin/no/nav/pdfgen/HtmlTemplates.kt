@@ -1,7 +1,5 @@
 package no.nav.pdfgen
 
-
-
 val testTemplateIncludedFonts: String = getResource("/html/test_template_included_fonts.html")
 val testTemplateInvalidFonts: String = getResource("/html/test_template_invalid_fonts.html")
 

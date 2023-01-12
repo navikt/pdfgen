@@ -16,91 +16,95 @@ import kotlinx.coroutines.*
 import no.nav.pdfgen.template.loadTemplates
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.PDDocument
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
-import org.junit.jupiter.api.AfterEach
-import kotlin.io.use
 
-object PdfGenITest {
-    val applicationPort = getRandomPort()
-    val application = initializeApplication(applicationPort)
-    val client = HttpClient(CIO) {
+internal class PdfGenITest {
+    private val applicationPort = getRandomPort()
+    private val application = initializeApplication(applicationPort)
+    private val client = HttpClient(CIO) {
         expectSuccess = false
     }
-    val env = Environment()
-    val templates = loadTemplates(env)
-    val timeoutSeconds: Long = 10
-    application.start()
+    private val env = Environment()
+    private val templates = loadTemplates(env)
+    private val timeoutSeconds: Long = 10
 
-    @AfterEach stop()
-    {
+    @AfterEach
+    fun stop() {
         application.stop(timeoutSeconds * 1000, timeoutSeconds * 1000)
     }
 
-    describe("POST to /api/v1/genpdf/{applicationName}/{templateName}") {
+    @Test
+    internal fun post_to_api_v1_genpdf_applicationName_templateName() {
+        application.start()
+        // api path /api/v1/genpdf/{applicationName}/{templateName}
         templates.map { it.key }.forEach {
             val (applicationName, templateName) = it
-            it("With $templateName for $applicationName results in a valid PDF") {
-                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
-                    ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
+            println("With $templateName for $applicationName results in a valid PDF")
+            val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
+                ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
 
-                val response = runBlocking<HttpResponse> {
-                    client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        setBody(TextContent(json, contentType = ContentType.Application.Json))
-                    }
-                }
-                response.status.isSuccess() shouldBeEqualTo true
-                val bytes = runBlocking { response.readBytes() }
-                bytes shouldNotBeEqualTo null
-                // Load the document in pdfbox to ensure it's valid
-                val document = PDDocument.load(bytes)
-                document shouldNotBeEqualTo null
-                document.pages.count shouldBeGreaterThan 0
-                println(document.documentInformation.title)
-                document.close()
-            }
-        }
-    }
-
-    describe("Generate sample PDFs using test data") {
-        templates.map { it.key }.forEach {
-            val (applicationName, templateName) = it
-            it("$templateName for $applicationName generates a sample PDF") {
-                val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
-                    ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
-
-                val response = runBlocking<HttpResponse> {
-                    client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                        setBody(TextContent(json, contentType = ContentType.Application.Json))
-                    }
-                }
-
-                response.status.isSuccess() shouldBeEqualTo true
-                val bytes = runBlocking { response.readBytes() }
-                bytes shouldNotBeEqualTo null
-                Files.write(Paths.get("build", "${it.first}-${it.second}.pdf"), bytes)
-            }
-        }
-    }
-
-    describe("Using the HTML convert endpoint") {
-        it("Should render a document using default HTML") {
             val response = runBlocking<HttpResponse> {
-                client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
-                    setBody(testTemplateIncludedFonts)
+                client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                    setBody(TextContent(json, contentType = ContentType.Application.Json))
                 }
             }
-            response.status.isSuccess() shouldBeEqualTo true
+            assertEquals(true, response.status.isSuccess())
             val bytes = runBlocking { response.readBytes() }
-            bytes shouldNotBeEqualTo null
-            Files.write(Paths.get("build", "html.pdf"), bytes)
-            // Load the document in pdfbox to ensure its valid
+            assertNotEquals(null, bytes)
+            // Load the document in pdfbox to ensure it's valid
             val document = PDDocument.load(bytes)
-            document shouldNotBeEqualTo null
-            document.pages.count shouldBeGreaterThan 0
+            assertNotEquals(null, document)
+            assertEquals(true, document.pages.count > 0)
             println(document.documentInformation.title)
+            document.close()
         }
+    }
+
+    @Test
+    internal fun `Generate sample PDFs using test data`() {
+        application.start()
+        templates.map { it.key }.forEach {
+            val (applicationName, templateName) = it
+            println("$templateName for $applicationName generates a sample PDF")
+            val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")
+                ?.readBytes()?.toString(Charsets.UTF_8) ?: "{}"
+
+            val response = runBlocking<HttpResponse> {
+                client.post("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                    setBody(TextContent(json, contentType = ContentType.Application.Json))
+                }
+            }
+            assertEquals(true, response.status.isSuccess())
+            val bytes = runBlocking { response.readBytes() }
+            assertNotEquals(null, bytes)
+            Files.write(Paths.get("build", "${it.first}-${it.second}.pdf"), bytes)
+        }
+    }
+
+    @Test
+    internal fun `Using the HTML convert endpoint should render a document using default HTML`() {
+        application.start()
+        val response = runBlocking {
+            client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
+                setBody(testTemplateIncludedFonts)
+            }
+        }
+        assertEquals(true, response.status.isSuccess())
+        val bytes = runBlocking { response.readBytes() }
+        assertNotEquals(null, bytes)
+        Files.write(Paths.get("build", "html.pdf"), bytes)
+        // Load the document in pdfbox to ensure its valid
+        val document = PDDocument.load(bytes)
+        assertNotEquals(null, document)
+        assertEquals(true, document.pages.count > 0)
+        println(document.documentInformation.title)
+        document.close()
 
         /* openhtmltopdf seems to strip any input that causes non-conforming PDF/A, so i can't get this test to work :(
         it("Should return non OK status code when rendering templates that result in non-conformant PDF/A") {
@@ -114,48 +118,52 @@ object PdfGenITest {
         */
     }
 
-    describe("Using the image convert endpoint") {
+    @Test
+    internal fun `Using the image convert endpoint Should render a document using input image`() {
+        application.start()
         mapOf(
             ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
             ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf"
         ).forEach { (payload, outputFile) ->
 
-            it("Should render a document using input image, $outputFile") {
-                runBlocking {
-                    runBlocking<HttpStatement> {
-                        client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
-                            setBody(payload)
-                        }
-                    }.execute { response ->
-                        response.status.isSuccess().shouldBeTrue()
-                        val bytes = response.readBytes()
-                        bytes.shouldNotBeEmpty()
-                        Files.write(Paths.get("build", outputFile), bytes)
-                        // Load the document in pdfbox to ensure its valid
-                        val document = PDDocument.load(bytes)
-                        document.shouldNotBeNull()
-                        document.pages.count shouldBeGreaterThan 0
-                    }
-                }
-            }
-        }
-    }
-
-    describe("Calls to unknown endpoints") {
-        it("Should respond with helpful information") {
+            println("Should render a document using input image, $outputFile")
             runBlocking {
-                runBlocking<HttpStatement> {
-                    client.config { expectSuccess = false }.preparePost("http://localhost:$applicationPort/whodis")
+                runBlocking {
+                    client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/image/integration-test") {
+                        setBody(payload)
+                    }
                 }.execute { response ->
-                    response.status.value shouldBeEqualTo 404
-                    val text = runBlocking { response.bodyAsText() }
-                    text shouldContain "Known templates:\n/api/v1/genpdf"
+                    assertEquals(true, response.status.isSuccess())
+                    val bytes = response.readBytes()
+                    assertEquals(false, bytes.isEmpty())
+                    Files.write(Paths.get("build", outputFile), bytes)
+                    // Load the document in pdfbox to ensure its valid
+                    val document = PDDocument.load(bytes)
+                    assertNotEquals(null, document)
+                    assertEquals(true, document.pages.count > 0)
+                    document.close()
                 }
             }
         }
     }
 
-    xdescribe("Simple performance test") {
+    @Test
+    internal fun `Calls to unknown endpoints should respond with helpful information`() {
+        application.start()
+        runBlocking {
+            runBlocking {
+                client.config { expectSuccess = false }.preparePost("http://localhost:$applicationPort/whodis")
+            }.execute { response ->
+                assertEquals(404, response.status.value)
+                val text = runBlocking { response.bodyAsText() }
+                assertEquals(true, text.contains("Known templates:\n/api/v1/genpdf"))
+            }
+        }
+    }
+
+    @Test
+    internal fun `Simple performance test`() {
+        application.start()
         val warmupPasses = 20
         val passes = 100
 
@@ -173,37 +181,17 @@ object PdfGenITest {
                         client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
                             setBody(TextContent(json, contentType = ContentType.Application.Json))
                         }.execute()
-                    response.readBytes() shouldNotBeEqualTo null
-                    response.status.isSuccess() shouldBeEqualTo true
+                    assertNotEquals(null, response.readBytes())
+                    assertEquals(true, response.status.isSuccess())
                 }
             }.toList().forEach { it.join() }
         }
         templates.map { it.key }.forEach { (applicationName, templateName) ->
-            it("$templateName for $applicationName performs fine") {
-                val startTime = System.currentTimeMillis()
-                runBlocking(context) {
-                    val tasks = (1..passes).map {
-                        launch {
-                            val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                                IOUtils.toByteArray(it).toString(Charsets.UTF_8)
-                            } ?: "{}"
-
-                            val response =
-                                client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                                    setBody(TextContent(json, contentType = ContentType.Application.Json))
-                                }.execute()
-                            response.readBytes() shouldNotBeEqualTo null
-                            response.status.isSuccess() shouldBeEqualTo true
-                        }
-                    }.toList()
-                    tasks.forEach { it.join() }
-                }
-                println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
-            }
-            it("$templateName for $applicationName performs fine with single-thread load") {
-                val startTime = System.currentTimeMillis()
-                runBlocking {
-                    for (i in 1..passes) {
+            println("$templateName for $applicationName performs fine")
+            val startTimePerformsfine = System.currentTimeMillis()
+            runBlocking(context) {
+                val tasks = (1..passes).map {
+                    launch {
                         val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
                             IOUtils.toByteArray(it).toString(Charsets.UTF_8)
                         } ?: "{}"
@@ -212,12 +200,31 @@ object PdfGenITest {
                             client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
                                 setBody(TextContent(json, contentType = ContentType.Application.Json))
                             }.execute()
-                        response.readBytes() shouldNotBeEqualTo null
-                        response.status.isSuccess() shouldBeEqualTo true
+                        assertNotEquals(null, response.readBytes())
+                        assertEquals(true, response.status.isSuccess())
                     }
-                }
-                println("Single-thread performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
+                }.toList()
+                tasks.forEach { it.join() }
             }
+            println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTimePerformsfine}ms")
+
+            println("$templateName for $applicationName performs fine with single-thread load")
+            val startTimeSingleThread = System.currentTimeMillis()
+            runBlocking {
+                for (i in 1..passes) {
+                    val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
+                        IOUtils.toByteArray(it).toString(Charsets.UTF_8)
+                    } ?: "{}"
+
+                    val response =
+                        client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
+                            setBody(TextContent(json, contentType = ContentType.Application.Json))
+                        }.execute()
+                    assertNotEquals(null, response.readBytes())
+                    assertEquals(true, response.status.isSuccess())
+                }
+            }
+            println("Single-thread performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTimeSingleThread}ms")
         }
     }
-})
+}
