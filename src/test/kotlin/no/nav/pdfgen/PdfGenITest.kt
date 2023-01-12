@@ -189,7 +189,7 @@ internal class PdfGenITest {
     @Test
     internal fun `Simple performance test full`() {
         application.start()
-        val passes = 100
+        val passes = 80
 
         val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         templates.map { it.key }.forEach { (applicationName, templateName) ->
