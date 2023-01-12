@@ -187,9 +187,9 @@ internal class PdfGenITest {
         }
     }
     @Test
-    internal fun `Simple performance test full`() {
+    internal fun `Simple performance test full multiple-threads`() {
         application.start()
-        val passes = 50
+        val passes = 100
 
         val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         templates.map { it.key }.forEach { (applicationName, templateName) ->
@@ -212,10 +212,19 @@ internal class PdfGenITest {
                 }.toList()
                 tasks.forEach { it.join() }
             }
-            println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
+            println("Multiple-threads performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
+        }
+    }
+
+    @Test
+    internal fun `Simple performance test full single-thread`() {
+        application.start()
+        val passes = 100
+
+        templates.map { it.key }.forEach { (applicationName, templateName) ->
 
             println("$templateName for $applicationName performs fine with single-thread load")
-            val startTimeSingleThread = System.currentTimeMillis()
+            val startTime = System.currentTimeMillis()
             runBlocking {
                 for (i in 1..passes) {
                     val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
@@ -230,7 +239,7 @@ internal class PdfGenITest {
                     assertEquals(true, response.status.isSuccess())
                 }
             }
-            println("Single-thread performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTimeSingleThread}ms")
+            println("Single-thread performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
         }
     }
 }
