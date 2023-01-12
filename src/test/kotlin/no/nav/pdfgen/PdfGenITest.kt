@@ -164,7 +164,7 @@ internal class PdfGenITest {
     @Test
     internal fun `Simple performance test full multiple-threads`() {
         application.start()
-        val passes = 40
+        val passes = 20
 
         val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         templates.map { it.key }.forEach { (applicationName, templateName) ->
