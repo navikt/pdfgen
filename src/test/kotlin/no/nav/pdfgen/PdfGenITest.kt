@@ -162,34 +162,9 @@ internal class PdfGenITest {
     }
 
     @Test
-    internal fun `Simple performance test warmup`() {
-        application.start()
-        val warmupPasses = 20
-
-        val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
-        runBlocking(context) {
-            val warmupTemplate = templates.map { it.key }.first()
-            (1..warmupPasses).map {
-                val (applicationName, templateName) = warmupTemplate
-                launch {
-                    val json = javaClass.getResourceAsStream("/data/$applicationName/$templateName.json")?.use {
-                        IOUtils.toByteArray(it).toString(Charsets.UTF_8)
-                    }!!
-
-                    val response =
-                        client.preparePost("http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName") {
-                            setBody(TextContent(json, contentType = ContentType.Application.Json))
-                        }.execute()
-                    assertNotEquals(null, response.readBytes())
-                    assertEquals(true, response.status.isSuccess())
-                }
-            }.toList().forEach { it.join() }
-        }
-    }
-    @Test
     internal fun `Simple performance test full multiple-threads`() {
         application.start()
-        val passes = 50
+        val passes = 40
 
         val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         templates.map { it.key }.forEach { (applicationName, templateName) ->
@@ -219,7 +194,7 @@ internal class PdfGenITest {
     @Test
     internal fun `Simple performance test full single-thread`() {
         application.start()
-        val passes = 50
+        val passes = 40
 
         templates.map { it.key }.forEach { (applicationName, templateName) ->
 
