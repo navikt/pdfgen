@@ -162,10 +162,9 @@ internal class PdfGenITest {
     }
 
     @Test
-    internal fun `Simple performance test`() {
+    internal fun `Simple performance test warmup`() {
         application.start()
         val warmupPasses = 20
-        val passes = 100
 
         val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         runBlocking(context) {
@@ -186,9 +185,16 @@ internal class PdfGenITest {
                 }
             }.toList().forEach { it.join() }
         }
+    }
+    @Test
+    internal fun `Simple performance test full`() {
+        application.start()
+        val passes = 100
+
+        val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         templates.map { it.key }.forEach { (applicationName, templateName) ->
             println("$templateName for $applicationName performs fine")
-            val startTimePerformsfine = System.currentTimeMillis()
+            val startTime = System.currentTimeMillis()
             runBlocking(context) {
                 val tasks = (1..passes).map {
                     launch {
@@ -206,7 +212,7 @@ internal class PdfGenITest {
                 }.toList()
                 tasks.forEach { it.join() }
             }
-            println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTimePerformsfine}ms")
+            println("Performance testing $templateName for $applicationName took ${System.currentTimeMillis() - startTime}ms")
 
             println("$templateName for $applicationName performs fine with single-thread load")
             val startTimeSingleThread = System.currentTimeMillis()
