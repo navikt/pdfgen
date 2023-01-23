@@ -14,7 +14,7 @@ val logbackVersion = "1.4.5"
 val logstashEncoderVersion = "7.2"
 val openHtmlToPdfVersion = "1.0.10"
 val prometheusVersion = "0.16.0"
-val junitJupiterVersion = "5.9.0"
+val junitJupiterVersion = "5.9.2"
 val verapdfVersion = "1.22.2"
 
 plugins {
