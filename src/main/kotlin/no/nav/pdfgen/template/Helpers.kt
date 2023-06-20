@@ -4,24 +4,25 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import no.nav.pdfgen.Environment
-import no.nav.pdfgen.domain.syfosoknader.Periode
-import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import no.nav.pdfgen.Environment
+import no.nav.pdfgen.domain.syfosoknader.Periode
+import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-val dateFormatLong: DateTimeFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy")
-    .withLocale(Locale("no", "NO"))
+val dateFormatLong: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("d. MMMM yyyy").withLocale(Locale("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
-fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String = try {
-    formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
-} catch (e: Exception) {
-    formatter.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
-}
+fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String =
+    try {
+        formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
+    } catch (e: Exception) {
+        formatter.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
+    }
 
 fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
     handlebars.apply {
@@ -30,7 +31,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
                 formatDate(dateFormat, context)
-            }
+            },
         )
 
         registerHelper(
@@ -38,7 +39,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
                 formatDate(datetimeFormat, context)
-            }
+            },
         )
 
         registerHelper(
@@ -46,7 +47,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
                 dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
-            }
+            },
         )
 
         registerHelper(
@@ -58,7 +59,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 } catch (e: Exception) {
                     dateFormatLong.format(DateTimeFormatter.ISO_DATE.parse(context))
                 }
-            }
+            },
         )
 
         registerHelper(
@@ -66,9 +67,9 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<String> { context, options ->
                 ChronoUnit.DAYS.between(
                     LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
-                    LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0)))
+                    LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0))),
                 )
-            }
+            },
         )
 
         // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
@@ -79,9 +80,11 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                     return@Helper ""
                 } else {
                     val periode: Periode = PeriodeMapper.jsonTilPeriode(context)
-                    return@Helper periode.fom!!.format(dateFormat) + " - " + periode.tom!!.format(dateFormat)
+                    return@Helper periode.fom!!.format(dateFormat) +
+                        " - " +
+                        periode.tom!!.format(dateFormat)
                 }
-            }
+            },
         )
         registerHelper(
             "insert_at",
@@ -90,22 +93,26 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 val divider = options.hash<String>("divider", " ")
                 options.params
                     .map { it as Int }
-                    .fold(context.toString()) { v, idx -> v.substring(0, idx) + divider + v.substring(idx, v.length) }
-            }
+                    .fold(context.toString()) { v, idx ->
+                        v.substring(0, idx) + divider + v.substring(idx, v.length)
+                    }
+            },
         )
 
         registerHelper(
             "eq",
             Helper<Any?> { context, options ->
-                if (context?.toString() == options.param<Any?>(0)?.toString()) options.fn() else options.inverse()
-            }
+                if (context?.toString() == options.param<Any?>(0)?.toString()) options.fn()
+                else options.inverse()
+            },
         )
 
         registerHelper(
             "not_eq",
             Helper<Any?> { context, options ->
-                if (context?.toString() != options.param<Any?>(0)?.toString()) options.fn() else options.inverse()
-            }
+                if (context?.toString() != options.param<Any?>(0)?.toString()) options.fn()
+                else options.inverse()
+            },
         )
 
         registerHelper(
@@ -113,7 +120,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<Comparable<Any>> { context, options ->
                 val param = options.param(0) as Comparable<Any>
                 if (context > param) options.fn() else options.inverse()
-            }
+            },
         )
 
         registerHelper(
@@ -121,41 +128,39 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<Comparable<Any>> { context, options ->
                 val param = options.param(0) as Comparable<Any>
                 if (context < param) options.fn() else options.inverse()
-            }
+            },
         )
 
         registerHelper(
             "safe",
             Helper<String> { context, _ ->
                 if (context == null) "" else Handlebars.SafeString(context)
-            }
+            },
         )
 
         registerHelper(
             "image",
-            Helper<String> { context, _ ->
-                if (context == null) "" else env.images[context]
-            }
+            Helper<String> { context, _ -> if (context == null) "" else env.images[context] },
         )
 
         registerHelper(
             "resource",
-            Helper<String> { context, _ ->
-                env.resources[context]?.toString(Charsets.UTF_8) ?: ""
-            }
+            Helper<String> { context, _ -> env.resources[context]?.toString(Charsets.UTF_8) ?: "" },
         )
 
         registerHelper(
             "capitalize",
             Helper<String> { context, _ ->
                 context?.lowercase()?.replaceFirstChar { it.uppercase() } ?: ""
-            }
+            },
         )
 
         registerHelper(
             "capitalize_names",
             Helper<String> { context, _ ->
-                if (context == null) "" else
+                if (context == null) {
+                    ""
+                } else
                     Handlebars.SafeString(
                         context
                             .trim()
@@ -163,30 +168,24 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                             .lowercase()
                             .capitalizeWords(" ")
                             .capitalizeWords("-")
-                            .capitalizeWords("'")
+                            .capitalizeWords("'"),
                     )
-            }
+            },
         )
 
         registerHelper(
             "uppercase",
-            Helper<String> { context, _ ->
-                context?.uppercase() ?: ""
-            }
+            Helper<String> { context, _ -> context?.uppercase() ?: "" },
         )
 
         registerHelper(
             "inc",
-            Helper<Int> { context, _ ->
-                context + 1
-            }
+            Helper<Int> { context, _ -> context + 1 },
         )
 
         registerHelper(
             "formatComma",
-            Helper<Any> { context, _ ->
-                context?.toString()?.replace(".", ",") ?: ""
-            }
+            Helper<Any> { context, _ -> context?.toString()?.replace(".", ",") ?: "" },
         )
 
         registerHelper(
@@ -197,7 +196,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 } else {
                     options.fn()
                 }
-            }
+            },
         )
 
         registerHelper(
@@ -205,17 +204,18 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<Iterable<Any>?> { list, options ->
                 val checkfor = options.param(0, null as String?)
 
-                val contains = list
-                    ?.map { Context.newContext(options.context, it) }
-                    ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
-                    ?: false
+                val contains =
+                    list
+                        ?.map { Context.newContext(options.context, it) }
+                        ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
+                        ?: false
 
                 if (contains) {
                     options.fn()
                 } else {
                     options.inverse()
                 }
-            }
+            },
         )
 
         registerHelper(
@@ -231,7 +231,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 } else {
                     options.inverse()
                 }
-            }
+            },
         )
 
         registerHelper(
@@ -242,15 +242,19 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
 
                 val splitNumber = context.toString().split(".")
 
-                // we're joining with a non-breaking space since currency values should not be split across several lines
-                val formattedNumber = splitNumber.first().reversed().chunked(3).joinToString("\u00A0").reversed()
+                // we're joining with a non-breaking space since currency values should not be split
+                // across several lines
+                val formattedNumber =
+                    splitNumber.first().reversed().chunked(3).joinToString("\u00A0").reversed()
                 if (withoutDecimals) {
                     formattedNumber
                 } else {
-                    val decimals = splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) } ?: "00"
+                    val decimals =
+                        splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) }
+                            ?: "00"
                     "$formattedNumber,$decimals"
                 }
-            }
+            },
         )
 
         registerHelper(
@@ -259,11 +263,13 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 val kr = context / 100
                 val øre = context % 100
 
-                // using .format(locale = Locale("nb")) should also do the trick, but it appears this no longer works
+                // using .format(locale = Locale("nb")) should also do the trick, but it appears
+                // this no longer works
                 // so we just reuse the string-based code from above to get the format we want :)
-                val formattedKr = kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
+                val formattedKr =
+                    kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
                 "$formattedKr,%02d".format(øre)
-            }
+            },
         )
 
         registerHelper(
@@ -273,16 +279,17 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                 val kr = value / 100
                 val øre = value % 100
 
-                val formattedKr = kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
+                val formattedKr =
+                    kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
                 "$formattedKr,%02d".format(øre)
-            }
+            },
         )
 
         registerHelper(
             "is_defined",
             Helper<Any> { context, options ->
                 if (context != null) options.fn() else options.inverse()
-            }
+            },
         )
 
         registerHelper(
@@ -292,17 +299,21 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                     ""
                 } else {
                     val santizedText = Handlebars.Utils.escapeExpression(context)
-                    val withLineBreak = santizedText.toString()
-                        .replace("\\r\\n", "<br/>")
-                        .replace("\\n", "<br/>")
-                        .replace("\r\n", "<br/>")
-                        .replace("\n", "<br/>")
+                    val withLineBreak =
+                        santizedText
+                            .toString()
+                            .replace("\\r\\n", "<br/>")
+                            .replace("\\n", "<br/>")
+                            .replace("\r\n", "<br/>")
+                            .replace("\n", "<br/>")
                     Handlebars.SafeString(withLineBreak)
                 }
-            }
+            },
         )
     }
 }
 
 private fun String.capitalizeWords(wordSplitter: String) =
-    this.split(wordSplitter).joinToString(wordSplitter) { it.trim().replaceFirstChar { it.uppercase() } }
+    this.split(wordSplitter).joinToString(wordSplitter) {
+        it.trim().replaceFirstChar { it.uppercase() }
+    }

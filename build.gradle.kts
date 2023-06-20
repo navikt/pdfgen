@@ -16,10 +16,12 @@ val openHtmlToPdfVersion = "1.0.10"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.9.3"
 val verapdfVersion = "1.22.2"
+val ktfmtVersion = "0.44"
+
 
 plugins {
     kotlin("jvm") version "1.8.22"
-    id("org.jmailen.kotlinter") version "3.15.0"
+    id("com.diffplug.spotless") version "6.19.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.github.ben-manes.versions") version "0.47.0"
 }
@@ -42,6 +44,13 @@ tasks {
     }
     withType<Jar> {
         manifest.attributes("Main-Class" to "no.nav.pdfgen.BootstrapKt")
+    }
+
+    spotless {
+        kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
+        check {
+            dependsOn("spotlessApply")
+        }
     }
 }
 

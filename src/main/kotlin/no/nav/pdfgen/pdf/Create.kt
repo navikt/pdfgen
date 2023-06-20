@@ -4,6 +4,10 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.ktor.http.*
 import io.ktor.http.content.*
+import java.io.*
+import java.lang.IllegalArgumentException
+import java.util.*
+import javax.imageio.ImageIO
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.log
 import no.nav.pdfgen.util.scale
@@ -25,27 +29,32 @@ import org.apache.xmpbox.xml.XmpSerializer
 import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
-import java.io.*
-import java.lang.IllegalArgumentException
-import java.util.*
-import javax.imageio.ImageIO
 
 fun createPDFA(html: String, env: Environment): ByteArray {
-    val pdf = ByteArrayOutputStream().apply {
-        PdfRendererBuilder()
+    val pdf =
+        ByteArrayOutputStream()
             .apply {
-                for (font in env.fonts) {
-                    useFont({ ByteArrayInputStream(font.bytes) }, font.family, font.weight, font.style, font.subset)
-                }
+                PdfRendererBuilder()
+                    .apply {
+                        for (font in env.fonts) {
+                            useFont(
+                                { ByteArrayInputStream(font.bytes) },
+                                font.family,
+                                font.weight,
+                                font.style,
+                                font.subset
+                            )
+                        }
+                    }
+                    .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
+                    .usePdfUaAccessbility(true)
+                    .useColorProfile(env.colorProfile)
+                    .useSVGDrawer(BatikSVGDrawer())
+                    .withHtmlContent(html, null)
+                    .toStream(this)
+                    .run()
             }
-            .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
-            .usePdfUaAccessbility(true)
-            .useColorProfile(env.colorProfile)
-            .useSVGDrawer(BatikSVGDrawer())
-            .withHtmlContent(html, null)
-            .toStream(this)
-            .run()
-    }.toByteArray()
+            .toByteArray()
     require(verifyCompliance(pdf)) { "Non-compliant PDF/A :(" }
     return pdf
 }
@@ -110,12 +119,14 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Enviro
     }
 }
 
-private fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavour.PDFA_2_A): Boolean {
+private fun verifyCompliance(
+    input: ByteArray,
+    flavour: PDFAFlavour = PDFAFlavour.PDFA_2_A
+): Boolean {
     val pdf = ByteArrayInputStream(input)
     val validator = Foundries.defaultInstance().createValidator(flavour, false)
     val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
-    val failures = result.testAssertions
-        .filter { it.status != TestAssertion.Status.PASSED }
+    val failures = result.testAssertions.filter { it.status != TestAssertion.Status.PASSED }
     failures.forEach { test ->
         log.warn(test.message)
         log.warn("Location ${test.location.context} ${test.location.level}")
@@ -128,7 +139,7 @@ private fun verifyCompliance(input: ByteArray, flavour: PDFAFlavour = PDFAFlavou
 class PdfContent(
     private val html: String,
     private val env: Environment,
-    override val contentType: ContentType = ContentType.Application.Pdf
+    override val contentType: ContentType = ContentType.Application.Pdf,
 ) : OutgoingContent.ByteArrayContent() {
     override fun bytes(): ByteArray = createPDFA(html, env)
 }

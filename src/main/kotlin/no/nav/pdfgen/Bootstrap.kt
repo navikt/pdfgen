@@ -37,8 +37,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 
-val objectMapper: ObjectMapper = ObjectMapper()
-    .registerKotlinModule()
+val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
 val log: Logger = LoggerFactory.getLogger("pdfgen")
 
@@ -57,14 +56,14 @@ fun initializeApplication(port: Int): ApplicationEngine {
     XRLog.setLoggerImpl(Slf4jLogger())
 
     return embeddedServer(
-        Netty, port,
+        Netty,
+        port,
         configure = {
-            responseWriteTimeoutSeconds = 60 // Increase timeout of Netty to handle large content bodies
-        }
+            responseWriteTimeoutSeconds =
+                60 // Increase timeout of Netty to handle large content bodies
+        },
     ) {
-        install(ContentNegotiation) {
-            jackson {}
-        }
+        install(ContentNegotiation) { jackson {} }
 
         install(StatusPages) {
             status(HttpStatusCode.NotFound) { call, _ ->
@@ -72,18 +71,14 @@ fun initializeApplication(port: Int): ApplicationEngine {
                     TextContent(
                         messageFor404(templates, call.request.path()),
                         ContentType.Text.Plain.withCharset(Charsets.UTF_8),
-                        HttpStatusCode.NotFound
-                    )
+                        HttpStatusCode.NotFound,
+                    ),
                 )
             }
         }
         routing {
-            get("/internal/is_ready") {
-                call.respondText("I'm ready")
-            }
-            get("/internal/is_alive") {
-                call.respondText("I'm alive")
-            }
+            get("/internal/is_ready") { call.respondText("I'm ready") }
+            get("/internal/is_alive") { call.respondText("I'm alive") }
             get("/internal/prometheus") {
                 val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
                 call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
@@ -91,7 +86,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                         runCatching {
                             TextFormat.write004(
                                 this@respondTextWriter,
-                                collectorRegistry.filteredMetricFamilySamples(names)
+                                collectorRegistry.filteredMetricFamilySamples(names),
                             )
                         }
                     }
@@ -103,6 +98,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
 }
 
 private fun messageFor404(templates: Map<Pair<String, String>, Template>, path: String) =
-    "Unkown path '$path'. Known templates:\n" + templates.map { (app, _) ->
-        "/api/v1/genpdf/%s/%s".format(app.first, app.second)
-    }.joinToString("\n")
+    "Unkown path '$path'. Known templates:\n" +
+        templates
+            .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
+            .joinToString("\n")

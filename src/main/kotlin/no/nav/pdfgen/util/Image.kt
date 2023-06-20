@@ -1,10 +1,10 @@
 package no.nav.pdfgen.util
 
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 
 data class ImageSize(val width: Float, val height: Float)
 
@@ -13,7 +13,12 @@ fun toPortait(image: BufferedImage): BufferedImage {
         return image
     }
 
-    val rotateTransform = AffineTransform.getRotateInstance(Math.toRadians(90.0), (image.height / 2f).toDouble(), (image.height / 2f).toDouble())
+    val rotateTransform =
+        AffineTransform.getRotateInstance(
+            Math.toRadians(90.0),
+            (image.height / 2f).toDouble(),
+            (image.height / 2f).toDouble()
+        )
 
     return AffineTransformOp(rotateTransform, AffineTransformOp.TYPE_BILINEAR)
         .filter(image, BufferedImage(image.height, image.width, image.type))
