@@ -35,12 +35,12 @@ jobs:
         architecture: x64
         cache: 'gradle'
 
-    - name: Run tests
+    - name: Build gradle artifacts
       env:
         ORG_GRADLE_PROJECT_githubUser: x-access-token
         ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        ./gradlew test
+        ./gradlew shadowJar
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
