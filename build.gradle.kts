@@ -15,7 +15,7 @@ val logstashEncoderVersion = "7.4"
 val openHtmlToPdfVersion = "1.0.10"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.9.3"
-val verapdfVersion = "1.22.2"
+val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 
 
