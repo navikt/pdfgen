@@ -3,6 +3,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  packages: write
+
 env:
   IMAGE: ghcr.io/${{ github.repository }}
   NEW_VERSION: ${{ github.event.release.tag_name }}
