@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 group = "no.nav.pdfgen"
 version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
@@ -20,30 +18,42 @@ val ktfmtVersion = "0.44"
 
 
 plugins {
+    id("application")
     kotlin("jvm") version "1.9.10"
     id("com.diffplug.spotless") version "6.22.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.github.ben-manes.versions") version "0.48.0"
 }
 
+application {
+    mainClass.set("no.nav.pdfgen.BootstrapKt")
+}
+
 tasks {
-    create("printVersion") {
-        doLast {
-            println(project.version)
-        }
-    }
-    withType<Test> {
+
+    test {
         useJUnitPlatform {}
         testLogging {
             events("passed", "skipped", "failed")
             showStandardStreams = true
         }
     }
-    withType<KotlinCompile> {
+
+    compileKotlin{
         kotlinOptions.jvmTarget = "17"
     }
-    withType<Jar> {
-        manifest.attributes("Main-Class" to "no.nav.pdfgen.BootstrapKt")
+
+    shadowJar {
+        archiveBaseName.set("app")
+        archiveClassifier.set("")
+        isZip64 = true
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to "no.nav.pdfgen.BootstrapKt",
+                ),
+            )
+        }
     }
 
     spotless {
