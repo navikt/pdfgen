@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/java17@sha256:5cc4322dea54a6732cd2d3feebb18138f62af280a167afcbe94d3be7a607f1e5
+FROM gcr.io/distroless/java17@sha256:17459919f2ccb3439155da0b4f42ddf08cb022b2a3e1a4b9491d425dfcc31e7e
 
 WORKDIR /app
 
