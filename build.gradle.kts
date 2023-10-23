@@ -3,7 +3,7 @@ version = "2.0.0" //This will never change. See GitHub releases for docker image
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.15.3"
-val jaxbVersion = "4.0.3"
+val jaxbVersion = "4.0.4"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.16.2"
 val kluentVersion = "1.72"
