@@ -7,7 +7,7 @@ import org.testcontainers.containers.GenericContainer
 import java.nio.file.Paths
 
 internal class DockerImageTest {
-    private var pdfgen: GenericContainer /
+    private var pdfgen: GenericContainer =
     GenericContainer(
      ImageFromDockerfile()
         .withFileFromPath("/", Paths.get("Dockerfile"))
