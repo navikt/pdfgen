@@ -15,6 +15,7 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
+val testcontainersVersion=  "1.19.1"
 
 
 plugins {
@@ -101,6 +102,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
 }
