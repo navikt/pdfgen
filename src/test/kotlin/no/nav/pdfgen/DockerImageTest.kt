@@ -8,6 +8,9 @@ import java.nio.file.Paths
 internal class DockerImageTest {
     private var pdfgen: ImageFromDockerfile = ImageFromDockerfile()
         .withFileFromPath("/", Paths.get("Dockerfile"))
+        .apply {
+            start()
+        }
     @Test
     internal fun `Test Dockerfile`() {
         Assertions.assertEquals(true, pdfgen.isDeleteOnExit)
