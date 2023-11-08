@@ -12,7 +12,7 @@ Repository for `pdfgen`, an application written in Kotlin used to create PDFs an
 * Junit
 * Handlebars
 * VeraPDF-validation
-* JDK 17
+* JDK 21
 
 ## Getting started
 
