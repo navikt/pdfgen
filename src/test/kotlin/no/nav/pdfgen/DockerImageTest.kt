@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
 
 internal class DockerImageTest {
@@ -26,13 +27,13 @@ internal class DockerImageTest {
             )
             .withNetwork(network)
             .withExposedPorts(8080)
+            .waitingFor(Wait.forHttp("/internal/is_ready"))
             .apply { start() }
 
     @Test
     internal fun `Test Dockerfile`() {
 
         runBlocking {
-            Thread.sleep(1000)
             val pdfgenContainerUrlIsReady = pdfgenContainer.buildUrl("internal/is_ready")
 
             val httpClient =
