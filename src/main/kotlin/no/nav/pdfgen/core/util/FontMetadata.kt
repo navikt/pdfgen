@@ -1,8 +1,8 @@
-package no.nav.pdfgen.util
+package no.nav.pdfgen.core.util
 
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
+import no.nav.pdfgen.core.fontsRoot
 import java.nio.file.Files
-import no.nav.pdfgen.fontsRoot
 
 data class FontMetadata(
     val family: String,

@@ -1,4 +1,4 @@
-package no.nav.pdfgen.domain.syfosoknader
+package no.nav.pdfgen.core.domain
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException

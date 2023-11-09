@@ -1,17 +1,11 @@
-package no.nav.pdfgen.pdf
+package no.nav.pdfgen.core.pdf
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
-import io.ktor.http.*
-import io.ktor.http.content.*
-import java.io.*
-import java.lang.IllegalArgumentException
-import java.util.*
-import javax.imageio.ImageIO
-import no.nav.pdfgen.Environment
-import no.nav.pdfgen.log
-import no.nav.pdfgen.util.scale
-import no.nav.pdfgen.util.toPortait
+import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.pdfgen.core.PDFgen
+import no.nav.pdfgen.core.util.scale
+import no.nav.pdfgen.core.util.toPortait
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -29,26 +23,34 @@ import org.apache.xmpbox.xml.XmpSerializer
 import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.Calendar
+import javax.imageio.ImageIO
 
-fun createPDFA(html: String, env: Environment): ByteArray {
+private val log = KotlinLogging.logger {}
+
+fun createPDFA(html: String): ByteArray {
     val pdf =
         ByteArrayOutputStream()
             .apply {
                 PdfRendererBuilder()
                     .apply {
-                        for (font in env.fonts) {
+                        for (font in PDFgen.getEnvironment().fonts) {
                             useFont(
                                 { ByteArrayInputStream(font.bytes) },
                                 font.family,
                                 font.weight,
                                 font.style,
-                                font.subset
+                                font.subset,
                             )
                         }
                     }
                     .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
                     .usePdfUaAccessbility(true)
-                    .useColorProfile(env.colorProfile)
+                    .useColorProfile(PDFgen.getEnvironment().colorProfile)
                     .useSVGDrawer(BatikSVGDrawer())
                     .withHtmlContent(html, null)
                     .toStream(this)
@@ -59,7 +61,7 @@ fun createPDFA(html: String, env: Environment): ByteArray {
     return pdf
 }
 
-fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Environment) {
+fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
     PDDocument().use { document ->
         val page = PDPage(PDRectangle.A4)
         document.addPage(page)
@@ -98,7 +100,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Enviro
             throw IllegalArgumentException(e)
         }
 
-        val intent = PDOutputIntent(document, env.colorProfile.inputStream())
+        val intent = PDOutputIntent(document, PDFgen.getEnvironment().colorProfile.inputStream())
         intent.info = "sRGB IEC61966-2.1"
         intent.outputCondition = "sRGB IEC61966-2.1"
         intent.outputConditionIdentifier = "sRGB IEC61966-2.1"
@@ -121,25 +123,17 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream, env: Enviro
 
 private fun verifyCompliance(
     input: ByteArray,
-    flavour: PDFAFlavour = PDFAFlavour.PDFA_2_A
+    flavour: PDFAFlavour = PDFAFlavour.PDFA_2_A,
 ): Boolean {
     val pdf = ByteArrayInputStream(input)
     val validator = Foundries.defaultInstance().createValidator(flavour, false)
     val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
     val failures = result.testAssertions.filter { it.status != TestAssertion.Status.PASSED }
     failures.forEach { test ->
-        log.warn(test.message)
-        log.warn("Location ${test.location.context} ${test.location.level}")
-        log.warn("Status ${test.status}")
-        log.warn("Test number ${test.ruleId.testNumber}")
+        log.warn { test.message }
+        log.warn { "Location ${test.location.context} ${test.location.level}" }
+        log.warn { "Status ${test.status}" }
+        log.warn { "Test number ${test.ruleId.testNumber}" }
     }
     return failures.isEmpty()
-}
-
-class PdfContent(
-    private val html: String,
-    private val env: Environment,
-    override val contentType: ContentType = ContentType.Application.Pdf,
-) : OutgoingContent.ByteArrayContent() {
-    override fun bytes(): ByteArray = createPDFA(html, env)
 }

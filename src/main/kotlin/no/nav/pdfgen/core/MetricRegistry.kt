@@ -1,4 +1,4 @@
-package no.nav.pdfgen
+package no.nav.pdfgen.core
 
 import io.prometheus.client.Summary
 

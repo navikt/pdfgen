@@ -1,23 +1,22 @@
-package no.nav.pdfgen.template
+package no.nav.pdfgen.core.template
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
-import io.ktor.util.*
+import no.nav.pdfgen.core.templateRoot
 import java.nio.file.Files
-import no.nav.pdfgen.Environment
-import no.nav.pdfgen.templateRoot
+import kotlin.io.path.extension
 
 typealias TemplateMap = Map<Pair<String, String>, Template>
 
-fun setupHandlebars(env: Environment) =
+fun setupHandlebars() =
     Handlebars(FileTemplateLoader(templateRoot.toFile())).apply {
-        registerNavHelpers(this, env)
+        registerNavHelpers(this)
         infiniteLoops(true)
     }
 
-fun loadTemplates(env: Environment): TemplateMap =
+fun loadTemplates(): TemplateMap =
     Files.list(templateRoot)
         .filter { !Files.isHidden(it) && Files.isDirectory(it) }
         .map {
@@ -28,8 +27,7 @@ fun loadTemplates(env: Environment): TemplateMap =
                 val fileName = it.fileName.toString()
                 val templateName = fileName.substring(0..fileName.length - 5)
                 val templateBytes = Files.readAllBytes(it).toString(Charsets.UTF_8)
-                val xhtml =
-                    setupHandlebars(env).compile(StringTemplateSource(fileName, templateBytes))
+                val xhtml = setupHandlebars().compile(StringTemplateSource(fileName, templateBytes))
                 (applicationName to templateName) to xhtml
             }
         }

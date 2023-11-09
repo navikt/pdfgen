@@ -1,16 +1,16 @@
-package no.nav.pdfgen.template
+package no.nav.pdfgen.core.template
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import no.nav.pdfgen.core.PDFgen
+import no.nav.pdfgen.core.domain.Periode
+import no.nav.pdfgen.core.domain.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
-import no.nav.pdfgen.Environment
-import no.nav.pdfgen.domain.syfosoknader.Periode
-import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
+import java.util.Locale
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val dateFormatLong: DateTimeFormatter =
@@ -24,7 +24,7 @@ fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String =
         formatter.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
     }
 
-fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
+fun registerNavHelpers(handlebars: Handlebars) {
     handlebars.apply {
         registerHelper(
             "iso_to_nor_date",
@@ -102,16 +102,22 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
         registerHelper(
             "eq",
             Helper<Any?> { context, options ->
-                if (context?.toString() == options.param<Any?>(0)?.toString()) options.fn()
-                else options.inverse()
+                if (context?.toString() == options.param<Any?>(0)?.toString()) {
+                    options.fn()
+                } else {
+                    options.inverse()
+                }
             },
         )
 
         registerHelper(
             "not_eq",
             Helper<Any?> { context, options ->
-                if (context?.toString() != options.param<Any?>(0)?.toString()) options.fn()
-                else options.inverse()
+                if (context?.toString() != options.param<Any?>(0)?.toString()) {
+                    options.fn()
+                } else {
+                    options.inverse()
+                }
             },
         )
 
@@ -140,12 +146,16 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
 
         registerHelper(
             "image",
-            Helper<String> { context, _ -> if (context == null) "" else env.images[context] },
+            Helper<String> { context, _ ->
+                if (context == null) "" else PDFgen.getEnvironment().images[context]
+            },
         )
 
         registerHelper(
             "resource",
-            Helper<String> { context, _ -> env.resources[context]?.toString(Charsets.UTF_8) ?: "" },
+            Helper<String> { context, _ ->
+                PDFgen.getEnvironment().resources[context]?.toString(Charsets.UTF_8) ?: ""
+            },
         )
 
         registerHelper(
@@ -160,7 +170,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
             Helper<String> { context, _ ->
                 if (context == null) {
                     ""
-                } else
+                } else {
                     Handlebars.SafeString(
                         context
                             .trim()
@@ -170,6 +180,7 @@ fun registerNavHelpers(handlebars: Handlebars, env: Environment) {
                             .capitalizeWords("-")
                             .capitalizeWords("'"),
                     )
+                }
             },
         )
 

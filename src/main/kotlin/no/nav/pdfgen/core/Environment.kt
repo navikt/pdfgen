@@ -1,19 +1,29 @@
-package no.nav.pdfgen
+package no.nav.pdfgen.core
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.util.*
+import no.nav.pdfgen.core.util.FontMetadata
+import org.apache.pdfbox.io.IOUtils
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
-import kotlin.streams.toList
-import no.nav.pdfgen.util.FontMetadata
-import org.apache.pdfbox.io.IOUtils
+import kotlin.io.path.exists
+import kotlin.io.path.extension
 
-val templateRoot: Path = Paths.get("templates/")
-val imagesRoot: Path = Paths.get("resources/")
-val fontsRoot: Path = Paths.get("fonts/")
-
+val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
+val templateRoot: Path = getFromEnvOrDefault("TEMPLATES_PATH", "templates/")
+val imagesRoot: Path = getFromEnvOrDefault("RESOURCES_PATH", "resources/")
+val fontsRoot: Path = getFromEnvOrDefault("FONTS_PATH", "fonts/")
+class PDFgen {
+    companion object {
+        private var environment = Environment()
+        fun getEnvironment() = environment
+        fun init(environment: Environment) {
+            PDFgen.environment = environment
+        }
+    }
+}
 data class Environment(
     val images: Map<String, String> = loadImages(),
     val resources: Map<String, ByteArray> = loadResources(),
@@ -31,9 +41,7 @@ data class Environment(
 
         other as Environment
 
-        if (!colorProfile.contentEquals(other.colorProfile)) return false
-
-        return true
+        return colorProfile.contentEquals(other.colorProfile)
     }
 
     override fun hashCode(): Int {
@@ -41,7 +49,14 @@ data class Environment(
     }
 }
 
-fun loadImages() =
+private fun getFromEnvOrDefault(envVariableName: String, defaultPath: String): Path {
+    return System.getenv(envVariableName)?.let { Paths.get(it) } ?: run {
+        val fromDefaultPath = Paths.get(defaultPath)
+        return if (fromDefaultPath.exists()) fromDefaultPath else Paths.get(ClassLoader.getSystemResource(defaultPath).file.toString())
+    }
+}
+
+private fun loadImages() =
     Files.list(imagesRoot)
         .filter {
             val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
@@ -62,7 +77,7 @@ fun loadImages() =
         .toList()
         .toMap()
 
-fun loadResources() =
+private fun loadResources() =
     Files.list(imagesRoot)
         .filter {
             val validExtensions = setOf("svg")
