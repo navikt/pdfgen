@@ -6,11 +6,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
-import kotlin.io.path.Path
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -18,13 +17,18 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
+import org.testcontainers.utility.MountableFile
+import kotlin.io.path.Path
 
 internal class DockerImageTest {
     private val network = Network.newNetwork()
+
+    //
     private var pdfgenContainer =
         GenericContainer(
                 ImageFromDockerfile().withDockerfile(Path("./Dockerfile")),
             )
+            .withCopyToContainer(MountableFile.forHostPath(Path("./build/libs/app-2.0.0.jar")), "/app/app-2.0.0.jar")
             .withNetwork(network)
             .withExposedPorts(8080)
             .waitingFor(Wait.forHttp("/internal/is_ready"))
@@ -54,7 +58,6 @@ internal class DockerImageTest {
             Assertions.assertEquals(HttpStatusCode.OK, response.status)
         }
     }
-
     private fun GenericContainer<*>.buildUrl(url: String) =
         "http://${this.host}:${this.getMappedPort(8080)}/$url"
 }
