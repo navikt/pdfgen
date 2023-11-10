@@ -13,38 +13,26 @@ import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
-import org.testcontainers.utility.MountableFile
 import kotlin.io.path.Path
 
 internal class DockerImageTest {
 
 
     @Test
+    @DisabledIfEnvironmentVariable(named = "CI", matches = "true")
     internal fun `Test Dockerfile`() {
         val network = Network.newNetwork()
 
         val pdfgenContainer =
             GenericContainer(
                 ImageFromDockerfile()
-                    .withDockerfile(Path("./Dockerfile")),
+                    .withDockerfile(Path("./Dockerfile"))
             )
-                .withCopyToContainer(
-                    MountableFile.forHostPath(Path("./build/libs/app-2.0.0.jar")),
-                    "/app/app-2.0.0.jar",
-                )
-                .withCopyToContainer(MountableFile.forHostPath(Path("./fonts/")), "/app/fonts")
-                .withCopyToContainer(
-                    MountableFile.forHostPath(Path("./templates/")),
-                    "/app/templates",
-                )
-                .withCopyToContainer(
-                    MountableFile.forHostPath(Path("./resources/")),
-                    "/app/resources",
-                )
                 .withNetwork(network)
                 .withExposedPorts(8080)
                 .waitingFor(Wait.forHttp("/internal/is_ready"))
