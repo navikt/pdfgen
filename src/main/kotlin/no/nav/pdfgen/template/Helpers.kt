@@ -14,7 +14,7 @@ import no.nav.pdfgen.domain.syfosoknader.PeriodeMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val dateFormatLong: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("d. MMMM yyyy").withLocale(Locale("no", "NO"))
+    DateTimeFormatter.ofPattern("d. MMMM yyyy").withLocale(Locale.of("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
 fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String =
