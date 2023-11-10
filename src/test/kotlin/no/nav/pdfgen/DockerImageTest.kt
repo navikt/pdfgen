@@ -21,24 +21,34 @@ import org.testcontainers.utility.MountableFile
 import kotlin.io.path.Path
 
 internal class DockerImageTest {
-    private val network = Network.newNetwork()
 
-    //
-    private var pdfgenContainer =
-        GenericContainer(
-                ImageFromDockerfile().withDockerfile(Path("./Dockerfile")),
-            )
-            .withCopyToContainer(MountableFile.forHostPath(Path("./build/libs/app-2.0.0.jar")), "/app/app-2.0.0.jar")
-            .withCopyToContainer(MountableFile.forHostPath(Path("./fonts/")), "/app/fonts/")
-            .withCopyToContainer(MountableFile.forHostPath(Path("./templates/")), "/app/templates/")
-            .withCopyToContainer(MountableFile.forHostPath(Path("./resources/")), "/app/resources/")
-            .withNetwork(network)
-            .withExposedPorts(8080)
-            .waitingFor(Wait.forHttp("/internal/is_ready"))
-            .apply { start() }
 
     @Test
     internal fun `Test Dockerfile`() {
+        val network = Network.newNetwork()
+
+        val pdfgenContainer =
+            GenericContainer(
+                ImageFromDockerfile()
+                    .withDockerfile(Path("./Dockerfile")),
+            )
+                .withCopyToContainer(
+                    MountableFile.forHostPath(Path("./build/libs/app-2.0.0.jar")),
+                    "/app/app-2.0.0.jar",
+                )
+                .withCopyToContainer(MountableFile.forHostPath(Path("./fonts/")), "/app/fonts")
+                .withCopyToContainer(
+                    MountableFile.forHostPath(Path("./templates/")),
+                    "/app/templates",
+                )
+                .withCopyToContainer(
+                    MountableFile.forHostPath(Path("./resources/")),
+                    "/app/resources",
+                )
+                .withNetwork(network)
+                .withExposedPorts(8080)
+                .waitingFor(Wait.forHttp("/internal/is_ready"))
+                .apply { start() }
 
         runBlocking {
             val pdfgenContainerUrlIsReady = pdfgenContainer.buildUrl("internal/is_ready")
@@ -61,6 +71,7 @@ internal class DockerImageTest {
             Assertions.assertEquals(HttpStatusCode.OK, response.status)
         }
     }
+
     private fun GenericContainer<*>.buildUrl(url: String) =
         "http://${this.host}:${this.getMappedPort(8080)}/$url"
 }
