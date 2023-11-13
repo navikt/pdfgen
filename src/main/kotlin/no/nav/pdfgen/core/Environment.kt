@@ -2,28 +2,32 @@ package no.nav.pdfgen.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.pdfgen.core.util.FontMetadata
-import org.apache.pdfbox.io.IOUtils
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.exists
 import kotlin.io.path.extension
+import no.nav.pdfgen.core.util.FontMetadata
+import org.apache.pdfbox.io.IOUtils
 
 val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
 val templateRoot: Path = getFromEnvOrDefault("TEMPLATES_PATH", "templates/")
 val imagesRoot: Path = getFromEnvOrDefault("RESOURCES_PATH", "resources/")
 val fontsRoot: Path = getFromEnvOrDefault("FONTS_PATH", "fonts/")
+
 class PDFgen {
     companion object {
         private var environment = Environment()
+
         fun getEnvironment() = environment
+
         fun init(environment: Environment) {
             PDFgen.environment = environment
         }
     }
 }
+
 data class Environment(
     val images: Map<String, String> = loadImages(),
     val resources: Map<String, ByteArray> = loadResources(),
@@ -50,10 +54,12 @@ data class Environment(
 }
 
 private fun getFromEnvOrDefault(envVariableName: String, defaultPath: String): Path {
-    return System.getenv(envVariableName)?.let { Paths.get(it) } ?: run {
-        val fromDefaultPath = Paths.get(defaultPath)
-        return if (fromDefaultPath.exists()) fromDefaultPath else Paths.get(ClassLoader.getSystemResource(defaultPath).file.toString())
-    }
+    return System.getenv(envVariableName)?.let { Paths.get(it) }
+        ?: run {
+            val fromDefaultPath = Paths.get(defaultPath)
+            return if (fromDefaultPath.exists()) fromDefaultPath
+            else Paths.get(ClassLoader.getSystemResource(defaultPath).file.toString())
+        }
 }
 
 private fun loadImages() =

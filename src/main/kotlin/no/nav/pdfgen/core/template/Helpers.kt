@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import no.nav.pdfgen.core.PDFgen
-import no.nav.pdfgen.core.domain.Periode
-import no.nav.pdfgen.core.domain.PeriodeMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import no.nav.pdfgen.core.PDFgen
+import no.nav.pdfgen.core.domain.Periode
+import no.nav.pdfgen.core.domain.PeriodeMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val dateFormatLong: DateTimeFormatter =

@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+env:
+  NEW_VERSION: ${{ github.event.release.tag_name }}
 
 permissions:
   contents: write
@@ -17,22 +19,28 @@ jobs:
         with:
           java-version: 21
           distribution: 'temurin'
-      - uses: actions/cache@v3
+      - name: Gradle wrapper validation
+        uses: gradle/wrapper-validation-action@v1
+      - name: Setup gradle dependency cache
+        uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/.*gradle*') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            ${{ runner.os }}-gradle-
       - name: Build
-        run: mvn -B -q -fae clean install
+        run: ./gradlew -Pversion=${{ env.NEW_VERSION }} build
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
-          release-type: maven
+          release-type: java
           package-name: pdfgen-core
-      - name: Deploy to Github Package
+          include-v-in-tag: false
+      - name: Upload to github packages
         if: ${{ steps.release.outputs.release_created }}
+        run: ./gradlew -Pversion=${{ env.NEW_VERSION }} publish
         env:
           GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn --settings .m2/maven-settings.xml source:jar-no-fork deploy -DskipTests=true -Dmaven.wagon.http.pool=false
+          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

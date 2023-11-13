@@ -3,6 +3,12 @@ package no.nav.pdfgen.core.pdf
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.Calendar
+import javax.imageio.ImageIO
 import no.nav.pdfgen.core.PDFgen
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
@@ -23,12 +29,6 @@ import org.apache.xmpbox.xml.XmpSerializer
 import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import java.io.OutputStream
-import java.util.Calendar
-import javax.imageio.ImageIO
 
 private val log = KotlinLogging.logger {}
 

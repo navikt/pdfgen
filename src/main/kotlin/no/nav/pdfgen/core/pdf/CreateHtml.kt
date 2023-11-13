@@ -5,12 +5,12 @@ import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.nio.file.Files
+import java.nio.file.Paths
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
 import no.nav.pdfgen.core.objectMapper
 import no.nav.pdfgen.core.template.loadTemplates
-import java.nio.file.Files
-import java.nio.file.Paths
 
 private val log = KotlinLogging.logger {}
 

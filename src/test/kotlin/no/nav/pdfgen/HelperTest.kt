@@ -27,6 +27,7 @@ internal class HelperTest {
     fun init() {
         PDFgen.init(Environment())
     }
+
     private fun jsonContext(jsonNode: JsonNode): Context {
         println(ObjectMapper().writeValueAsString(jsonNode))
         return Context.newBuilder(jsonNode)

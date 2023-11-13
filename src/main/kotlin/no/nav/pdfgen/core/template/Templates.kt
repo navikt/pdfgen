@@ -4,9 +4,9 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.github.jknack.handlebars.io.StringTemplateSource
-import no.nav.pdfgen.core.templateRoot
 import java.nio.file.Files
 import kotlin.io.path.extension
+import no.nav.pdfgen.core.templateRoot
 
 typealias TemplateMap = Map<Pair<String, String>, Template>
 
