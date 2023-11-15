@@ -1,14 +1,10 @@
 package no.nav.pdfgen
 
-// import no.nav.pdfgen.core.api.render
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.jknack.handlebars.Context
-import com.github.jknack.handlebars.JsonNodeValueResolver
-import com.github.jknack.handlebars.context.MapValueResolver
 import java.io.ByteArrayInputStream
-import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
 import no.nav.pdfgen.core.pdf.createPDFA
+import no.nav.pdfgen.core.pdf.render
 import no.nav.pdfgen.core.template.loadTemplates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -100,27 +96,4 @@ internal class RenderingTest {
             assertEquals(true, validationResult.isCompliant)
         }
     }
-}
-
-// TODO remove this and use pdfgen-core method
-fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
-    return HANDLEBARS_RENDERING_SUMMARY.startTimer()
-        .use {
-            loadTemplates()[directoryName to template]?.apply(
-                Context.newBuilder(jsonNode)
-                    .resolver(
-                        JsonNodeValueResolver.INSTANCE,
-                        MapValueResolver.INSTANCE,
-                    )
-                    .build(),
-            )
-        }
-        ?.let { html ->
-            /* Uncomment to output html to file for easier debug
-             *        File("pdf.html").bufferedWriter().use { out ->
-             *            out.write(html)
-             *        }
-             */
-            html
-        }
 }
