@@ -1,10 +1,6 @@
 package no.nav.pdfgen.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.github.jknack.handlebars.Context
-import com.github.jknack.handlebars.JsonNodeValueResolver
-import com.github.jknack.handlebars.Template
-import com.github.jknack.handlebars.context.MapValueResolver
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.contentType
@@ -23,20 +19,24 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.logstash.logback.argument.StructuredArguments
-import no.nav.pdfgen.*
-import no.nav.pdfgen.pdf.PdfContent
-import no.nav.pdfgen.pdf.createPDFA
-import no.nav.pdfgen.template.TemplateMap
-import no.nav.pdfgen.template.loadTemplates
+import no.nav.pdfgen.core.Environment
+import no.nav.pdfgen.core.OPENHTMLTOPDF_RENDERING_SUMMARY
+import no.nav.pdfgen.core.objectMapper
+import no.nav.pdfgen.core.pdf.createHtml
+import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
+import no.nav.pdfgen.core.pdf.createPDFA
+import no.nav.pdfgen.log
 
-fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
+fun Routing.setupGeneratePdfApi(env: Environment) {
     route("/api/v1/genpdf") {
         if (!env.disablePdfGet) {
             get("/{applicationName}/{template}") {
-                val hotTemplates = loadTemplates(env)
-                createHtml(call, hotTemplates, true)?.let { document ->
-                    call.respond(PdfContent(document, env))
+                val template = call.parameters["template"]!!
+                val applicationName = call.parameters["applicationName"]!!
+                val jsonNode = hotTemplateData(applicationName, template)
+
+                createHtml(template, applicationName, jsonNode)?.let { document ->
+                    call.respond(createPDFA(document))
                 }
                     ?: call.respondText(
                         "Template or application not found",
@@ -46,8 +46,11 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
         }
         post("/{applicationName}/{template}") {
             val startTime = System.currentTimeMillis()
-            createHtml(call, templates)?.let { document ->
-                call.respond(PdfContent(document, env))
+            val template = call.parameters["template"]!!
+            val applicationName = call.parameters["applicationName"]!!
+
+            createHtmlFromTemplateData(template, applicationName)?.let { document ->
+                call.respond(createPDFA(document))
                 log.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
             }
                 ?: call.respondText(
@@ -55,6 +58,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
                     status = HttpStatusCode.NotFound
                 )
         }
+
         post("/html/{applicationName}") {
             val applicationName = call.parameters["applicationName"]!!
             val timer =
@@ -62,7 +66,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
 
             val html = call.receiveText()
 
-            call.respond(PdfContent(html, env))
+            call.respond(createPDFA(html))
             log.info(
                 "Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms"
             )
@@ -78,7 +82,7 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
                     withContext(Dispatchers.IO) {
                         call.receive<InputStream>().use { inputStream ->
                             ByteArrayOutputStream().use { outputStream ->
-                                createPDFA(inputStream, outputStream, env)
+                                createPDFA(inputStream, outputStream)
                                 call.respondBytes(
                                     outputStream.toByteArray(),
                                     contentType = ContentType.Application.Pdf
@@ -98,8 +102,11 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
         route("/api/v1/genhtml") {
             if (!env.disablePdfGet) {
                 get("/{applicationName}/{template}") {
-                    val hotTemplates = loadTemplates(env)
-                    createHtml(call, hotTemplates, true)?.let { call.respond(it) }
+                    val template = call.parameters["template"]!!
+                    val applicationName = call.parameters["applicationName"]!!
+                    val jsonNode = hotTemplateData(applicationName, template)
+
+                    createHtml(template, applicationName, jsonNode)?.let { call.respond(it) }
                         ?: call.respondText(
                             "Template or application not found",
                             status = HttpStatusCode.NotFound
@@ -109,7 +116,11 @@ fun Routing.setupGeneratePdfApi(env: Environment, templates: TemplateMap) {
 
             post("/{applicationName}/{template}") {
                 val startTime = System.currentTimeMillis()
-                createHtml(call, templates)?.let {
+                val template = call.parameters["template"]!!
+                val applicationName = call.parameters["applicationName"]!!
+                val jsonNode: JsonNode = call.receive()
+
+                createHtml(template, applicationName, jsonNode)?.let {
                     call.respond(it)
                     log.info("Done generating HTML in ${System.currentTimeMillis() - startTime}ms")
                 }
@@ -134,46 +145,4 @@ private fun hotTemplateData(applicationName: String, template: String): JsonNode
             JsonNode::class.java,
         )
     return data
-}
-
-private suspend fun createHtml(
-    call: ApplicationCall,
-    templates: TemplateMap,
-    useHottemplate: Boolean = false,
-): String? {
-    val template = call.parameters["template"]!!
-    val applicationName = call.parameters["applicationName"]!!
-    val jsonNode =
-        if (useHottemplate) hotTemplateData(applicationName, template) else call.receive()
-    log.debug("JSON: {}", objectMapper.writeValueAsString(jsonNode))
-    return render(applicationName, template, templates, jsonNode)
-}
-
-fun render(
-    applicationName: String,
-    template: String,
-    templates: Map<Pair<String, String>, Template>,
-    jsonNode: JsonNode
-): String? {
-    return HANDLEBARS_RENDERING_SUMMARY.startTimer()
-        .use {
-            templates[applicationName to template]?.apply(
-                Context.newBuilder(jsonNode)
-                    .resolver(
-                        JsonNodeValueResolver.INSTANCE,
-                        MapValueResolver.INSTANCE,
-                    )
-                    .build(),
-            )
-        }
-        ?.let { html ->
-            log.debug("Generated HTML {}", StructuredArguments.keyValue("html", html))
-
-            /* Uncomment to output html to file for easier debug
-             *        File("pdf.html").bufferedWriter().use { out ->
-             *            out.write(html)
-             *        }
-             */
-            html
-        }
 }

@@ -3,9 +3,9 @@ package no.nav.pdfgen
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.io.ByteArrayInputStream
-import no.nav.pdfgen.api.render
-import no.nav.pdfgen.pdf.createPDFA
-import no.nav.pdfgen.template.loadTemplates
+import no.nav.pdfgen.core.pdf.createPDFA
+import no.nav.pdfgen.core.pdf.render
+import no.nav.pdfgen.core.template.loadTemplates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,8 +15,7 @@ import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
 
 internal class RenderingTest {
-    private val env = Environment()
-    private val templates = loadTemplates(env)
+    private val templates = loadTemplates()
     private val objectMapper = ObjectMapper()
 
     @BeforeEach
@@ -38,7 +37,7 @@ internal class RenderingTest {
                 println(
                     "Renders the template $templateName for application $applicationName without exceptions"
                 )
-                render(applicationName, templateName, templates, node)
+                render(applicationName, templateName, node)
             }
     }
 
@@ -61,8 +60,8 @@ internal class RenderingTest {
                 println(
                     "Renders the template $templateName for application $applicationName to a PDF/A compliant document"
                 )
-                val doc = render(applicationName, templateName, templates, node)
-                val pdf = createPDFA(doc!!, env)
+                val doc = render(applicationName, templateName, node)
+                val pdf = createPDFA(doc!!)
                 Foundries.defaultInstance().createParser(ByteArrayInputStream(pdf)).use { that ->
                     val validationResult = validator.validate(that)
                     validationResult.testAssertions
@@ -83,7 +82,7 @@ internal class RenderingTest {
         val pdfaFlavour = PDFAFlavour.PDFA_2_U
         val validator = Foundries.defaultInstance().createValidator(pdfaFlavour, false)
         val doc = testTemplateIncludedFonts
-        val pdf = createPDFA(doc, env)
+        val pdf = createPDFA(doc)
         Foundries.defaultInstance().createParser(ByteArrayInputStream(pdf)).use {
             val validationResult = validator.validate(it)
             validationResult.testAssertions

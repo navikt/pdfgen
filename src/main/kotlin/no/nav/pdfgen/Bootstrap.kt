@@ -3,8 +3,6 @@ package no.nav.pdfgen
 // Uncommemt to enable debug to file
 // import java.io.File
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Template
 import com.openhtmltopdf.slf4j.Slf4jLogger
 import com.openhtmltopdf.util.XRLog
@@ -32,12 +30,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.nav.pdfgen.api.setupGeneratePdfApi
-import no.nav.pdfgen.template.loadTemplates
+import no.nav.pdfgen.core.PDFgen
+import no.nav.pdfgen.core.template.loadTemplates
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
-
-val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
 val log: Logger = LoggerFactory.getLogger("pdfgen")
 
@@ -49,8 +46,10 @@ fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     VeraGreenfieldFoundryProvider.initialise()
 
-    val env = Environment()
-    val templates = loadTemplates(env)
+    PDFgen.init(no.nav.pdfgen.core.Environment())
+
+    val env = no.nav.pdfgen.core.Environment()
+    val templates = loadTemplates()
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
     XRLog.setLoggerImpl(Slf4jLogger())
@@ -92,7 +91,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                     }
                 }
             }
-            setupGeneratePdfApi(env, templates)
+            setupGeneratePdfApi(env)
         }
     }
 }

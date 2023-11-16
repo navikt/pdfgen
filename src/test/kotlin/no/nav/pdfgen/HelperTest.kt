@@ -8,16 +8,15 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
-import no.nav.pdfgen.template.registerNavHelpers
+import no.nav.pdfgen.core.template.registerNavHelpers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 internal class HelperTest {
     val jsonNodeFactory = JsonNodeFactory.instance
-    private val env = Environment()
     private val handlebars =
-        Handlebars(ClassPathTemplateLoader()).apply { registerNavHelpers(this, env) }
+        Handlebars(ClassPathTemplateLoader()).apply { registerNavHelpers(this) }
 
     private fun jsonContext(jsonNode: JsonNode): Context {
         println(ObjectMapper().writeValueAsString(jsonNode))

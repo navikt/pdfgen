@@ -10,6 +10,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import kotlin.io.path.Path
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -18,10 +19,8 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
-import kotlin.io.path.Path
 
 internal class DockerImageTest {
-
 
     @Test
     @DisabledIfEnvironmentVariable(named = "CI", matches = "true")
@@ -29,10 +28,7 @@ internal class DockerImageTest {
         val network = Network.newNetwork()
 
         val pdfgenContainer =
-            GenericContainer(
-                ImageFromDockerfile()
-                    .withDockerfile(Path("./Dockerfile"))
-            )
+            GenericContainer(ImageFromDockerfile().withDockerfile(Path("./Dockerfile")))
                 .withNetwork(network)
                 .withExposedPorts(8080)
                 .waitingFor(Wait.forHttp("/internal/is_ready"))

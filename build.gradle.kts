@@ -16,6 +16,7 @@ val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion=  "1.19.2"
+val pdfgencoreVersion = "1.0.3"
 
 
 plugins {
@@ -67,10 +68,14 @@ tasks {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+    }
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
@@ -78,12 +83,7 @@ dependencies {
     implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
-    implementation("org.jsoup:jsoup:$jsoupVersion")
-    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
