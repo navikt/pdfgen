@@ -2,7 +2,7 @@ group = "no.nav.pdfgen"
 version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.15.3"
+val jacksonVersion = "2.16.0"
 val jaxbVersion = "4.0.4"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.16.2"
@@ -15,7 +15,7 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
-val testcontainersVersion=  "1.19.1"
+val testcontainersVersion=  "1.19.2"
 val pdfgencoreVersion = "1.0.3"
 
 
