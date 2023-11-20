@@ -16,7 +16,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import no.nav.pdfgen.core.Environment
+import no.nav.pdfgen.PDFGenEnvironment
 import no.nav.pdfgen.core.OPENHTMLTOPDF_RENDERING_SUMMARY
 import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
@@ -25,7 +25,7 @@ import no.nav.pdfgen.log
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-fun Routing.setupGeneratePdfApi(env: Environment) {
+fun Routing.setupGeneratePdfApi(env: PDFGenEnvironment = PDFGenEnvironment()) {
     route("/api/v1/genpdf") {
         if (!env.disablePdfGet) {
             get("/{applicationName}/{template}") {
