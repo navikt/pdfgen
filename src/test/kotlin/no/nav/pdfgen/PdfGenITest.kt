@@ -16,6 +16,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
 import kotlinx.coroutines.*
+import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.template.loadTemplates
 import org.apache.pdfbox.io.IOUtils
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -28,7 +29,7 @@ internal class PdfGenITest {
     private val applicationPort = getRandomPort()
     private val application = initializeApplication(applicationPort)
     private val client = HttpClient(CIO) { expectSuccess = false }
-    private val templates = loadTemplates()
+    private val templates = Environment().templates
     private val timeoutSeconds: Long = 10
 
     @AfterEach

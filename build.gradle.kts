@@ -16,7 +16,7 @@ val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion=  "1.19.3"
-val pdfgencoreVersion = "1.0.3"
+val pdfgencoreVersion = "1.1.0"
 
 
 plugins {
@@ -68,6 +68,7 @@ tasks {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     }

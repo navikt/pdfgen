@@ -2,6 +2,7 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.pdfgen.core.Environment
 import java.io.ByteArrayInputStream
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.core.pdf.render
@@ -15,7 +16,7 @@ import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
 
 internal class RenderingTest {
-    private val templates = loadTemplates()
+    private val templates = Environment().templates
     private val objectMapper = ObjectMapper()
 
     @BeforeEach
