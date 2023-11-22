@@ -12,6 +12,7 @@ import io.ktor.http.content.TextContent
 import io.ktor.http.withCharset
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.call
+import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
@@ -39,18 +40,20 @@ import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 
 val log: Logger = LoggerFactory.getLogger("pdfgen")
 
+
 fun main() {
-    initializeApplication(8580).start(wait = true)
+    initializeApplication(no.nav.pdfgen.Environment().port).start(wait = true)
 }
 
 fun initializeApplication(port: Int): ApplicationEngine {
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     VeraGreenfieldFoundryProvider.initialise()
 
-    val environment = Environment()
-    PDFGenCore.init(environment)
+    val environment = no.nav.pdfgen.Environment()
+    val coreEnvironment = Environment()
+    PDFGenCore.init(coreEnvironment)
 
-    val templates = environment.templates
+    val templates = coreEnvironment.templates
     val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
     XRLog.setLoggerImpl(Slf4jLogger())
@@ -76,6 +79,11 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 )
             }
         }
+        install(createApplicationPlugin(name = "ReloadPDFGenCorePlugin") {
+            onCallReceive { call ->
+                if (environment.isDevMode) PDFGenCore.reloadEnvironment()
+            }
+        })
         routing {
             get("/internal/is_ready") { call.respondText("I'm ready") }
             get("/internal/is_alive") { call.respondText("I'm alive") }
@@ -92,7 +100,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
                     }
                 }
             }
-            setupGeneratePdfApi()
+            setupGeneratePdfApi(environment)
         }
     }
 }
