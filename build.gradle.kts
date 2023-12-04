@@ -22,7 +22,7 @@ val pdfgencoreVersion = "1.1.0"
 plugins {
     id("application")
     kotlin("jvm") version "1.9.21"
-    id("com.diffplug.spotless") version "6.23.2"
+    id("com.diffplug.spotless") version "6.23.3"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.github.ben-manes.versions") version "0.50.0"
 }
