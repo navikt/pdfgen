@@ -1,4 +1,4 @@
-name: Publish master
+name: Publish main
 on:
   release:
     types: [published]
@@ -17,8 +17,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: 'master'
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
