@@ -14,6 +14,8 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.pdfgen.Environment
@@ -22,8 +24,6 @@ import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.log
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 
 fun Routing.setupGeneratePdfApi(env: Environment = Environment()) {
     route("/api/v1/genpdf") {

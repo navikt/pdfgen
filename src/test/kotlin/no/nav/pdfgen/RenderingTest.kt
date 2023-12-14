@@ -2,11 +2,10 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.pdfgen.core.Environment
 import java.io.ByteArrayInputStream
+import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.core.pdf.render
-import no.nav.pdfgen.core.template.loadTemplates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

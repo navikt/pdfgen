@@ -33,13 +33,11 @@ import kotlinx.coroutines.launch
 import no.nav.pdfgen.api.setupGeneratePdfApi
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.PDFGenCore
-
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 
 val log: Logger = LoggerFactory.getLogger("pdfgen")
-
 
 fun main() {
     initializeApplication(no.nav.pdfgen.Environment().port).start(wait = true)
@@ -79,11 +77,11 @@ fun initializeApplication(port: Int): ApplicationEngine {
                 )
             }
         }
-        install(createApplicationPlugin(name = "ReloadPDFGenCorePlugin") {
-            onCallReceive { call ->
-                if (environment.isDevMode) PDFGenCore.reloadEnvironment()
+        install(
+            createApplicationPlugin(name = "ReloadPDFGenCorePlugin") {
+                onCallReceive { call -> if (environment.isDevMode) PDFGenCore.reloadEnvironment() }
             }
-        })
+        )
         routing {
             get("/internal/is_ready") { call.respondText("I'm ready") }
             get("/internal/is_alive") { call.respondText("I'm alive") }
