@@ -10,7 +10,7 @@ val kluentVersion = "1.72"
 val ktorVersion = "2.3.9"
 val logbackVersion = "1.5.3"
 val logstashEncoderVersion = "7.4"
-val openHtmlToPdfVersion = "1.0.10"
+val openHtmlToPdfVersion = "1.1.4"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.2"
 val verapdfVersion = "1.24.1"
@@ -80,9 +80,9 @@ dependencies {
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
+    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
+    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
