@@ -16,7 +16,7 @@ val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion=  "1.19.4"
-val pdfgencoreVersion = "1.1.5"
+val pdfgencoreVersion = "1.1.6"
 
 
 plugins {
