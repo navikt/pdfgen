@@ -17,8 +17,8 @@ import java.nio.file.Paths
 import java.util.concurrent.Executors
 import kotlinx.coroutines.*
 import no.nav.pdfgen.core.Environment
-import org.apache.pdfbox.Loader
 import org.apache.pdfbox.io.IOUtils
+import org.apache.pdfbox.pdmodel.PDDocument
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -64,7 +64,7 @@ internal class PdfGenITest {
                 val bytes = runBlocking { response.readBytes() }
                 assertNotEquals(null, bytes)
                 // Load the document in pdfbox to ensure it's valid
-                val document = Loader.loadPDF(bytes)
+                val document = PDDocument.load(bytes)
                 assertNotEquals(null, document)
                 assertEquals(true, document.pages.count > 0)
                 println(document.documentInformation.title)
@@ -115,7 +115,7 @@ internal class PdfGenITest {
         assertNotEquals(null, bytes)
         Files.write(Paths.get("build", "html.pdf"), bytes)
         // Load the document in pdfbox to ensure its valid
-        val document = Loader.loadPDF(bytes)
+        val document = PDDocument.load(bytes)
         assertNotEquals(null, document)
         assertEquals(true, document.pages.count > 0)
         println(document.documentInformation.title)
@@ -156,7 +156,7 @@ internal class PdfGenITest {
                             assertEquals(false, bytes.isEmpty())
                             Files.write(Paths.get("build", outputFile), bytes)
                             // Load the document in pdfbox to ensure its valid
-                            val document = Loader.loadPDF(bytes)
+                            val document = PDDocument.load(bytes)
                             assertNotEquals(null, document)
                             assertEquals(true, document.pages.count > 0)
                             document.close()
