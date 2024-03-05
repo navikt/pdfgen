@@ -10,13 +10,13 @@ val kluentVersion = "1.72"
 val ktorVersion = "2.3.9"
 val logbackVersion = "1.5.3"
 val logstashEncoderVersion = "7.4"
-val openHtmlToPdfVersion = "1.0.10"
+val openHtmlToPdfVersion = "pdfbox2-65c2c5010f84b2daa5821971c9c68cd330463830"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.2"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion=  "1.19.6"
-val pdfgencoreVersion = "1.1.5"
+val pdfgencoreVersion = "1.1.8"
 
 
 plugins {
@@ -72,6 +72,13 @@ repositories {
     maven {
         url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     }
+    maven {
+        url = uri("https://maven.pkg.github.com/openhtmltopdf/openhtmltopdf")
+        credentials {
+            username = "token"
+            password = System.getenv("ORG_GRADLE_PROJECT_githubPassword")
+        }
+    }
 }
 
 dependencies {
@@ -80,9 +87,9 @@ dependencies {
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
+    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
+    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
