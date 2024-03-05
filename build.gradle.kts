@@ -10,13 +10,13 @@ val kluentVersion = "1.72"
 val ktorVersion = "2.3.9"
 val logbackVersion = "1.5.3"
 val logstashEncoderVersion = "7.4"
-val openHtmlToPdfVersion = "1.1.4"
+val openHtmlToPdfVersion = "pdfbox2-65c2c5010f84b2daa5821971c9c68cd330463830"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.2"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion=  "1.19.6"
-val pdfgencoreVersion = "1.1.5"
+val pdfgencoreVersion = "1.1.8"
 
 
 plugins {
@@ -71,6 +71,13 @@ repositories {
     mavenLocal()
     maven {
         url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+    }
+    maven {
+        url = uri("https://maven.pkg.github.com/openhtmltopdf/openhtmltopdf")
+        credentials {
+            username = "token"
+            password = System.getenv("GITHUB_TOKEN")
+        }
     }
 }
 
