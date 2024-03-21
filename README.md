@@ -69,6 +69,14 @@ HTML endpoints on `/api/v1/genhtml/<application>/<template>`.
 
 By default pdfgen will load all assets (`templates`, `resources`, `data`) to memory on startup. Any change on files inside these folders will not be loaded before a restart of the application. However if you are developing templates you can make the application to reload the assets on every request by setting `DEV_MODE=true`.
 
+### Release
+We use default github release, 
+This project uses [semantic versioning](https://semver.org/) and does NOT prefix tags or release titles with `v` i.e. use `1.2.3` instead of `v1.2.3` 
+
+see guide about how to relese:[creating release github](
+https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release)
+
+
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 
