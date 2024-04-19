@@ -79,7 +79,7 @@ fun initializeApplication(port: Int): ApplicationEngine {
         }
         install(
             createApplicationPlugin(name = "ReloadPDFGenCorePlugin") {
-                onCallReceive { call -> if (environment.isDevMode) PDFGenCore.reloadEnvironment() }
+                onCall { _ -> if (environment.isDevMode) PDFGenCore.reloadEnvironment() }
             }
         )
         routing {
