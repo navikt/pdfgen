@@ -32,7 +32,7 @@ COPY resources /app/resources # additional resources
 ```
 
 Check GitHub releases to find the latest `release` version 
-Check [Github releases](https://github.com/navikt/pdfgen/releases) to find the latest `release` version
+Check [GitHub releases](https://github.com/navikt/pdfgen/releases) to find the latest `release` version
 
 Set up the basic folder structure
 ```bash
@@ -67,7 +67,7 @@ The template and data directory structure both follow the `<application>/<templa
 To enable HTML document support, use the environment variable `ENABLE_HTML_ENDPOINT=true`. This will enable the 
 HTML endpoints on `/api/v1/genhtml/<application>/<template>`. 
 
-By default pdfgen will load all assets (`templates`, `resources`, `data`) to memory on startup. Any change on files inside these folders will not be loaded before a restart of the application. However if you are developing templates you can make the application to reload the assets on every request by setting `DEV_MODE=true`.
+By default, pdfgen will load all assets (`templates`, `resources`, `data`) to memory on startup. Any change on files inside these folders will not be loaded before a restart of the application. However if you are developing templates you can make the application to reload the assets on every request by setting `DEV_MODE=true`.
 
 ### Getting github package registry packages
 Some packages used in this repo is uploaded to the GitHub Package Registry which requires authentication. 

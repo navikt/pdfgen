@@ -17,6 +17,7 @@ val verapdfVersion = "1.24.2"
 val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.19.7"
 val pdfgencoreVersion = "1.1.14"
+val commonsCompressVersion = "1.26.1"
 
 
 plugins {
@@ -113,6 +114,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
+    constraints {
+        implementation("org.apache.commons:commons-compress:$commonsCompressVersion") {
+            because("Due to vulnerabilities, see CVE-2024-26308")
+        }
+    }
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
     testImplementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 }
