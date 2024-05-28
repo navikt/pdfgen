@@ -11,4 +11,7 @@ ENV DISABLE_PDF_GET="true"
 ENV ENABLE_HTML_ENDPOINT="false"
 
 EXPOSE 8080
+
+USER nonroot
+
 CMD [ "app.jar" ]
