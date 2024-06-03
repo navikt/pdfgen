@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = "no.nav.pdfgen"
 version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
@@ -18,6 +20,7 @@ val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.19.8"
 val pdfgencoreVersion = "1.1.17"
 val commonsCompressVersion = "1.26.2"
+val javaVersion = JvmTarget.JVM_21
 
 
 plugins {
@@ -32,6 +35,12 @@ application {
     mainClass.set("no.nav.pdfgen.BootstrapKt")
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(javaVersion)
+    }
+}
+
 tasks {
 
     test {
@@ -40,10 +49,6 @@ tasks {
             events("passed", "skipped", "failed")
             showStandardStreams = true
         }
-    }
-
-    compileKotlin{
-        kotlinOptions.jvmTarget = "21"
     }
 
     shadowJar {
