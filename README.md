@@ -2,6 +2,9 @@
 
 [![Build main](https://github.com/navikt/pdfgen/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/navikt/pdfgen/actions/workflows/build.yml)
 
+![GitHub Release](https://img.shields.io/github/v/release/navikt/pdfgen)
+
+
 Repository for `pdfgen`, an application written in Kotlin used to create PDFs and HTMLs
 
 ## Technologies & Tools
