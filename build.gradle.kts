@@ -19,7 +19,7 @@ val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.20.1"
 val pdfgencoreVersion = "1.1.23"
-val commonsCompressVersion = "1.27.0"
+val commonsCompressVersion = "1.27.1"
 val javaVersion = JvmTarget.JVM_21
 
 
