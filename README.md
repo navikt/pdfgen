@@ -58,7 +58,14 @@ mkdir {templates,data}/your_teamname # your_teamname can be anything, but it'll 
 ## Developing pdfgen
 
 ### Build and run tests
-`./gradlew shadowJar`
+```shell script
+./gradlew shadowJar
+```
+or on windows
+```shell script
+gradlew.bat shadowJar
+```
+
 
 Running the application locally enables a GET endpoint at `/api/v1/genpdf/<application>/<template>`
 which looks for test data at `data/<application>/<template>.json` and outputs a PDF to your browser.
@@ -116,7 +123,7 @@ or the command line:
 ```
 
 ### Release
-We use default github release, 
+We use default GitHub release, 
 This project uses [semantic versioning](https://semver.org/) and does NOT prefix tags or release titles with `v` i.e. use `1.2.3` instead of `v1.2.3` 
 
 see guide about how to relese:[creating release github](
@@ -126,7 +133,9 @@ https://docs.github.com/en/repositories/releasing-projects-on-github/managing-re
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 
-```./gradlew wrapper --gradle-version $gradleVersjon```
+```shell script
+./gradlew wrapper --gradle-version $gradleVersjon
+```
 
 
 ## pdfgen 2.0

@@ -78,7 +78,7 @@ internal class RenderingTest {
     }
 
     @Test
-    internal fun `All pdfs should create a PDFA compliant file eenders a HTML payload to a PDFA compliant document`() {
+    internal fun `All pdfs should create a PDFA compliant file renders a HTML payload to a PDFA compliant document`() {
         val pdfaFlavour = PDFAFlavour.PDFA_2_U
         val validator = Foundries.defaultInstance().createValidator(pdfaFlavour, false)
         val doc = testTemplateIncludedFonts

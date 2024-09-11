@@ -53,7 +53,7 @@ internal class PdfGenITest {
                         ?: "{}"
 
                 val response =
-                    runBlocking<HttpResponse> {
+                    runBlocking {
                         client.post(
                             "http://localhost:$applicationPort/api/v1/genpdf/$applicationName/$templateName"
                         ) {
@@ -120,18 +120,29 @@ internal class PdfGenITest {
         assertEquals(true, document.pages.count > 0)
         println(document.documentInformation.title)
         document.close()
-
-        /* openhtmltopdf seems to strip any input that causes non-conforming PDF/A, so i can't get this test to work :(
-        it("Should return non OK status code when rendering templates that result in non-conformant PDF/A") {
-            val response = runBlocking<HttpResponse> {
-                client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
-                    body = TextContent(testTemplateInvalidFonts, contentType = ContentType.Application.Json)
-                }
-            }
-            response.status.isSuccess() shouldBeEqualTo false
-        }
-         */
     }
+
+    /* openhtmltopdf seems to strip any input that causes non-conforming PDF/A, so i can't get this test to work :(
+  @Test
+  internal fun `Using the HTML convert endpoint should render a invalid document using default HTML`() {
+      application.start()
+      val response = runBlocking {
+          client.post("http://localhost:$applicationPort/api/v1/genpdf/html/integration-test") {
+              setBody(testTemplateInvalidFonts)
+          }
+      }
+      assertEquals(false, response.status.isSuccess())
+      val bytes = runBlocking { response.readBytes() }
+      assertNotEquals(null, bytes)
+      Files.write(Paths.get("build", "html.pdf"), bytes)
+      // Load the document in pdfbox to ensure its valid
+      val document = Loader.loadPDF(bytes)
+      assertNotEquals(null, document)
+      assertEquals(true, document.pages.count > 0)
+      println(document.documentInformation.title)
+      document.close()
+  }
+  */
 
     @Test
     internal fun `Using the image convert endpoint Should render a document using input image`() {
