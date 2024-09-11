@@ -14,3 +14,6 @@ src/generated
 # Project specific
 *.pdf
 /data/
+
+# Kotlin 2.0
+.kotlin/

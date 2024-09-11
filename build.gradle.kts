@@ -18,8 +18,9 @@ val junitJupiterVersion = "5.11.0"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.20.1"
-val pdfgencoreVersion = "1.1.24"
+val pdfgencoreVersion = "1.1.25"
 val commonsCompressVersion = "1.27.1"
+
 val javaVersion = JvmTarget.JVM_21
 
 
@@ -27,7 +28,7 @@ plugins {
     id("application")
     kotlin("jvm") version "2.0.20"
     id("com.diffplug.spotless") version "6.25.0"
-    id("com.gradleup.shadow") version "8.3.0"
+    id("com.gradleup.shadow") version "8.3.1"
     id("com.github.ben-manes.versions") version "0.51.0"
 }
 
@@ -48,6 +49,8 @@ tasks {
         testLogging {
             events("passed", "skipped", "failed")
             showStandardStreams = true
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
     }
 
