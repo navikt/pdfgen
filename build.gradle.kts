@@ -33,7 +33,7 @@ plugins {
 }
 
 application {
-    mainClass.set("no.nav.pdfgen.BootstrapKt")
+    mainClass.set("no.nav.pdfgen.ApplicationKt")
 }
 
 kotlin {
@@ -61,7 +61,7 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to "no.nav.pdfgen.BootstrapKt",
+                    "Main-Class" to "no.nav.pdfgen.ApplicationKt",
                 ),
             )
         }
