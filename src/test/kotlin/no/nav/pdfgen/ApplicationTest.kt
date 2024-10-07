@@ -6,8 +6,8 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import no.nav.pdfgen.application.api.nais.registerNaisApi
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 internal class ApplicationTest {
 
@@ -26,7 +26,6 @@ internal class ApplicationTest {
 
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals("I'm alive", response.bodyAsText())
-
         }
     }
 
@@ -82,6 +81,5 @@ internal class ApplicationTest {
             assertEquals(HttpStatusCode.InternalServerError, response.status)
             assertEquals("Please wait! I'm not ready :(", response.bodyAsText())
         }
-
     }
 }

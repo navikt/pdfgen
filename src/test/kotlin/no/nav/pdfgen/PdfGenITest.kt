@@ -27,14 +27,8 @@ internal class PdfGenITest {
     @Test
     internal fun post_to_api_v1_genpdf_applicationName_templateName() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             // api path /api/v1/genpdf/{applicationName}/{templateName}
             templates
                 .map { it.key }
@@ -48,19 +42,18 @@ internal class PdfGenITest {
                             ?.toString(Charsets.UTF_8)
                             ?: "{}"
 
-                    val response =
-                        runBlocking {
-                            client.post(
-                                "http://0.0.0.0:$randomApplicationPort/api/v1/genpdf/$applicationName/$templateName",
-                            ) {
-                                setBody(
-                                    TextContent(
-                                        json,
-                                        contentType = ContentType.Application.Json,
-                                    ),
-                                )
-                            }
+                    val response = runBlocking {
+                        client.post(
+                            "http://0.0.0.0:$randomApplicationPort/api/v1/genpdf/$applicationName/$templateName",
+                        ) {
+                            setBody(
+                                TextContent(
+                                    json,
+                                    contentType = ContentType.Application.Json,
+                                ),
+                            )
                         }
+                    }
                     assertEquals(true, response.status.isSuccess())
                     val bytes = runBlocking { response.readBytes() }
                     assertNotEquals(null, bytes)
@@ -71,22 +64,14 @@ internal class PdfGenITest {
                     println(document.documentInformation.title)
                     document.close()
                 }
-
         }
-
     }
 
     @Test
     internal fun `Generate sample PDFs using test data`() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             templates
                 .map { it.key }
                 .forEach {
@@ -123,16 +108,12 @@ internal class PdfGenITest {
     @Test
     internal fun `Using the HTML convert endpoint should render a document using default HTML`() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             val response = runBlocking {
-                client.post("http://0.0.0.0:$randomApplicationPort/api/v1/genpdf/html/integration-test") {
+                client.post(
+                    "http://0.0.0.0:$randomApplicationPort/api/v1/genpdf/html/integration-test"
+                ) {
                     setBody(testTemplateIncludedFonts)
                 }
             }
@@ -184,28 +165,22 @@ internal class PdfGenITest {
     @Test
     internal fun `Using the image convert endpoint Should render a document using input image`() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             mapOf(
-                ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
-                ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf",
-            )
+                    ByteArrayContent(testJpg, ContentType.Image.JPEG) to "jpg.pdf",
+                    ByteArrayContent(testPng, ContentType.Image.PNG) to "png.pdf",
+                )
                 .forEach { (payload, outputFile) ->
                     println("Should render a document using input image, $outputFile")
                     runBlocking {
                         runBlocking {
-                            client.preparePost(
-                                "http://0.0.0.0:$randomApplicationPort/api/v1/genpdf/image/integration-test",
-                            ) {
-                                setBody(payload)
+                                client.preparePost(
+                                    "http://0.0.0.0:$randomApplicationPort/api/v1/genpdf/image/integration-test",
+                                ) {
+                                    setBody(payload)
+                                }
                             }
-                        }
                             .execute { response ->
                                 assertEquals(true, response.status.isSuccess())
                                 val bytes = response.readBytes()
@@ -225,20 +200,14 @@ internal class PdfGenITest {
     @Test
     internal fun `Calls to unknown endpoints should respond with helpful information`() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             runBlocking {
                 runBlocking {
-                    client
-                        .config { expectSuccess = false }
-                        .preparePost("http://0.0.0.0:$randomApplicationPort/whodis")
-                }
+                        client
+                            .config { expectSuccess = false }
+                            .preparePost("http://0.0.0.0:$randomApplicationPort/whodis")
+                    }
                     .execute { response ->
                         assertEquals(404, response.status.value)
                         val text = runBlocking { response.bodyAsText() }
@@ -251,14 +220,8 @@ internal class PdfGenITest {
     @Test
     internal fun `Simple performance test full multiple-threads`() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             val passes = 20
 
             val context = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
@@ -290,7 +253,8 @@ internal class PdfGenITest {
                                                     setBody(
                                                         TextContent(
                                                             json,
-                                                            contentType = ContentType.Application.Json,
+                                                            contentType =
+                                                                ContentType.Application.Json,
                                                         ),
                                                     )
                                                 }
@@ -312,26 +276,24 @@ internal class PdfGenITest {
     @Test
     internal fun `Simple performance test full single-thread`() {
         testApplication {
-            environment {
-                connector {
-                    port = randomApplicationPort
-                }
-            }
-            application {
-                module()
-            }
+            environment { connector { port = randomApplicationPort } }
+            application { module() }
             val passes = 40
 
             templates
                 .map { it.key }
                 .forEach { (applicationName, templateName) ->
-                    println("$templateName for $applicationName performs fine with single-thread load")
+                    println(
+                        "$templateName for $applicationName performs fine with single-thread load"
+                    )
                     val startTime = System.currentTimeMillis()
                     runBlocking {
                         for (i in 1..passes) {
                             val json =
                                 javaClass
-                                    .getResourceAsStream("/data/$applicationName/$templateName.json")
+                                    .getResourceAsStream(
+                                        "/data/$applicationName/$templateName.json"
+                                    )
                                     ?.use { IOUtils.toByteArray(it).toString(Charsets.UTF_8) }
                                     ?: "{}"
 
