@@ -27,7 +27,7 @@ internal class RenderingTest {
     internal fun `All pdfs should render with default values`() {
         templates
             .map { it.key }
-            .forEach { it ->
+            .forEach {
                 val (applicationName, templateName) = it
                 val node =
                     javaClass

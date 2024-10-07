@@ -1,4 +1,4 @@
-package no.nav.pdfgen.api
+package no.nav.pdfgen.application.api.pdf
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.http.ContentType
@@ -10,10 +10,7 @@ import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondBytes
 import io.ktor.server.response.respondText
-import io.ktor.server.routing.Routing
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
+import io.ktor.server.routing.*
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +22,7 @@ import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.log
 
-fun Routing.setupGeneratePdfApi(env: Environment = Environment()) {
-    route("/api/v1/genpdf") {
+fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
         if (!env.disablePdfGet) {
             get("/{applicationName}/{template}") {
                 val template = call.parameters["template"]!!
@@ -94,36 +90,4 @@ fun Routing.setupGeneratePdfApi(env: Environment = Environment()) {
                 "Generated PDF using image for $applicationName om ${timer.observeDuration()}ms"
             )
         }
-    }
-    if (env.enableHtmlEndpoint) {
-        route("/api/v1/genhtml") {
-            if (!env.disablePdfGet) {
-                get("/{applicationName}/{template}") {
-                    val template = call.parameters["template"]!!
-                    val applicationName = call.parameters["applicationName"]!!
-                    createHtmlFromTemplateData(template, applicationName)?.let { call.respond(it) }
-                        ?: call.respondText(
-                            "Template or application not found",
-                            status = HttpStatusCode.NotFound
-                        )
-                }
-            }
-
-            post("/{applicationName}/{template}") {
-                val startTime = System.currentTimeMillis()
-                val template = call.parameters["template"]!!
-                val applicationName = call.parameters["applicationName"]!!
-                val jsonNode: JsonNode = call.receive()
-
-                createHtml(template, applicationName, jsonNode)?.let {
-                    call.respond(it)
-                    log.info("Done generating HTML in ${System.currentTimeMillis() - startTime}ms")
-                }
-                    ?: call.respondText(
-                        "Template or application not found",
-                        status = HttpStatusCode.NotFound
-                    )
-            }
-        }
-    }
 }
