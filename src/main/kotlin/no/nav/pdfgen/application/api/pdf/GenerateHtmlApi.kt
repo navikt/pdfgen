@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
-import no.nav.pdfgen.log
+import no.nav.pdfgen.logger
 
 fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
     if (env.enableHtmlEndpoint) {
@@ -34,7 +34,9 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
 
                 createHtml(template, applicationName, jsonNode)?.let {
                     call.respond(it)
-                    log.info("Done generating HTML in ${System.currentTimeMillis() - startTime}ms")
+                    logger.info(
+                        "Done generating HTML in ${System.currentTimeMillis() - startTime}ms"
+                    )
                 }
                     ?: call.respondText(
                         "Template or application not found",

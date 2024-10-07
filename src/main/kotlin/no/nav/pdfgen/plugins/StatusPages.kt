@@ -7,9 +7,17 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import no.nav.pdfgen.logger
 
-fun Application.configureStatusPages(templates: Map<Pair<String, String>, Template>,) {
+fun Application.configureStatusPages(
+    templates: Map<Pair<String, String>, Template>,
+) {
     install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
+            logger.error("Caught exception", cause)
+            throw cause
+        }
         status(HttpStatusCode.NotFound) { call, _ ->
             call.respond(
                 TextContent(
@@ -21,6 +29,7 @@ fun Application.configureStatusPages(templates: Map<Pair<String, String>, Templa
         }
     }
 }
+
 private fun messageFor404(templates: Map<Pair<String, String>, Template>, path: String) =
     "Unkown path '$path'. Known templates:\n" +
         templates

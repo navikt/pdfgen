@@ -4,27 +4,23 @@ package no.nav.pdfgen
 // import java.io.File
 import com.openhtmltopdf.slf4j.Slf4jLogger
 import com.openhtmltopdf.util.XRLog
-
 import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-
 import io.prometheus.client.hotspot.DefaultExports
-
+import java.util.concurrent.TimeUnit
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.plugins.configureContentNegotiation
 import no.nav.pdfgen.plugins.configureNaisThings
 import no.nav.pdfgen.plugins.configureReloadPDFGenCorePlugin
-
 import no.nav.pdfgen.plugins.configureRouting
 import no.nav.pdfgen.plugins.configureStatusPages
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
-import java.util.concurrent.TimeUnit
 
-val log: Logger = LoggerFactory.getLogger("pdfgen")
+val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
 fun main() {
     DefaultExports.initialize()
@@ -34,14 +30,12 @@ fun main() {
             Netty,
             port = Environment().port,
             module = Application::module,
-            configure = {
-                responseWriteTimeoutSeconds = 60
-            },
+            configure = { responseWriteTimeoutSeconds = 60 },
         )
     Runtime.getRuntime()
         .addShutdownHook(
             Thread {
-                log.info("Shutting down application from shutdown hook")
+                logger.info("Shutting down application from shutdown hook")
                 embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
             },
         )
