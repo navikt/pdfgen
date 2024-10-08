@@ -8,12 +8,12 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.prometheus.client.hotspot.DefaultExports
-import java.util.concurrent.TimeUnit
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.plugins.configureContentNegotiation
-import no.nav.pdfgen.plugins.configureNaisThings
-import no.nav.pdfgen.plugins.configureReloadPDFGenCorePlugin
+import no.nav.pdfgen.plugins.configureLifecycleHooks
+import no.nav.pdfgen.plugins.configureNais
+import no.nav.pdfgen.plugins.configureReloadPDFGenCore
 import no.nav.pdfgen.plugins.configureRouting
 import no.nav.pdfgen.plugins.configureStatusPages
 import org.slf4j.Logger
@@ -23,8 +23,6 @@ import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
 fun main() {
-    DefaultExports.initialize()
-
     val embeddedServer =
         embeddedServer(
             Netty,
@@ -32,17 +30,12 @@ fun main() {
             module = Application::module,
             configure = { responseWriteTimeoutSeconds = 60 },
         )
-    Runtime.getRuntime()
-        .addShutdownHook(
-            Thread {
-                logger.info("Shutting down application from shutdown hook")
-                embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
-            },
-        )
     embeddedServer.start(true)
 }
 
 fun Application.module() {
+    DefaultExports.initialize()
+
     val applicationState = ApplicationState()
 
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
@@ -55,13 +48,12 @@ fun Application.module() {
     val templates = coreEnvironment.templates
     XRLog.setLoggerImpl(Slf4jLogger())
 
+    configureLifecycleHooks(applicationState)
     configureContentNegotiation()
-    configureStatusPages(templates)
-    configureNaisThings(applicationState)
-    configureReloadPDFGenCorePlugin(environment = environment)
-    configureRouting(
-        environment = environment,
-    )
+    configureStatusPages(templates, applicationState)
+    configureNais(applicationState)
+    configureReloadPDFGenCore(environment = environment)
+    configureRouting(environment = environment)
 }
 
 data class ApplicationState(

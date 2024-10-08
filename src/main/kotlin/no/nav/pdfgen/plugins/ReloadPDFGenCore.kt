@@ -4,7 +4,7 @@ import io.ktor.server.application.*
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.core.PDFGenCore
 
-fun Application.configureReloadPDFGenCorePlugin(environment: Environment) {
+fun Application.configureReloadPDFGenCore(environment: Environment) {
     install(
         createApplicationPlugin(name = "ReloadPDFGenCorePlugin") {
             onCall { _ -> if (environment.isDevMode) PDFGenCore.reloadEnvironment() }

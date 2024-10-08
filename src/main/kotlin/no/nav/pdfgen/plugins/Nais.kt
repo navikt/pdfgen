@@ -6,7 +6,7 @@ import no.nav.pdfgen.ApplicationState
 import no.nav.pdfgen.application.api.nais.registerNaisApi
 import no.nav.pdfgen.application.metrics.monitorHttpRequests
 
-fun Application.configureNaisThings(applicationState: ApplicationState) {
+fun Application.configureNais(applicationState: ApplicationState) {
     routing { registerNaisApi(applicationState) }
     intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
 }

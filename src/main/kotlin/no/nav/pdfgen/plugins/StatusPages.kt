@@ -7,16 +7,19 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import no.nav.pdfgen.ApplicationState
 import no.nav.pdfgen.logger
 
 fun Application.configureStatusPages(
     templates: Map<Pair<String, String>, Template>,
+    applicationState: ApplicationState
 ) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
             logger.error("Caught exception", cause)
-            throw cause
+            applicationState.alive = false
+            applicationState.ready = false
         }
         status(HttpStatusCode.NotFound) { call, _ ->
             call.respond(
