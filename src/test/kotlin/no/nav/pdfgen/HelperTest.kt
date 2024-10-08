@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 internal class HelperTest {
-    val jsonNodeFactory = JsonNodeFactory.instance
+    private val jsonNodeFactory = JsonNodeFactory.instance
     private val handlebars =
         Handlebars(ClassPathTemplateLoader()).apply { registerNavHelpers(this) }
 
