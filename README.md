@@ -66,7 +66,6 @@ or on windows
 gradlew.bat shadowJar
 ```
 
-
 Running the application locally enables a GET endpoint at `/api/v1/genpdf/<application>/<template>`
 which looks for test data at `data/<application>/<template>.json` and outputs a PDF to your browser.
 Additionally, the template folder will be fetched on every request, and reflect any changes made since the last GET,
@@ -79,48 +78,6 @@ HTML endpoints on `/api/v1/genhtml/<application>/<template>`.
 
 By default, pdfgen will load all assets (`templates`, `resources`, `data`) to memory on startup. Any change on files inside these folders will not be loaded before a restart of the application. However if you are developing templates you can make the application to reload the assets on every request by setting `DEV_MODE=true`.
 
-### Getting github package registry packages
-Some packages used in this repo is uploaded to the GitHub Package Registry which requires authentication. 
-It can, for example, be solved like this in Gradle:
-```
-val githubUser: String by project
-val githubPassword: String by project
-repositories {
-    maven {
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
-        setUrl("https://maven.pkg.github.com/openhtmltopdf/openhtmltopdf)
-    }
-}
-```
-
-`githubUser` and `githubPassword` can be put into a separate file `~/.gradle/gradle.properties` with the following content:
-
-```                                                     
-githubUser=x-access-token
-githubPassword=[token]
-```
-
-Replace `[token]` with a personal access token with scope `read:packages`.
-
-Alternatively, the variables can be configured via environment variables:
-
-* `ORG_GRADLE_PROJECT_githubUser`
-* `ORG_GRADLE_PROJECT_githubPassword`
-
-Example in a .bashrc file:
-```
-export ORG_GRADLE_PROJECT_githubUser='username'
-export ORG_GRADLE_PROJECT_githubPassword='personal access token'
-```
-
-or the command line:
-
-```
-./gradlew -PgithubUser=x-access-token -PgithubPassword=[token]
-```
 
 ### Release
 We use default GitHub release, 
@@ -136,7 +93,6 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 ```shell script
 ./gradlew wrapper --gradle-version $gradleVersjon
 ```
-
 
 ## pdfgen 2.0
 
@@ -157,9 +113,9 @@ This project is currently maintained by the organisation [@navikt](https://githu
 
 If you need to raise an issue or question about this library, please create an issue here and tag it with the appropriate label.
 
-For contact requests within the [@navikt](https://github.com/navikt) org, you can use the slack channel #pdfgen
+For contact requests within the [@navikt](https://github.com/navikt) org, you can use the Slack channel #pdfgen
 
-If you need to contact anyone directly, please see contributors.
+If you need to contact anyone directly, please see [CODEOWNERS](CODEOWNERS)
 
 ## ✏️ Contributing
 
