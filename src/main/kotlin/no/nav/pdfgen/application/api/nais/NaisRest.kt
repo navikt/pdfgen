@@ -10,9 +10,6 @@ import io.ktor.server.routing.get
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.exporter.common.TextFormat.write004
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import no.nav.pdfgen.ApplicationState
 
 fun Routing.registerNaisApi(
@@ -41,14 +38,7 @@ fun Routing.registerNaisApi(
     get("/internal/prometheus") {
         val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
         call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
-            CoroutineScope(Dispatchers.IO).launch {
-                runCatching {
-                    write004(
-                        this@respondTextWriter,
-                        collectorRegistry.filteredMetricFamilySamples(names),
-                    )
-                }
-            }
+            write004(this, collectorRegistry.filteredMetricFamilySamples(names))
         }
     }
 }

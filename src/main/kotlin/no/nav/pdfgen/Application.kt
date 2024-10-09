@@ -23,6 +23,8 @@ import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
 fun main() {
+    DefaultExports.initialize()
+
     val embeddedServer =
         embeddedServer(
             Netty,
@@ -34,8 +36,6 @@ fun main() {
 }
 
 fun Application.module() {
-    DefaultExports.initialize()
-
     val applicationState = ApplicationState()
 
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
