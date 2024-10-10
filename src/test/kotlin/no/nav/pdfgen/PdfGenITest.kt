@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 internal class PdfGenITest {
-    // private val randomApplicationPort = getRandomPort()
     private val templates = Environment().templates
 
     @Test
