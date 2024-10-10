@@ -30,7 +30,7 @@ fun main() {
             factory = Netty,
             module = Application::module,
             configure = {
-                responseWriteTimeoutSeconds = 60
+                responseWriteTimeoutSeconds = 70
                 connector { port = Environment().port }
             },
         )
