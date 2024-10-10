@@ -5,7 +5,7 @@ package no.nav.pdfgen
 import com.openhtmltopdf.slf4j.Slf4jLogger
 import com.openhtmltopdf.util.XRLog
 import io.ktor.server.application.*
-import io.ktor.server.engine.embeddedServer
+import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
@@ -27,10 +27,12 @@ fun main() {
 
     val embeddedServer =
         embeddedServer(
-            Netty,
-            port = Environment().port,
+            factory = Netty,
             module = Application::module,
-            configure = { responseWriteTimeoutSeconds = 60 },
+            configure = {
+                responseWriteTimeoutSeconds = 60
+                connector { port = Environment().port }
+            },
         )
     embeddedServer.start(true)
 }
