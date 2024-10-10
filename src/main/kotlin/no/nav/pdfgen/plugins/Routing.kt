@@ -13,5 +13,4 @@ fun Application.configureRouting(environment: Environment) {
         route("/api/v1/genhtml") { registerGenerateHtmlApi(environment) }
     }
     intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
-
 }
