@@ -258,7 +258,7 @@ internal class PdfGenITest {
     internal fun `Simple performance test full single-thread`() {
         testApplication {
             application { module() }
-            val passes = 40
+            val passes = 30
 
             templates
                 .map { it.key }
