@@ -1,10 +1,10 @@
 package no.nav.pdfgen.application.metrics
 
-import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.*
 import io.ktor.server.request.path
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.util.pipeline.*
 
-fun monitorHttpRequests(): suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit {
+fun monitorHttpRequests(): PipelineInterceptor<Unit, PipelineCall> {
     return {
         val label = context.request.path()
         val timer = HTTP_HISTOGRAM.labels(label).startTimer()
