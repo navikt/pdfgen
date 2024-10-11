@@ -18,7 +18,7 @@ val junitJupiterVersion = "5.11.2"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.20.2"
-val pdfgencoreVersion = "1.1.29"
+val pdfgencoreVersion = "1.1.30"
 val commonsCompressVersion = "1.27.1"
 
 val javaVersion = JvmTarget.JVM_21
