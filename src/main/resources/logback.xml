@@ -13,5 +13,7 @@
         <appender-ref ref="stdout_json" />
     </root>
 
+    <logger name="org.apache.pdfbox" level="ERROR" />
+
 </configuration>
 
