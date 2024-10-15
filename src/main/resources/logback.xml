@@ -5,12 +5,14 @@
             <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider" />
         </encoder>
     </appender>
-    
+
     <logger name="pdfgen" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="stdout_json" />
     </root>
+
+    <logger name="org.apache.pdfbox" level="ERROR" />
 
 </configuration>
 
