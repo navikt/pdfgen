@@ -5,6 +5,11 @@ import no.nav.pdfgen.ApplicationState
 
 fun Application.configureLifecycleHooks(applicationState: ApplicationState) {
 
-    this.monitor.subscribe(ApplicationStarted) { applicationState.ready = true }
-    this.monitor.subscribe(ApplicationStopped) { applicationState.ready = false }
+    monitor.subscribe(ApplicationStarted) {
+        applicationState.ready = true
+    }
+    monitor.subscribe(ApplicationStopped) {
+        applicationState.ready = false
+        applicationState.alive = false
+    }
 }

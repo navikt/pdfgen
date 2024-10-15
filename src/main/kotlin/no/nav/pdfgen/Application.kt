@@ -1,7 +1,5 @@
 package no.nav.pdfgen
 
-// Uncommemt to enable debug to file
-// import java.io.File
 import com.openhtmltopdf.slf4j.Slf4jLogger
 import com.openhtmltopdf.util.XRLog
 import io.ktor.server.application.*
@@ -50,10 +48,10 @@ fun Application.module() {
     val templates = coreEnvironment.templates
     XRLog.setLoggerImpl(Slf4jLogger())
 
-    configureLifecycleHooks(applicationState)
+    configureLifecycleHooks(applicationState = applicationState)
     configureContentNegotiation()
-    configureStatusPages(templates, applicationState)
-    configureNais(applicationState)
+    configureStatusPages(templates = templates)
+    configureNais(applicationState = applicationState)
     configureReloadPDFGenCore(environment = environment)
     configureRouting(environment = environment)
 }

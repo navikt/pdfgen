@@ -12,14 +12,11 @@ import no.nav.pdfgen.logger
 
 fun Application.configureStatusPages(
     templates: Map<Pair<String, String>, Template>,
-    applicationState: ApplicationState
 ) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
             logger.error("Caught exception", cause)
-            applicationState.alive = false
-            applicationState.ready = false
+            call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
         }
         status(HttpStatusCode.NotFound) { call, _ ->
             call.respond(
