@@ -7,7 +7,6 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import no.nav.pdfgen.ApplicationState
 import no.nav.pdfgen.logger
 
 fun Application.configureStatusPages(
