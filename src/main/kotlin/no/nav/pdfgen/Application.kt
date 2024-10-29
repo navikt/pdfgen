@@ -50,7 +50,7 @@ fun Application.module() {
 
     configureLifecycleHooks(applicationState = applicationState)
     configureContentNegotiation()
-    configureStatusPages(templates = templates)
+    configureStatusPages(templates = templates, environment = environment)
     configureNais(applicationState = applicationState)
     configureReloadPDFGenCore(environment = environment)
     configureRouting(environment = environment)

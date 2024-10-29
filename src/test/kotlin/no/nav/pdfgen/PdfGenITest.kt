@@ -13,6 +13,7 @@ import java.util.concurrent.Executors
 import kotlinx.coroutines.*
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 import no.nav.pdfgen.plugins.configureRouting
+import no.nav.pdfgen.plugins.configureStatusPages
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.io.IOUtils
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -231,7 +232,7 @@ internal class PdfGenITest {
     }
 
     @Test
-    internal fun `Calls to unknown endpoints should respond with helpful information`() {
+    internal fun `Calls to unknown endpoints should respond with helpful information genpdf`() {
         testApplication {
             application { module() }
             runBlocking {
@@ -240,6 +241,30 @@ internal class PdfGenITest {
                         assertEquals(404, response.status.value)
                         val text = runBlocking { response.bodyAsText() }
                         assertEquals(true, text.contains("Known templates:\n/api/v1/genpdf"))
+                    }
+            }
+        }
+    }
+
+    @Test
+    internal fun `Calls to unknown endpoints should respond with helpful information genpdf and genhtml`() {
+        testApplication {
+            val environment =
+                Environment(
+                    disablePdfGet = false,
+                    enableHtmlEndpoint = true,
+                )
+            application {
+                configureStatusPages(templates,environment)
+            }
+            runBlocking {
+                runBlocking { client.config { expectSuccess = false }.preparePost("/imnothome") }
+                    .execute { response ->
+                        assertEquals(404, response.status.value)
+                        val text = runBlocking { response.bodyAsText() }
+                        println(text)
+                        assertEquals(true, text.contains("Known templates:\n/api/v1/genpdf"))
+                        assertEquals(true, text.contains("api/v1/genhtml"))
                     }
             }
         }
