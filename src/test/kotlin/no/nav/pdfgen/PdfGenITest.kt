@@ -5,14 +5,14 @@ package no.nav.pdfgen
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.content.ByteArrayContent
-import io.ktor.http.content.TextContent
+import io.ktor.http.content.*
 import io.ktor.server.testing.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
 import kotlinx.coroutines.*
-import no.nav.pdfgen.core.Environment
+import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
+import no.nav.pdfgen.plugins.configureRouting
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.io.IOUtils
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 internal class PdfGenITest {
-    private val templates = Environment().templates
+    private val templates = PDFGenCoreEnvironment().templates
 
     @Test
     internal fun post_to_api_v1_genpdf_applicationName_templateName() {
@@ -60,6 +60,52 @@ internal class PdfGenITest {
                     assertEquals(true, document.pages.count > 0)
                     println(document.documentInformation.title)
                     document.close()
+                }
+        }
+    }
+
+    @Test
+    internal fun post_to_api_v1_genhtml_applicationName_templateName() {
+
+        val templates = PDFGenCoreEnvironment().templates
+        val environment =
+            Environment(
+                disablePdfGet = false,
+                enableHtmlEndpoint = true,
+            )
+
+        testApplication {
+            application {
+                module()
+                configureRouting(environment = environment)
+            }
+            // api path /api/v1/genhtml/{applicationName}/{templateName}
+            templates
+                .map { it.key }
+                .forEach {
+                    val (applicationName, templateName) = it
+                    println("With $templateName for $applicationName results in a valid html")
+                    val json =
+                        javaClass
+                            .getResourceAsStream("/data/$applicationName/$templateName.json")
+                            ?.readBytes()
+                            ?.toString(Charsets.UTF_8)
+                            ?: "{}"
+
+                    val response = runBlocking {
+                        client.post(
+                            "/api/v1/genhtml/$applicationName/$templateName",
+                        ) {
+                            setBody(
+                                TextContent(
+                                    json,
+                                    contentType = ContentType.Application.Json,
+                                ),
+                            )
+                        }
+                    }
+                    assertEquals(true, response.status.isSuccess())
+                    assertEquals(true, response.bodyAsText().contains("<html>"))
                 }
         }
     }
@@ -264,7 +310,7 @@ internal class PdfGenITest {
                 .map { it.key }
                 .forEach { (applicationName, templateName) ->
                     println(
-                        "$templateName for $applicationName performs fine with single-thread load"
+                        "$templateName for $applicationName performs fine with single-thread load",
                     )
                     val startTime = System.currentTimeMillis()
                     runBlocking {
@@ -272,7 +318,7 @@ internal class PdfGenITest {
                             val json =
                                 javaClass
                                     .getResourceAsStream(
-                                        "/data/$applicationName/$templateName.json"
+                                        "/data/$applicationName/$templateName.json",
                                     )
                                     ?.use { IOUtils.toByteArray(it).toString(Charsets.UTF_8) }
                                     ?: "{}"
