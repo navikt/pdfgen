@@ -50,6 +50,5 @@ private fun messageFor404(
             templates
                 .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
                 .joinToString("\n")
-
     }
 }

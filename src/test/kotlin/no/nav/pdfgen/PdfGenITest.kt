@@ -254,9 +254,7 @@ internal class PdfGenITest {
                     disablePdfGet = false,
                     enableHtmlEndpoint = true,
                 )
-            application {
-                configureStatusPages(templates,environment)
-            }
+            application { configureStatusPages(templates, environment) }
             runBlocking {
                 runBlocking { client.config { expectSuccess = false }.preparePost("/imnothome") }
                     .execute { response ->
