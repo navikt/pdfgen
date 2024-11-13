@@ -19,8 +19,9 @@ val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.20.3"
 val pdfgencoreVersion = "1.1.33"
-val commonsCompressVersion = "1.27.1"
 
+val commonsCompressVersion = "1.27.1"
+val commonsIoVersion = "2.17.0"
 val javaVersion = JvmTarget.JVM_21
 
 
@@ -92,6 +93,11 @@ dependencies {
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    constraints {
+        implementation("commons-io:commons-io:$commonsIoVersion") {
+            because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
+        }
+    }
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
