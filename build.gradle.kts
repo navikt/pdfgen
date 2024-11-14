@@ -3,12 +3,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.pdfgen"
 version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
+val javaVersion = JvmTarget.JVM_21
+
+
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.18.1"
-val jaxbVersion = "4.0.4"
-val jaxbApiVersion = "2.3.1"
-val jsoupVersion = "1.16.2"
-val kluentVersion = "1.72"
 val ktorVersion = "3.0.1"
 val logbackVersion = "1.5.12"
 val logstashEncoderVersion = "8.0"
@@ -18,11 +17,11 @@ val junitJupiterVersion = "5.11.3"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion= "1.20.3"
-val pdfgencoreVersion = "1.1.33"
+val pdfgencoreVersion = "1.1.34"
 
+///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
 val commonsIoVersion = "2.17.0"
-val javaVersion = JvmTarget.JVM_21
 
 
 plugins {
