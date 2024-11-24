@@ -16,8 +16,9 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.11.3"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
-val testcontainersVersion= "1.20.4"
+val testcontainersVersion = "1.20.4"
 val pdfgencoreVersion = "1.1.34"
+val nettycommonVersion = "4.1.115.Final"
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
@@ -101,6 +102,9 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    constraints {
+        implementation("io.netty:netty-common:$nettycommonVersion")
+    }
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
