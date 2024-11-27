@@ -18,12 +18,12 @@ val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "1.20.4"
 val pdfgencoreVersion = "1.1.35"
-val nettycommonVersion = "4.1.115.Final"
+
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
 val commonsIoVersion = "2.18.0"
-
+val nettycommonVersion = "4.1.115.Final"
 
 plugins {
     id("application")
@@ -103,7 +103,9 @@ dependencies {
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     constraints {
-        implementation("io.netty:netty-common:$nettycommonVersion")
+        implementation("io.netty:netty-common:$nettycommonVersion") {
+            because("Due to vulnerabilities in io.ktor:ktor-server-netty")
+        }
     }
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
