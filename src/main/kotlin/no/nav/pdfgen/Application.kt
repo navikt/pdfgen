@@ -57,6 +57,6 @@ fun Application.module() {
 }
 
 data class ApplicationState(
-    var alive: Boolean = true,
-    var ready: Boolean = true,
+    var alive: Boolean = false,
+    var ready: Boolean = false,
 )
