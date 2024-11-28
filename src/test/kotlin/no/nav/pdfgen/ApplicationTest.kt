@@ -102,7 +102,6 @@ internal class ApplicationTest {
             }
             assertNotReady()
         }
-
     }
 
     private suspend fun ApplicationTestBuilder.assertReady() {

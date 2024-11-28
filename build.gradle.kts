@@ -17,7 +17,7 @@ val junitJupiterVersion = "5.11.3"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "1.20.4"
-val pdfgencoreVersion = "1.1.35"
+val pdfgencoreVersion = "1.1.36"
 
 
 ///Due to vulnerabilities
@@ -27,7 +27,7 @@ val nettycommonVersion = "4.1.115.Final"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.1.0"
     id("com.diffplug.spotless") version "6.25.0"
     id("com.gradleup.shadow") version "8.3.5"
     id("com.github.ben-manes.versions") version "0.51.0"
