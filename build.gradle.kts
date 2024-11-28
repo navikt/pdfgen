@@ -7,7 +7,7 @@ val javaVersion = JvmTarget.JVM_21
 
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.18.1"
+val jacksonVersion = "2.18.2"
 val ktorVersion = "3.0.1"
 val logbackVersion = "1.5.12"
 val logstashEncoderVersion = "8.0"
