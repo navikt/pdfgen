@@ -11,13 +11,13 @@ val jacksonVersion = "2.18.2"
 val ktorVersion = "3.0.3"
 val logbackVersion = "1.5.15"
 val logstashEncoderVersion = "8.0"
-val openHtmlToPdfVersion = "1.1.23"
+val openHtmlToPdfVersion = "1.1.24"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.11.4"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "1.20.4"
-val pdfgencoreVersion = "1.1.37"
+val pdfgencoreVersion = "1.1.38"
 
 
 ///Due to vulnerabilities
