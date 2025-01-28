@@ -23,11 +23,22 @@ val logger: Logger = LoggerFactory.getLogger("pdfgen")
 fun main() {
     DefaultExports.initialize()
 
+    val workerSize = System.getenv("WORKER_GROUP_SIZE")?.toIntOrNull()
+    val connectionSize = System.getenv("CONNECTION_GROUP_SIZE")?.toIntOrNull()
+    val callSize = System.getenv("CALL_GROUP_SIZE")?.toIntOrNull()
+
     val embeddedServer =
         embeddedServer(
             factory = Netty,
             module = Application::module,
             configure = {
+                // defaultverdiene er hentet fra io.ktor.server.engine.ApplicationEngine
+                workerGroupSize = workerSize ?: (parallelism / 2 + 1)
+                logger.info("Setter worker group size: $workerGroupSize")
+                connectionGroupSize = connectionSize ?: (parallelism / 2 + 1)
+                logger.info("Setter connection group size: $connectionGroupSize")
+                callGroupSize = callSize ?: parallelism
+                logger.info("Setter call group size: $callGroupSize")
                 responseWriteTimeoutSeconds = 70
                 connector { port = Environment().port }
             },
