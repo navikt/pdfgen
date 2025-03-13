@@ -28,9 +28,6 @@ jobs:
         shell: bash
         run: |
           ./gradlew shadowJar
-        env:
-          ORG_GRADLE_PROJECT_githubUser: x-access-token
-          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker images
         run: |
           docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .
