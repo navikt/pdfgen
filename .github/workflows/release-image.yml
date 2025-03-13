@@ -7,7 +7,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}
+  
   NEW_VERSION: ${{ github.event.release.tag_name }}
 
 jobs:
@@ -28,13 +28,12 @@ jobs:
         shell: bash
         run: |
           ./gradlew shadowJar
-      - name: Build Docker images
-        run: |
-          docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .
-      - name: Push docker image to GitHub
+      - name: docker-build-push
+        uses: nais/docker-build-push@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker login ghcr.io -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
-          docker push ${{ env.IMAGE }}:${{ env.NEW_VERSION }}
-
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+        id: docker-build-push
+        with:
+          team: pdfgen
+          identity_provider: "${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}"
+          project_id: "${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}"
