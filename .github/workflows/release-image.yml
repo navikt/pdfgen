@@ -4,8 +4,9 @@ on:
     types: [published]
 
 permissions:
+  contents: read
+  id-token: write
   packages: write
-
 env:
   
   NEW_VERSION: ${{ github.event.release.tag_name }}
