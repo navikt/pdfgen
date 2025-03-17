@@ -83,7 +83,6 @@ internal class PdfgenPerformanceTest {
             templates
                 .map { it.key }
                 .forEach { (applicationName, templateName) ->
-
                     println(
                         "$templateName for $applicationName performs fine with single-thread load",
                     )
