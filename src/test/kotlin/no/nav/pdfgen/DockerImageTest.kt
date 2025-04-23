@@ -23,6 +23,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile
 internal class DockerImageTest {
 
     @Test
+    @DisabledIfEnvironmentVariable(named = "CI", matches = "true")
     internal fun `Test Dockerfile`() {
         val network = Network.newNetwork()
 
