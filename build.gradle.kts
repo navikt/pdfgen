@@ -14,10 +14,10 @@ val logstashEncoderVersion = "8.1"
 val openHtmlToPdfVersion = "1.1.28"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.12.2"
-val verapdfVersion = "1.26.1"
+val verapdfVersion = "1.28.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "1.21.0"
-val pdfgencoreVersion = "1.1.49"
+val pdfgencoreVersion = "1.1.50"
 
 
 ///Due to vulnerabilities
