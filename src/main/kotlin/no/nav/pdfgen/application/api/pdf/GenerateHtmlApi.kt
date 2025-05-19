@@ -16,7 +16,10 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
             get("/{applicationName}/{template}") {
                 val template = call.parameters["template"]!!
                 val applicationName = call.parameters["applicationName"]!!
-                createHtmlFromTemplateData(template, applicationName)?.let { call.respond(it) }
+                createHtmlFromTemplateData(template, applicationName)?.let {
+                    call.response.header("Content-Type", ContentType.Text.Html.toString())
+                    call.respond(it)
+                }
                     ?: call.respondText(
                         "Template or application not found",
                         status = HttpStatusCode.NotFound
@@ -31,6 +34,7 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
             val jsonNode: JsonNode = call.receive()
 
             createHtml(template, applicationName, jsonNode)?.let {
+                call.response.header("Content-Type", ContentType.Text.Html.toString())
                 call.respond(it)
                 logger.info("Done generating HTML in ${System.currentTimeMillis() - startTime}ms")
             }
