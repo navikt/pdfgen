@@ -7,27 +7,27 @@ val javaVersion = JvmTarget.JVM_21
 
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.18.3"
-val ktorVersion = "3.1.1"
+val jacksonVersion = "2.19.0"
+val ktorVersion = "3.1.3"
 val logbackVersion = "1.5.18"
-val logstashEncoderVersion = "8.0"
-val openHtmlToPdfVersion = "1.1.24"
+val logstashEncoderVersion = "8.1"
+val openHtmlToPdfVersion = "1.1.28"
 val prometheusVersion = "0.16.0"
-val junitJupiterVersion = "5.12.1"
-val verapdfVersion = "1.26.1"
+val junitJupiterVersion = "5.13.0"
+val verapdfVersion = "1.28.1"
 val ktfmtVersion = "0.44"
-val testcontainersVersion = "1.20.6"
-val pdfgencoreVersion = "1.1.45"
+val testcontainersVersion = "1.21.1"
+val pdfgencoreVersion = "1.1.51"
 
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
-val commonsIoVersion = "2.18.0"
+val commonsIoVersion = "2.19.0"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.1.20"
-    id("com.diffplug.spotless") version "7.0.2"
+    kotlin("jvm") version "2.1.21"
+    id("com.diffplug.spotless") version "7.0.4"
     id("com.gradleup.shadow") version "8.3.6"
     id("com.github.ben-manes.versions") version "0.52.0"
 }

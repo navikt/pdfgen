@@ -19,6 +19,7 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
+import org.testcontainers.utility.MountableFile
 
 internal class DockerImageTest {
 
@@ -28,8 +29,12 @@ internal class DockerImageTest {
         val network = Network.newNetwork()
 
         val pdfgenContainer =
-            GenericContainer(ImageFromDockerfile().withDockerfile(Path("./Dockerfile")))
+            GenericContainer(ImageFromDockerfile()
+                .withDockerfile(Path("./Dockerfile")))
                 .withNetwork(network)
+                .withCopyToContainer(MountableFile.forHostPath("templates"), "/app/templates")
+                .withCopyToContainer(MountableFile.forHostPath("fonts"), "/app/fonts")
+                .withCopyToContainer(MountableFile.forHostPath("resources"), "/app/resources")
                 .withExposedPorts(8080)
                 .waitingFor(Wait.forHttp("/internal/is_ready"))
                 .apply { start() }
