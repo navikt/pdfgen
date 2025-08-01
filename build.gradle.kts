@@ -21,7 +21,7 @@ val pdfgencoreVersion = "1.1.55"
 
 
 ///Due to vulnerabilities
-val commonsCompressVersion = "1.27.1"
+val commonsCompressVersion = "1.28.0"
 val commonsIoVersion = "2.20.0"
 
 plugins {
