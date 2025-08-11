@@ -28,7 +28,7 @@ plugins {
     id("application")
     kotlin("jvm") version "2.2.0"
     id("com.diffplug.spotless") version "7.2.1"
-    id("com.gradleup.shadow") version "9.0.0"
+    id("com.gradleup.shadow") version "9.0.1"
     id("com.github.ben-manes.versions") version "0.52.0"
 }
 
