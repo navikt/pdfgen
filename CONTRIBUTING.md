@@ -10,7 +10,7 @@ A Gradle Wrapper is included in the code though so you do not have to manage you
 To run a build simply exucute the following:
 
 ```shell script
-./gradlew shadowJar
+./gradlew installDist
 ```
 
 This will run all the steps defined in the `build.gradle.kts` file.
