@@ -62,11 +62,11 @@ mkdir {templates,data}/your_teamname # your_teamname can be anything, but it'll 
 
 ### Build and run tests
 ```shell script
-./gradlew shadowJar
+./gradlew installDist
 ```
 or on windows
 ```shell script
-gradlew.bat shadowJar
+gradlew.bat installDist
 ```
 
 Running the application locally enables a GET endpoint at `/api/v1/genpdf/<application>/<template>`
@@ -125,7 +125,7 @@ If you need to contact anyone directly, please see [CODEOWNERS](CODEOWNERS)
 To get started, please fork the repo and checkout a new branch. You can then build the library with the Gradle wrapper
 
 ```shell script
-./gradlew shadowJar
+./gradlew installDist
 ```
 
 See more info in [CONTRIBUTING.md](CONTRIBUTING.md)
