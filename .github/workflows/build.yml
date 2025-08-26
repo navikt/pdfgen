@@ -27,7 +27,7 @@ jobs:
       - name: Build gradle artifacts
         shell: bash
         run: |
-          ./gradlew shadowJar
+          ./gradlew installDist
       - name: Run tests
         run: |
           ./gradlew test

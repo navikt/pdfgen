@@ -28,7 +28,7 @@ jobs:
       - name: Build gradle artifacts
         shell: bash
         run: |
-          ./gradlew shadowJar
+          ./gradlew installDist
       - name: Build Docker image to ghcr.io
         run: |
           docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .
