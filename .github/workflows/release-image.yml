@@ -29,6 +29,10 @@ jobs:
         shell: bash
         run: |
           ./gradlew installDist
+      - name: Login to nais
+        uses: nais/login@v0
+        with:
+          team: pdfgen
       - name: Build Docker image to ghcr.io
         run: |
           docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .
