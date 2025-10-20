@@ -9,7 +9,7 @@ val javaVersion = JvmTarget.JVM_21
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.20.0"
 val ktorVersion = "3.3.1"
-val logbackVersion = "1.5.19"
+val logbackVersion = "1.5.20"
 val logstashEncoderVersion = "8.1"
 val openHtmlToPdfVersion = "1.1.31"
 val prometheusVersion = "0.16.0"
@@ -17,7 +17,7 @@ val junitJupiterVersion = "6.0.0"
 val verapdfVersion = "1.28.2"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "2.0.1"
-val pdfgencoreVersion = "1.1.62"
+val pdfgencoreVersion = "1.1.63"
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
