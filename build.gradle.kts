@@ -26,7 +26,7 @@ val commonsIoVersion = "2.21.0"
 plugins {
     id("application")
     kotlin("jvm") version "2.2.21"
-    id("com.diffplug.spotless") version "8.0.0"
+    id("com.diffplug.spotless") version "8.1.0"
     id("com.github.ben-manes.versions") version "0.53.0"
 }
 
