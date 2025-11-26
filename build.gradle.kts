@@ -1,3 +1,4 @@
+import com.diffplug.gradle.spotless.SpotlessTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "no.nav.pdfgen"
@@ -42,7 +43,7 @@ kotlin {
 
 tasks {
 
-    test {
+    withType<Test> {
         useJUnitPlatform {}
         testLogging {
             events("passed", "skipped", "failed")
@@ -52,13 +53,22 @@ tasks {
         }
     }
 
+   withType<Exec> {
+        println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
+        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
+        println("✅ Added Pre Commit Git Hook Script.")
 
-    spotless {
-        kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
-        check {
-            dependsOn("spotlessApply")
+    }
+
+    withType<SpotlessTask> {
+        spotless{
+            kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
+            check {
+                dependsOn("spotlessApply")
+            }
         }
     }
+    
 }
 
 repositories {
