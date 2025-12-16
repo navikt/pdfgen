@@ -29,8 +29,7 @@ internal class DockerImageTest {
         val network = Network.newNetwork()
 
         val pdfgenContainer =
-            GenericContainer(ImageFromDockerfile()
-                .withDockerfile(Path("./Dockerfile")))
+            GenericContainer(ImageFromDockerfile().withDockerfile(Path("./Dockerfile")))
                 .withNetwork(network)
                 .withCopyToContainer(MountableFile.forHostPath("templates"), "/app/templates")
                 .withCopyToContainer(MountableFile.forHostPath("fonts"), "/app/fonts")

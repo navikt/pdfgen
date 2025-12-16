@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.pdfgen"
 version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
-val javaVersion = JvmTarget.JVM_21
+val javaVersion = JvmTarget.JVM_25
 
 
 val handlebarsVersion = "4.3.1"
@@ -23,10 +23,11 @@ val pdfgencoreVersion = "1.1.67"
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
 val commonsIoVersion = "2.21.0"
+val rhinoVersion = "1.7.14.1"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     id("com.diffplug.spotless") version "8.1.0"
     id("com.github.ben-manes.versions") version "0.53.0"
 }
@@ -106,6 +107,11 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     implementation("org.verapdf:validation-model:$verapdfVersion")
+    constraints {
+        implementation("org.mozilla:rhino:$rhinoVersion") {
+            because("Due to vulnerabilities in org.verapdf:validation-model")
+        }
+    }
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
