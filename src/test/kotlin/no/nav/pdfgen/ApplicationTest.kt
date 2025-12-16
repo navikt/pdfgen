@@ -17,8 +17,8 @@ internal class ApplicationTest {
     @Test
     internal fun `App is ready only after ServerReady is raised`() {
         testApplication {
-           lateinit var raiseApplicationStarted: () -> Any
-           lateinit var raiseServerReady: () -> Any
+            lateinit var raiseApplicationStarted: () -> Any
+            lateinit var raiseServerReady: () -> Any
             application {
                 routing {
                     val applicationState = ApplicationState()

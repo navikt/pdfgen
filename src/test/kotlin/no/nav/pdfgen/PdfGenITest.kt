@@ -51,7 +51,10 @@ internal class PdfGenITest {
                         }
                     }
                     assertEquals(true, response.status.isSuccess())
-                    assertEquals(true, response.headers["Content-Type"]!!.contains("application/pdf"))
+                    assertEquals(
+                        true,
+                        response.headers["Content-Type"]!!.contains("application/pdf")
+                    )
                     val bytes = runBlocking { response.readRawBytes() }
                     assertNotEquals(null, bytes)
                     // Load the document in pdfbox to ensure it's valid
