@@ -2,7 +2,6 @@ package no.nav.pdfgen
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.events.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -100,6 +99,33 @@ internal class ApplicationTest {
                     registerNaisApi(applicationState)
                 }
             }
+            assertNotReady()
+        }
+    }
+
+    @Test
+    internal fun `App stops being ready once ApplicationStopPreparing is raised`() {
+        testApplication {
+            lateinit var raiseApplicationStarted: () -> Any
+            lateinit var raiseServerReady: () -> Any
+            lateinit var raiseApplicationStopPreparing: () -> Any
+            application {
+                routing {
+                    val applicationState = ApplicationState()
+                    registerNaisApi(applicationState)
+                    configureLifecycleHooks(applicationState)
+                }
+                raiseApplicationStarted = { monitor.raise(ApplicationStarted, this) }
+                raiseServerReady = { monitor.raise(ServerReady, this.environment) }
+                raiseApplicationStopPreparing = { monitor.raise(ApplicationStopPreparing, this.environment) }
+            }
+
+            assertNotReady()
+            raiseApplicationStarted()
+            raiseServerReady()
+            assertReady()
+
+            raiseApplicationStopPreparing()
             assertNotReady()
         }
     }
