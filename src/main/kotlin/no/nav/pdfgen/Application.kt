@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty
 import io.prometheus.client.hotspot.DefaultExports
+import java.util.concurrent.TimeUnit
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.plugins.configureContentNegotiation
@@ -43,6 +44,7 @@ fun main() {
                 connector { port = Environment().port }
             },
         )
+    embeddedServer.addShutdownHook { embeddedServer.stop(3, 5, TimeUnit.SECONDS) }
     embeddedServer.start(true)
 }
 
