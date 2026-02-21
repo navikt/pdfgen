@@ -55,6 +55,8 @@ mkdir {templates,data}/your_teamname # your_teamname can be anything, but it'll 
 
 [navikt/flex-sykepengesoknad-pdfgen](https://github.com/navikt/flex-sykepengesoknad-pdfgen), [navikt/smpdfgen](https://github.com/navikt/smpdfgen), [navikt/smarbeidsgiver-pdfgen](https://github.com/navikt/smarbeidsgiver-pdfgen), [pale-2-pdfgen](https://github.com/navikt/pale-2-pdfgen) is some good examples of how such a project can be set up.
 
+[navikt/helsearbeidsgiver-pdfgen](https://github.com/navikt/helsearbeidsgiver-pdfgen) is a project that has tests to ensure templates produce the expected PDF text content.
+
 ### Helpers
 [https://github.com/navikt/pdfgen-core/blob/main/src/main/kotlin/no/nav/pdfgen/core/template/Helpers.kt](https://github.com/navikt/pdfgen-core/blob/main/src/main/kotlin/no/nav/pdfgen/core/template/Helpers.kt) contains a collection of customs Helpers which implements functionality that is not part of the Handlebars language itself.
 
