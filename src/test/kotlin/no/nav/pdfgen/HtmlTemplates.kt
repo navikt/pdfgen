@@ -6,7 +6,7 @@ val testTemplateInvalidFonts: String = getResource("/html/test_template_invalid_
 val testJpg: ByteArray = getResource("/image/test.jpg")
 val testPng: ByteArray = getResource("/image/test.png")
 
-inline fun <reified T> getResource(path: String): T =
+internal inline fun <reified T> getResource(path: String): T =
     PdfGenITest::class.java.getResourceAsStream(path).use { stream ->
         when (T::class) {
             String::class -> stream!!.bufferedReader(Charsets.UTF_8).use { it.readText() } as T
