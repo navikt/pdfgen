@@ -14,7 +14,6 @@ import kotlin.io.path.Path
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.Wait
@@ -24,7 +23,6 @@ import org.testcontainers.utility.MountableFile
 internal class DockerImageTest {
 
     @Test
-    @DisabledIfEnvironmentVariable(named = "CI", matches = "true")
     internal fun `Test Dockerfile`() {
         val network = Network.newNetwork()
 
