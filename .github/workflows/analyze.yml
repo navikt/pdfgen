@@ -26,6 +26,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: kotlin
+        build-mode: none
 
     - name: Set up Java 25
       uses: actions/setup-java@v5
