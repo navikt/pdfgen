@@ -21,5 +21,3 @@ If you are adding a new feature or bug fix please ensure there is proper test co
 
 ## Pull Request Review
 If you have a branch on your fork that is ready to be merged, please create a new pull request. The maintainers will review to make sure the above guidelines have been followed and if the changes are helpful to all library users, they will be merged.
-
-This project uses [semantic versioning](https://semver.org/) and does NOT prefix tags or release titles with `v` i.e. use `1.2.3` instead of `v1.2.3` 
