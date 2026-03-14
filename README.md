@@ -5,19 +5,17 @@
 ![GitHub Release](https://img.shields.io/github/v/release/navikt/pdfgen)
 
 
-Repository for `pdfgen`, an application written in Kotlin used to create PDFs and HTMLs
+Repository for `pdfgen`, an application written in Rust used to create PDFs and HTMLs
 
 ## Technologies & Tools
 
-* Kotlin
-* Gradle
-* Ktor
-* Junit
-* Handlebars
-* VeraPDF-validation
-* JDK 25
+* Rust
+* Cargo
+* Axum (HTTP server)
+* Handlebars (template engine)
+* Chromium/Chrome (PDF generation via headless browser)
+* Prometheus (metrics)
 * Docker
-* [pdfgen-core](https://github.com/navikt/pdfgen-core)
 
 ## Getting started
 
@@ -64,40 +62,38 @@ mkdir {templates,data}/your_teamname # your_teamname can be anything, but it'll 
 
 ### Build and run tests
 ```shell script
-./gradlew installDist
-```
-or on windows
-```shell script
-gradlew.bat installDist
+cargo build --release
 ```
 
 Running the application locally enables a GET endpoint at `/api/v1/genpdf/<application>/<template>`
 which looks for test data at `data/<application>/<template>.json` and outputs a PDF to your browser.
-Additionally, the template folder will be fetched on every request, and reflect any changes made since the last GET,
-making this ideal for developing new templates for your application.
-
 The template and data directory structure both follow the `<application>/<template>` structure.
 
 To enable HTML document support, use the environment variable `ENABLE_HTML_ENDPOINT=true`. This will enable the 
 HTML endpoints on `/api/v1/genhtml/<application>/<template>`. 
 
-By default, pdfgen will load all assets (`templates`, `resources`, `data`) to memory on startup. Any change on files inside these folders will not be loaded before a restart of the application. However if you are developing templates you can make the application to reload the assets on every request by setting `DEV_MODE=true`.
+By default, pdfgen will load all assets (`templates`, `resources`, `data`) to memory on startup. Any change on files inside these folders will not be loaded before a restart of the application.
 
+### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SERVER_PORT` | `8080` | HTTP server port |
+| `DISABLE_PDF_GET` | `true` | Disable GET endpoint for PDF generation |
+| `ENABLE_HTML_ENDPOINT` | `false` | Enable HTML generation endpoints |
+| `DEV_MODE` | `false` | Reload templates on each request (development only) |
+| `TEMPLATES_DIR` | `templates` | Directory containing Handlebars templates |
+| `RESOURCES_DIR` | `resources` | Directory containing resource files (images) |
+| `FONTS_DIR` | `fonts` | Directory containing fonts |
+| `DATA_DIR` | `data` | Directory containing test data JSON files |
+| `CHROME_BINARY` | auto-detect | Path to Chrome/Chromium binary for PDF generation |
 
 ### Release
-We use default GitHub release, 
+We use default GitHub release. 
 This project uses [semantic versioning](https://semver.org/) and does NOT prefix tags or release titles with `v` i.e. use `1.2.3` instead of `v1.2.3` 
 
-see guide about how to relese:[creating release github](
+See guide about how to release: [creating release github](
 https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release)
-
-
-### Upgrading the gradle wrapper
-Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
-
-```shell script
-./gradlew wrapper --gradle-version $gradleVersjon
-```
 
 ## pdfgen 2.0
 

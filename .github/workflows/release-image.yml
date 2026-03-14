@@ -18,17 +18,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '25'
-          architecture: x64
-          cache: 'gradle'
-      - name: Build gradle artifacts
-        shell: bash
-        run: |
-          ./gradlew installDist
       - name: Build Docker image to ghcr.io
         run: |
           docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .

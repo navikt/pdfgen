@@ -1,0 +1,27 @@
+[package]
+name = "pdfgen"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "pdfgen"
+path = "src-rs/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+axum = "0.7"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+handlebars = "6"
+chrono = { version = "0.4", features = ["serde"] }
+base64 = "0.22"
+prometheus = { version = "0.13", features = ["process"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+tempfile = "3"
+bytes = "1"
+tower-http = { version = "0.5", features = ["trace"] }
+walkdir = "2"
+anyhow = "1"
+once_cell = "1"
+mime = "0.3"
