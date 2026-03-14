@@ -61,6 +61,17 @@ pub async fn post_pdf(
 ) -> Response {
     let start = std::time::Instant::now();
     let tmpl_name = format!("{}/{}", app_name, template_name);
+
+    // Check template existence for proper 404/500 distinction
+    let template_exists = {
+        let hbs = state.hbs.read().await;
+        hbs.has_template(&tmpl_name)
+    };
+    if !template_exists {
+        return not_found_response(&state, &format!("/api/v1/genpdf/{}/{}", app_name, template_name))
+            .await;
+    }
+
     let html = {
         let hbs = state.hbs.read().await;
         template::render_template(&hbs, &tmpl_name, &json_data)
@@ -68,8 +79,7 @@ pub async fn post_pdf(
     match html {
         Err(e) => {
             error!("Template rendering failed for {tmpl_name}: {e}");
-            not_found_response(&state, &format!("/api/v1/genpdf/{}/{}", app_name, template_name))
-                .await
+            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
         }
         Ok(html_str) => match gen_pdf::html_to_pdf(&html_str).await {
             Err(e) => {

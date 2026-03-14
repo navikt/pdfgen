@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct AppAliveness {
     pub alive: Arc<AtomicBool>,
     pub ready: Arc<AtomicBool>,
@@ -9,10 +9,7 @@ pub struct AppAliveness {
 
 impl AppAliveness {
     pub fn new() -> Self {
-        Self {
-            alive: Arc::new(AtomicBool::new(false)),
-            ready: Arc::new(AtomicBool::new(false)),
-        }
+        Self::default()
     }
 
     pub fn set_alive(&self, val: bool) {

@@ -541,7 +541,7 @@ simple_helper!(IntAsCurrencyNoHelper, |h: &Helper, out: &mut dyn Output| {
     if let Some(p) = h.param(0) {
         if let Some(n) = p.value().as_i64() {
             let kr = n / 100;
-            let ore = (n % 100).abs();
+            let ore = n.abs() % 100;
             let formatted_kr: String = kr.to_string().chars().rev()
                 .collect::<Vec<char>>().chunks(3)
                 .map(|c| c.iter().collect::<String>())

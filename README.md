@@ -79,7 +79,7 @@ By default, pdfgen will load all assets (`templates`, `resources`, `data`) to me
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `SERVER_PORT` | `8080` | HTTP server port |
-| `DISABLE_PDF_GET` | `true` | Disable GET endpoint for PDF generation |
+| `DISABLE_PDF_GET` | `false` (binary), `true` (Docker image) | Disable GET endpoint for PDF generation |
 | `ENABLE_HTML_ENDPOINT` | `false` | Enable HTML generation endpoints |
 | `DEV_MODE` | `false` | Reload templates on each request (development only) |
 | `TEMPLATES_DIR` | `templates` | Directory containing Handlebars templates |
