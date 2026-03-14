@@ -1,15 +1,38 @@
-FROM gcr.io/distroless/java25-debian13@sha256:34596c2b01eae269c67370572ccf9cba6cd26ecd2eb171e1d90419060c6297c5
+FROM rust:1-slim-bookworm AS builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY Cargo.toml Cargo.lock* ./
+COPY src-rs/ src-rs/
+
+RUN cargo build --release
+
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium \
+    ca-certificates \
+    fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY build/install/*/lib /lib
+COPY --from=builder /build/target/release/pdfgen /app/pdfgen
 
-ENV JDK_JAVA_OPTIONS="-Dlogback.configurationFile=logback.xml"
+COPY templates /app/templates
+COPY fonts /app/fonts
+COPY resources /app/resources
+
+ENV CHROME_BINARY="/usr/bin/chromium"
 ENV DISABLE_PDF_GET="true"
 ENV ENABLE_HTML_ENDPOINT="false"
 
 EXPOSE 8080
 
-USER nonroot
+USER nobody
 
-ENTRYPOINT ["java", "-cp", "/lib/*", "no.nav.pdfgen.ApplicationKt"]
+ENTRYPOINT ["/app/pdfgen"]

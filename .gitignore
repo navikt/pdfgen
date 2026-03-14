@@ -17,3 +17,5 @@ src/generated
 
 # Kotlin 2.0
 .kotlin/
+# Rust build artifacts
+target/
