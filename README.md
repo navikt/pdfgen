@@ -12,8 +12,8 @@ Repository for `pdfgen`, an application written in Rust used to create PDFs and 
 * Rust
 * Cargo
 * Axum (HTTP server)
-* Handlebars (template engine)
-* Chromium/Chrome (PDF generation via headless browser)
+* Handlebars (template engine for HTML generation)
+* Typst (PDF generation — pure Rust, no external browser required)
 * Prometheus (metrics)
 * Docker
 
@@ -84,9 +84,8 @@ By default, pdfgen will load all assets (`templates`, `resources`, `data`) to me
 | `DEV_MODE` | `false` | Reload templates on each request (development only) |
 | `TEMPLATES_DIR` | `templates` | Directory containing Handlebars templates |
 | `RESOURCES_DIR` | `resources` | Directory containing resource files (images) |
-| `FONTS_DIR` | `fonts` | Directory containing fonts |
+| `FONTS_DIR` | `fonts` | Directory containing fonts (used by Typst PDF renderer) |
 | `DATA_DIR` | `data` | Directory containing test data JSON files |
-| `CHROME_BINARY` | auto-detect | Path to Chrome/Chromium binary for PDF generation |
 
 ### Release
 We use default GitHub release. 

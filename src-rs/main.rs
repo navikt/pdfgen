@@ -4,6 +4,7 @@ mod pdf;
 mod routes;
 mod state;
 mod template;
+mod typst_world;
 
 use axum::{
     middleware,

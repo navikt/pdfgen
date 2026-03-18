@@ -18,10 +18,13 @@ base64 = "0.22"
 prometheus = { version = "0.13", features = ["process"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
-tempfile = "3"
 bytes = "1"
 tower-http = { version = "0.5", features = ["trace"] }
 walkdir = "2"
 anyhow = "1"
 once_cell = "1"
 mime = "0.3"
+typst = "0.14"
+typst-pdf = "0.14"
+typst-library = "0.14"
+typst-syntax = "0.14"

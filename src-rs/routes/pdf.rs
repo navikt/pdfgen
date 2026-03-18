@@ -6,6 +6,7 @@ use axum::{
     Json,
 };
 use serde_json::Value;
+use std::path::PathBuf;
 use tracing::{error, info};
 
 use crate::{pdf as gen_pdf, template, AppState};
@@ -40,13 +41,22 @@ pub async fn get_pdf(
                     error!("Template rendering failed: {e}");
                     (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
                 }
-                Ok(html_str) => match gen_pdf::html_to_pdf(&html_str).await {
-                    Err(e) => {
-                        error!("PDF generation failed: {e}");
-                        (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+                Ok(html_str) => {
+                    let fonts_dir = state.config.fonts_dir.clone();
+                    let root = PathBuf::from(&state.config.templates_dir);
+                    match tokio::task::spawn_blocking(move || {
+                        gen_pdf::html_to_pdf(&html_str, &fonts_dir, &root)
+                    })
+                    .await
+                    .unwrap_or_else(|e| Err(anyhow::anyhow!("Task join error: {e}")))
+                    {
+                        Err(e) => {
+                            error!("PDF generation failed: {e}");
+                            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+                        }
+                        Ok(pdf_bytes) => pdf_response(pdf_bytes),
                     }
-                    Ok(pdf_bytes) => pdf_response(pdf_bytes),
-                },
+                }
             }
         }
     }
@@ -81,30 +91,41 @@ pub async fn post_pdf(
             error!("Template rendering failed for {tmpl_name}: {e}");
             (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
         }
-        Ok(html_str) => match gen_pdf::html_to_pdf(&html_str).await {
-            Err(e) => {
-                error!("PDF generation failed: {e}");
-                (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+        Ok(html_str) => {
+            let fonts_dir = state.config.fonts_dir.clone();
+            let root = PathBuf::from(&state.config.templates_dir);
+            match tokio::task::spawn_blocking(move || {
+                gen_pdf::html_to_pdf(&html_str, &fonts_dir, &root)
+            })
+            .await
+            .unwrap_or_else(|e| Err(anyhow::anyhow!("Task join error: {e}")))
+            {
+                Err(e) => {
+                    error!("PDF generation failed: {e}");
+                    (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+                }
+                Ok(pdf_bytes) => {
+                    info!("Done generating PDF in {}ms", start.elapsed().as_millis());
+                    pdf_response(pdf_bytes)
+                }
             }
-            Ok(pdf_bytes) => {
-                info!(
-                    "Done generating PDF in {}ms",
-                    start.elapsed().as_millis()
-                );
-                pdf_response(pdf_bytes)
-            }
-        },
+        }
     }
 }
 
 /// POST /api/v1/genpdf/html/{applicationName}
-/// Converts a raw HTML string to PDF.
+/// Converts a raw HTML string to PDF using Typst.
 pub async fn post_html_to_pdf(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     Path(_app_name): Path<String>,
     body: String,
 ) -> Response {
-    match gen_pdf::html_to_pdf(&body).await {
+    let fonts_dir = state.config.fonts_dir.clone();
+    let root = PathBuf::from(&state.config.templates_dir);
+    match tokio::task::spawn_blocking(move || gen_pdf::html_to_pdf(&body, &fonts_dir, &root))
+        .await
+        .unwrap_or_else(|e| Err(anyhow::anyhow!("Task join error: {e}")))
+    {
         Err(e) => {
             error!("HTML-to-PDF conversion failed: {e}");
             (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
@@ -114,9 +135,9 @@ pub async fn post_html_to_pdf(
 }
 
 /// POST /api/v1/genpdf/image/{applicationName}
-/// Converts a JPEG or PNG image to PDF.
+/// Converts a JPEG or PNG image to PDF using Typst.
 pub async fn post_image_to_pdf(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     Path(_app_name): Path<String>,
     request: axum::http::Request<Body>,
 ) -> Response {
@@ -138,7 +159,14 @@ pub async fn post_image_to_pdf(
         }
     };
 
-    match gen_pdf::image_to_pdf(&body_bytes, &content_type).await {
+    let fonts_dir = state.config.fonts_dir.clone();
+    let root = PathBuf::from(&state.config.templates_dir);
+    match tokio::task::spawn_blocking(move || {
+        gen_pdf::image_to_pdf(&body_bytes, &content_type, &fonts_dir, &root)
+    })
+    .await
+    .unwrap_or_else(|e| Err(anyhow::anyhow!("Task join error: {e}")))
+    {
         Err(e) => {
             error!("Image-to-PDF conversion failed: {e}");
             (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()

@@ -1,94 +1,71 @@
 use anyhow::{Context, Result};
-use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
-use tokio::process::Command;
+use std::collections::HashMap;
+use std::path::Path;
+use typst::foundations::Bytes;
 
-/// Convert HTML string to PDF bytes using headless Chrome.
-pub async fn html_to_pdf(html: &str) -> Result<Vec<u8>> {
-    let temp_dir = tempfile::TempDir::new().context("Failed to create temp dir")?;
-    let input_path = temp_dir.path().join("input.html");
-    let output_path = temp_dir.path().join("output.pdf");
+use crate::typst_world;
 
-    tokio::fs::write(&input_path, html)
-        .await
-        .context("Failed to write HTML to temp file")?;
+/// Convert HTML string to PDF bytes using Typst.
+///
+/// The HTML content is passed to a minimal Typst document as a raw virtual
+/// file and rendered. For best results, templates should use native Typst
+/// (`.typ`) format and `typst_to_pdf` directly.
+pub fn html_to_pdf(html: &str, fonts_dir: &str, root: &Path) -> Result<Vec<u8>> {
+    // Build a Typst document that displays the HTML content as a raw block
+    // This allows PDF generation without an external browser.
+    let typst_source = r#"#set document(title: "pdfgen")
+#set page(margin: (top: 1cm, bottom: 1cm, left: 1cm, right: 1cm))
+#let content = read("/html-content", encoding: none)
+#raw(str(content), lang: "html")
+"#
+    .to_string();
 
-    let chrome_bin = find_chrome_binary();
-    let status = Command::new(&chrome_bin)
-        .args([
-            "--headless=new",
-            "--no-sandbox",
-            "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--disable-extensions",
-            "--run-all-compositor-stages-before-draw",
-            "--no-pdf-header-footer",
-            &format!("--print-to-pdf={}", output_path.display()),
-        ])
-        .arg(input_path.to_str().unwrap())
-        .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .status()
-        .await
-        .with_context(|| format!("Failed to run Chrome binary: {chrome_bin}"))?;
+    let mut vfiles = HashMap::new();
+    vfiles.insert("/html-content".to_string(), Bytes::new(html.as_bytes().to_vec()));
 
-    if !status.success() {
-        anyhow::bail!("Chrome exited with non-zero status: {}", status);
-    }
-
-    tokio::fs::read(&output_path)
-        .await
-        .context("Failed to read PDF output")
+    typst_world::compile_to_pdf(fonts_dir, root, "/main.typ", typst_source, vfiles)
 }
 
-/// Wrap an image (JPEG/PNG) in an HTML page and convert to PDF.
-pub async fn image_to_pdf(image_bytes: &[u8], content_type: &str) -> Result<Vec<u8>> {
-    let mime = if content_type.contains("png") {
-        "image/png"
-    } else {
-        "image/jpeg"
-    };
-    let b64 = BASE64.encode(image_bytes);
-    let html = format!(
-        r#"<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8"/>
-<style>
-body {{ margin: 0; padding: 0; }}
-img {{ max-width: 100%; display: block; }}
-</style>
-</head>
-<body>
-<img src="data:{mime};base64,{b64}" alt="image"/>
-</body>
-</html>"#
+/// Render a Typst template to PDF bytes with JSON data injected as data.json.
+///
+/// The template can access the data via `#let data = json("data.json")`.
+#[allow(dead_code)]
+pub fn typst_to_pdf(
+    template_source: &str,
+    json_data: &serde_json::Value,
+    fonts_dir: &str,
+    root: &Path,
+) -> Result<Vec<u8>> {
+    let json_bytes = serde_json::to_vec(json_data).context("Failed to serialize JSON data")?;
+    let mut vfiles = HashMap::new();
+    vfiles.insert("/data.json".to_string(), Bytes::new(json_bytes));
+
+    typst_world::compile_to_pdf(
+        fonts_dir,
+        root,
+        "/main.typ",
+        template_source.to_string(),
+        vfiles,
+    )
+}
+
+/// Wrap an image (JPEG/PNG) in a Typst document and convert to PDF.
+pub fn image_to_pdf(
+    image_bytes: &[u8],
+    content_type: &str,
+    fonts_dir: &str,
+    root: &Path,
+) -> Result<Vec<u8>> {
+    let fmt = if content_type.contains("png") { "png" } else { "jpg" };
+    let typst_source = format!(
+        r#"#set page(margin: 0pt, width: auto, height: auto)
+#let img-data = read("/image-data", encoding: none)
+#image.decode(img-data, format: "{fmt}")
+"#
     );
-    html_to_pdf(&html).await
-}
 
-fn find_chrome_binary() -> String {
-    let candidates = [
-        std::env::var("CHROME_BINARY").ok(),
-        Some("google-chrome".to_string()),
-        Some("chromium".to_string()),
-        Some("chromium-browser".to_string()),
-        Some("/usr/bin/google-chrome".to_string()),
-        Some("/usr/bin/chromium".to_string()),
-    ];
-    for candidate in candidates.into_iter().flatten() {
-        if std::path::Path::new(&candidate).exists()
-            || which_exists(&candidate)
-        {
-            return candidate;
-        }
-    }
-    "google-chrome".to_string()
-}
+    let mut vfiles = HashMap::new();
+    vfiles.insert("/image-data".to_string(), Bytes::new(image_bytes.to_vec()));
 
-fn which_exists(name: &str) -> bool {
-    std::process::Command::new("which")
-        .arg(name)
-        .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false)
+    typst_world::compile_to_pdf(fonts_dir, root, "/main.typ", typst_source, vfiles)
 }

@@ -8,15 +8,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY Cargo.toml Cargo.lock* ./
 COPY src-rs/ src-rs/
+COPY fonts/ fonts/
 
 RUN cargo build --release
 
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
     ca-certificates \
-    fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -27,7 +26,6 @@ COPY templates /app/templates
 COPY fonts /app/fonts
 COPY resources /app/resources
 
-ENV CHROME_BINARY="/usr/bin/chromium"
 ENV DISABLE_PDF_GET="true"
 ENV ENABLE_HTML_ENDPOINT="false"
 
