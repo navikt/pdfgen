@@ -18,7 +18,7 @@ val junitJupiterVersion = "6.0.3"
 val verapdfVersion = "1.28.2"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "2.0.3"
-val pdfgencoreVersion = "1.1.77"
+val pdfgencoreVersion = "1.1.78"
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
@@ -27,7 +27,7 @@ val rhinoVersion = "1.9.1"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.3.10"
+    kotlin("jvm") version "2.3.20"
     id("com.diffplug.spotless") version "8.3.0"
     id("com.github.ben-manes.versions") version "0.53.0"
 }
