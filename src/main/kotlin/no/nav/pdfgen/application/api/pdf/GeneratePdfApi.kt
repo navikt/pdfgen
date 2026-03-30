@@ -13,6 +13,7 @@ import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.application.pdf.createPDFAWithCache
 import no.nav.pdfgen.core.OPENHTMLTOPDF_RENDERING_SUMMARY
 import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
@@ -26,7 +27,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
             val applicationName = call.parameters["applicationName"]!!
             createHtmlFromTemplateData(template, applicationName)?.let { document ->
                 call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-                call.respond(createPDFA(document))
+                call.respond(createPDFAWithCache(document))
             }
                 ?: call.respondText(
                     "Template or application not found",
@@ -42,7 +43,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
 
         createHtml(template, applicationName, jsonNode)?.let { document ->
             call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-            call.respond(createPDFA(document))
+            call.respond(createPDFAWithCache(document))
             logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         }
             ?: call.respondText(
@@ -59,7 +60,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
         val html = call.receiveText()
 
         call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-        call.respond(createPDFA(html))
+        call.respond(createPDFAWithCache(html))
         logger.info(
             "Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms"
         )
