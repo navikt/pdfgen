@@ -1,3 +1,4 @@
+⚠️ # Deprecated use [pdfgenrs](https://github.com/navikt/pdfgenrs)
 # pdfgen
 
 [![Build main](https://github.com/navikt/pdfgen/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/navikt/pdfgen/actions/workflows/build.yml)
