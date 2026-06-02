@@ -1,4 +1,4 @@
-⚠️ Deprecated use [pdfgenrs](https://github.com/navikt/pdfgenrs) ⚠️
+⚠️ Deprecated ⚠️ use [pdfgenrs](https://github.com/navikt/pdfgenrs) 
 ============= 
 
 
