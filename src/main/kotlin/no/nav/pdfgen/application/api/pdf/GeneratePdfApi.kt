@@ -75,19 +75,28 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
                 withContext(Dispatchers.IO) {
                     call.receive<InputStream>().use { inputStream ->
                         ByteArrayOutputStream().use { outputStream ->
-                            createPDFA(inputStream, outputStream)
-                            call.response.header(
-                                "Content-Type",
-                                ContentType.Application.Pdf.toString()
-                            )
-                            call.respondBytes(
-                                outputStream.toByteArray(),
-                                contentType = ContentType.Application.Pdf
-                            )
+                            try {
+                                createPDFA(inputStream, outputStream)
+                                call.response.header(
+                                    "Content-Type",
+                                    ContentType.Application.Pdf.toString()
+                                )
+                                call.respondBytes(
+                                    outputStream.toByteArray(),
+                                    contentType = ContentType.Application.Pdf
+                                )
+                            } catch (e: IllegalArgumentException) {
+                                logger.error("Klarte ikke å behandle bilde for $applicationName", e)
+                                call.respondText(
+                                    "Bildet kunne ikke konverteres til PDF. Kontroller at filen er et gyldig JPEG- eller PNG-bilde.",
+                                    status = HttpStatusCode.UnprocessableEntity
+                                )
+                            }
                         }
                     }
                 }
             }
+
             else -> call.respond(HttpStatusCode.UnsupportedMediaType)
         }
         logger.info(
