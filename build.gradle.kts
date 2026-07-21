@@ -1,36 +1,35 @@
+import com.diffplug.gradle.spotless.SpotlessTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "no.nav.pdfgen"
 version = "2.0.0" //This will never change. See GitHub releases for docker image release
 
-val javaVersion = JvmTarget.JVM_21
+val javaVersion = JvmTarget.JVM_25
 
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.18.1"
-val ktorVersion = "3.0.1"
-val logbackVersion = "1.5.12"
-val logstashEncoderVersion = "8.0"
-val openHtmlToPdfVersion = "1.1.22"
+val jacksonVersion = "2.21.3"
+val ktorVersion = "3.5.0"
+val logbackVersion = "1.5.32"
+val logstashEncoderVersion = "9.0"
+val openHtmlToPdfVersion = "1.1.37"
 val prometheusVersion = "0.16.0"
-val junitJupiterVersion = "5.11.3"
-val verapdfVersion = "1.26.1"
+val junitJupiterVersion = "6.0.3"
+val verapdfVersion = "1.30.1"
 val ktfmtVersion = "0.44"
-val testcontainersVersion = "1.20.4"
-val pdfgencoreVersion = "1.1.34"
-val nettycommonVersion = "4.1.115.Final"
+val testcontainersVersion = "2.0.5"
+val pdfgencoreVersion = "1.1.81"
 
 ///Due to vulnerabilities
-val commonsCompressVersion = "1.27.1"
-val commonsIoVersion = "2.18.0"
-
+val commonsCompressVersion = "1.28.0"
+val commonsIoVersion = "2.22.0"
+val rhinoVersion = "1.9.1"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.0.21"
-    id("com.diffplug.spotless") version "6.25.0"
-    id("com.gradleup.shadow") version "8.3.5"
-    id("com.github.ben-manes.versions") version "0.51.0"
+    kotlin("jvm") version "2.3.21"
+    id("com.diffplug.spotless") version "8.5.1"
+    id("com.github.ben-manes.versions") version "0.54.0"
 }
 
 application {
@@ -45,7 +44,7 @@ kotlin {
 
 tasks {
 
-    test {
+    withType<Test> {
         useJUnitPlatform {}
         testLogging {
             events("passed", "skipped", "failed")
@@ -55,25 +54,22 @@ tasks {
         }
     }
 
-    shadowJar {
-        archiveBaseName.set("app")
-        archiveClassifier.set("")
-        isZip64 = true
-        manifest {
-            attributes(
-                mapOf(
-                    "Main-Class" to "no.nav.pdfgen.ApplicationKt",
-                ),
-            )
-        }
+   withType<Exec> {
+        println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
+        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
+        println("✅ Added Pre Commit Git Hook Script.")
+
     }
 
-    spotless {
-        kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
-        check {
-            dependsOn("spotlessApply")
+    withType<SpotlessTask> {
+        spotless{
+            kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
+            check {
+                dependsOn("spotlessApply")
+            }
         }
     }
+    
 }
 
 repositories {
@@ -102,9 +98,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    constraints {
-        implementation("io.netty:netty-common:$nettycommonVersion")
-    }
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
@@ -114,6 +107,11 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     implementation("org.verapdf:validation-model:$verapdfVersion")
+    constraints {
+        implementation("org.mozilla:rhino:$rhinoVersion") {
+            because("Due to vulnerabilities in org.verapdf:validation-model")
+        }
+    }
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
