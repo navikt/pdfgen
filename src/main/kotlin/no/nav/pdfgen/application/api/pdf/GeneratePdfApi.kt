@@ -3,13 +3,10 @@ package no.nav.pdfgen.application.api.pdf
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.request.contentType
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveText
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondBytes
-import io.ktor.server.response.respondText
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -28,6 +25,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
             val template = call.parameters["template"]!!
             val applicationName = call.parameters["applicationName"]!!
             createHtmlFromTemplateData(template, applicationName)?.let { document ->
+                call.response.header("Content-Type", ContentType.Application.Pdf.toString())
                 call.respond(createPDFA(document))
             }
                 ?: call.respondText(
@@ -43,6 +41,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
         val jsonNode: JsonNode = call.receive()
 
         createHtml(template, applicationName, jsonNode)?.let { document ->
+            call.response.header("Content-Type", ContentType.Application.Pdf.toString())
             call.respond(createPDFA(document))
             logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         }
@@ -59,6 +58,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
 
         val html = call.receiveText()
 
+        call.response.header("Content-Type", ContentType.Application.Pdf.toString())
         call.respond(createPDFA(html))
         logger.info(
             "Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms"
@@ -76,6 +76,10 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
                     call.receive<InputStream>().use { inputStream ->
                         ByteArrayOutputStream().use { outputStream ->
                             createPDFA(inputStream, outputStream)
+                            call.response.header(
+                                "Content-Type",
+                                ContentType.Application.Pdf.toString()
+                            )
                             call.respondBytes(
                                 outputStream.toByteArray(),
                                 contentType = ContentType.Application.Pdf
