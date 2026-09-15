@@ -9,12 +9,12 @@ val javaVersion = JvmTarget.JVM_25
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.21.3"
-val ktorVersion = "3.5.0"
-val logbackVersion = "1.5.32"
+val ktorVersion = "3.5.2"
+val logbackVersion = "1.6.3"
 val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.37"
 val prometheusVersion = "0.16.0"
-val junitJupiterVersion = "6.0.3"
+val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.1"
 val ktfmtVersion = "0.44"
 val testcontainersVersion = "2.0.5"
@@ -24,6 +24,7 @@ val pdfgencoreVersion = "1.1.82"
 val commonsCompressVersion = "1.28.0"
 val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.1"
+val nettyVersion = "4.2.17.Final"
 
 plugins {
     id("application")
@@ -81,7 +82,6 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
@@ -98,6 +98,11 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    constraints {
+        implementation("io.netty:netty-handler:$nettyVersion") {
+            because("Due to vulnerabilitie in this transitive dependency")
+        }
+    }
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
