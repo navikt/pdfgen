@@ -29,12 +29,18 @@ jobs:
         shell: bash
         run: |
           ./gradlew installDist
-      - name: Build Docker image to ghcr.io
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Login to ghcr.io
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Konsumenter bygger for amd64 og arm64; Dockerfile har ingen RUN-steg, så QEMU trengs ikke
+      - name: Build and push multi-platform docker image to ghcr.io
         run: |
-          docker build --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} .
-      - name: Push docker image to GitHub
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker login ghcr.io -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
-          docker push ${{ env.IMAGE }}:${{ env.NEW_VERSION }}
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --tag ${{ env.IMAGE }}:${{ env.NEW_VERSION }} \
+            --push .
