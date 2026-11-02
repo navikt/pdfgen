@@ -122,7 +122,6 @@ This project is currently maintained by the organisation [@navikt](https://githu
 
 If you need to raise an issue or question about this library, please create an issue here and tag it with the appropriate label.
 
-For contact requests within the [@navikt](https://github.com/navikt) org, you can use the Slack channel #pdfgen
 
 If you need to contact anyone directly, please see [CODEOWNERS](CODEOWNERS)
 
