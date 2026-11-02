@@ -2,7 +2,6 @@ package no.nav.pdfgen.application.api.nais
 
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respondText
 import io.ktor.server.response.respondTextWriter
 import io.ktor.server.routing.Routing
@@ -16,7 +15,7 @@ fun Routing.registerNaisApi(
     applicationState: ApplicationState,
     readynessCheck: () -> Boolean = { applicationState.ready },
     alivenessCheck: () -> Boolean = { applicationState.alive },
-    collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
+    collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry,
 ) {
     get("/internal/is_alive") {
         if (alivenessCheck()) {
@@ -31,12 +30,14 @@ fun Routing.registerNaisApi(
         } else {
             call.respondText(
                 "Please wait! I'm not ready :(",
-                status = HttpStatusCode.InternalServerError
+                status = HttpStatusCode.InternalServerError,
             )
         }
     }
     get("/internal/prometheus") {
-        val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
+        val names = call.request.queryParameters
+            .getAll("name[]")
+            ?.toSet() ?: setOf()
         call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
             write004(this, collectorRegistry.filteredMetricFamilySamples(names))
         }
