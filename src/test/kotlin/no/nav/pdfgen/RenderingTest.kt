@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.core.pdf.render
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.function.Executable
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.flavours.PDFAFlavour
@@ -17,6 +19,7 @@ import java.io.ByteArrayInputStream
 internal class RenderingTest {
     private val templates = Environment().templates
     private val objectMapper = ObjectMapper()
+    private val requiredProfiles = listOf(PDFAFlavour.PDFA_2_A, PDFAFlavour.PDFUA_1)
 
     @BeforeEach
     internal fun setup() {
@@ -24,76 +27,83 @@ internal class RenderingTest {
     }
 
     @Test
-    internal fun `All pdfs should render with default values`() {
+    internal fun `Alle PDF-er gjengis med standardverdier`() {
         templates
             .map { it.key }
             .forEach {
                 val (applicationName, templateName) = it
-                val node =
-                    javaClass
-                        .getResourceAsStream("/data/$applicationName/$templateName.json")
-                        ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
-                        ?: objectMapper.createObjectNode()
+                val node = javaClass
+                    .getResourceAsStream("/data/$applicationName/$templateName.json")
+                    ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
+                    ?: objectMapper.createObjectNode()
+
                 println(
-                    "Renders the template $templateName for application $applicationName without exceptions",
+                    "Gjengir malen $templateName for applikasjonen $applicationName uten unntak",
                 )
+
                 render(applicationName, templateName, node)
             }
     }
 
     @Test
-    internal fun `All pdfs should create a PDFA compliant file`() {
-        val blackList = listOf<Pair<String, String>>()
-        val pdfaFlavour = PDFAFlavour.PDFA_2_U
-        val validator = Foundries.defaultInstance().createValidator(pdfaFlavour, false)
-
-        templates
-            .map { it.key }
-            .filterNot(blackList::contains)
-            .forEach {
-                val (applicationName, templateName) = it
-                val node =
-                    javaClass
+    internal fun `Alle maler gjengis som PDF-A-2a- og PDF-UA-1-kompatible dokumenter`() {
+        assertAll(
+            "Alle maler gjengis som PDF/A-2a- og PDF/UA-1-kompatible dokumenter",
+            templates.map { it.key }.map { (applicationName, templateName) ->
+                Executable {
+                    val node = javaClass
                         .getResourceAsStream("/data/$applicationName/$templateName.json")
                         ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
                         ?: objectMapper.createObjectNode()
-                println(
-                    "Renders the template $templateName for application $applicationName to a PDF/A compliant document",
-                )
-                val doc = render(applicationName, templateName, node)
-                val pdf = createPDFA(doc!!)
-                Foundries.defaultInstance().createParser(ByteArrayInputStream(pdf)).use { that ->
-                    val validationResult = validator.validate(that)
-                    validationResult.testAssertions
-                        .filter { test -> test.status != TestAssertion.Status.PASSED }
-                        .forEach { test ->
-                            println(test.message)
-                            println("Location ${test.location.context} ${test.location.level}")
-                            println("Status ${test.status}")
-                            println("Test number ${test.ruleId.testNumber}")
-                        }
-                    assertEquals(true, validationResult.isCompliant)
+
+                    println(
+                        "Validerer malen $templateName for applikasjonen $applicationName mot PDF/A-2a og PDF/UA-1",
+                    )
+
+                    val doc = render(applicationName, templateName, node)
+                    val pdf = createPDFA(doc!!)
+                    assertCompliant(pdf, "malen '$templateName' for applikasjonen '$applicationName'")
                 }
-            }
+            },
+        )
     }
 
     @Test
-    internal fun `All pdfs should create a PDFA compliant file renders a HTML payload to a PDFA compliant document`() {
-        val pdfaFlavour = PDFAFlavour.PDFA_2_U
-        val validator = Foundries.defaultInstance().createValidator(pdfaFlavour, false)
+    internal fun `HTML-fixturen gjengis som PDF-A-2a- og PDF-UA-1-kompatibelt dokument`() {
         val doc = testTemplateIncludedFonts
         val pdf = createPDFA(doc)
-        Foundries.defaultInstance().createParser(ByteArrayInputStream(pdf)).use {
-            val validationResult = validator.validate(it)
-            validationResult.testAssertions
-                .filter { test -> test.status != TestAssertion.Status.PASSED }
-                .forEach { test ->
-                    println(test.message)
-                    println("Location ${test.location.context} ${test.location.level}")
-                    println("Status ${test.status}")
-                    println("Test number ${test.ruleId.testNumber}")
+        assertCompliant(pdf, "HTML-fixturen '/html/test_template_included_fonts.html'")
+    }
+
+    private fun assertCompliant(
+        pdf: ByteArray,
+        documentDescription: String,
+    ) {
+        val validationResults = requiredProfiles.map { profile ->
+            val foundry = Foundries.defaultInstance()
+            foundry.createValidator(profile, false).use { validator ->
+                ByteArrayInputStream(pdf).use { stream ->
+                    foundry.createParser(stream).use { parser ->
+                        profile to validator.validate(parser)
+                    }
                 }
-            assertEquals(true, validationResult.isCompliant)
+            }
+        }
+        val failures =
+            validationResults.filterNot { (_, result) -> result.isCompliant }
+
+        assertTrue(failures.isEmpty()) {
+            failures.joinToString(separator = "\n\n") { (profile, result) ->
+                val failedRules = result.testAssertions
+                    .filter { assertion -> assertion.status != TestAssertion.Status.PASSED }
+                    .joinToString(separator = "\n") { assertion ->
+                        "Regel ${assertion.ruleId.testNumber}, status ${assertion.status}, " +
+                            "plassering ${assertion.location.context} (nivå ${assertion.location.level}): " +
+                            assertion.message
+                    }
+                "Dokumentet $documentDescription er ikke kompatibelt med profilen $profile.\n" +
+                    "Regler som feilet:\n$failedRules"
+            }
         }
     }
 }
