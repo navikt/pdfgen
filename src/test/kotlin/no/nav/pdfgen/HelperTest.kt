@@ -20,12 +20,12 @@ internal class HelperTest {
 
     private fun jsonContext(jsonNode: JsonNode): Context {
         println(ObjectMapper().writeValueAsString(jsonNode))
-        return Context.newBuilder(jsonNode)
+        return Context
+            .newBuilder(jsonNode)
             .resolver(
                 JsonNodeValueResolver.INSTANCE,
                 MapValueResolver.INSTANCE,
-            )
-            .build()
+            ).build()
     }
 
     @Test
@@ -97,7 +97,7 @@ internal class HelperTest {
     }
 
     @Test
-    internal fun `List contains helper a array with two nodes, where the field fish contains null on the first and a normal value on the second results in IT_CONTAINS`() {
+    internal fun `List contains helper returns IT_CONTAINS when a null fish is followed by a non-null fish`() {
         val template = handlebars.compile("helper_templates/contains")
 
         val jsonNode =
@@ -194,7 +194,7 @@ internal class HelperTest {
 
         assertEquals(
             "03.03.2020 10:15",
-            handlebars.compileInline("{{ iso_to_nor_datetime timestamp }}").apply(context)
+            handlebars.compileInline("{{ iso_to_nor_datetime timestamp }}").apply(context),
         )
     }
 
@@ -211,7 +211,7 @@ internal class HelperTest {
 
         assertEquals(
             "03.03.2020",
-            handlebars.compileInline("{{ iso_to_nor_date timestamp }}").apply(context)
+            handlebars.compileInline("{{ iso_to_nor_date timestamp }}").apply(context),
         )
     }
 
@@ -228,7 +228,7 @@ internal class HelperTest {
 
         assertEquals(
             "3. oktober 2020",
-            handlebars.compileInline("{{ iso_to_long_date timestampLong }}").apply(context)
+            handlebars.compileInline("{{ iso_to_long_date timestampLong }}").apply(context),
         )
     }
 
@@ -245,7 +245,7 @@ internal class HelperTest {
 
         assertEquals(
             "12. februar 2020",
-            handlebars.compileInline("{{ iso_to_long_date date }}").apply(context)
+            handlebars.compileInline("{{ iso_to_long_date date }}").apply(context),
         )
     }
 
@@ -264,7 +264,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq an_int an_int }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq an_int an_int }}TRUE{{/eq}}").apply(context),
         )
         assertEquals(
             "TRUE",
@@ -280,11 +280,11 @@ internal class HelperTest {
         )
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq a_string a_string }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq a_string a_string }}TRUE{{/eq}}").apply(context),
         )
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq a_double a_double }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq a_double a_double }}TRUE{{/eq}}").apply(context),
         )
     }
 
@@ -303,7 +303,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq an_int \"1337\" }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq an_int \"1337\" }}TRUE{{/eq}}").apply(context),
         )
     }
 
@@ -322,7 +322,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq \"1337\" an_int }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq \"1337\" an_int }}TRUE{{/eq}}").apply(context),
         )
     }
 
@@ -341,7 +341,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq an_int string_with_int }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq an_int string_with_int }}TRUE{{/eq}}").apply(context),
         )
     }
 
@@ -360,7 +360,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#eq string_with_int an_int }}TRUE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq string_with_int an_int }}TRUE{{/eq}}").apply(context),
         )
     }
 
@@ -381,7 +381,7 @@ internal class HelperTest {
             "TRUE",
             handlebars
                 .compileInline("{{#eq a_double string_with_double }}TRUE{{/eq}}")
-                .apply(context)
+                .apply(context),
         )
     }
 
@@ -402,7 +402,7 @@ internal class HelperTest {
             "TRUE",
             handlebars
                 .compileInline("{{#eq string_with_double a_double}}TRUE{{/eq}}")
-                .apply(context)
+                .apply(context),
         )
     }
 
@@ -448,7 +448,7 @@ internal class HelperTest {
         )
         assertEquals(
             "FALSE",
-            handlebars.compileInline("{{#eq an_int null}}TRUE{{else}}FALSE{{/eq}}").apply(context)
+            handlebars.compileInline("{{#eq an_int null}}TRUE{{else}}FALSE{{/eq}}").apply(context),
         )
     }
 
@@ -475,17 +475,15 @@ internal class HelperTest {
             "FALSE",
             handlebars
                 .compileInline(
-                    "{{#not_eq string_with_int string_with_int }}TRUE{{else}}FALSE{{/not_eq}}"
-                )
-                .apply(context),
+                    "{{#not_eq string_with_int string_with_int }}TRUE{{else}}FALSE{{/not_eq}}",
+                ).apply(context),
         )
         assertEquals(
             "FALSE",
             handlebars
                 .compileInline(
-                    "{{#not_eq string_with_double string_with_double }}TRUE{{else}}FALSE{{/not_eq}}"
-                )
-                .apply(context),
+                    "{{#not_eq string_with_double string_with_double }}TRUE{{else}}FALSE{{/not_eq}}",
+                ).apply(context),
         )
         assertEquals(
             "FALSE",
@@ -516,7 +514,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#not_eq an_int \"1338\" }}TRUE{{/not_eq}}").apply(context)
+            handlebars.compileInline("{{#not_eq an_int \"1338\" }}TRUE{{/not_eq}}").apply(context),
         )
     }
 
@@ -535,7 +533,7 @@ internal class HelperTest {
 
         assertEquals(
             "TRUE",
-            handlebars.compileInline("{{#not_eq \"1338\" an_int }}TRUE{{/not_eq}}").apply(context)
+            handlebars.compileInline("{{#not_eq \"1338\" an_int }}TRUE{{/not_eq}}").apply(context),
         )
     }
 
@@ -933,15 +931,15 @@ internal class HelperTest {
         assertEquals("1 337,69", handlebars.compileInline("{{ currency_no beløp }}").apply(context))
         assertEquals(
             "1 337,60",
-            handlebars.compileInline("{{ currency_no beløp_single_decimal }}").apply(context)
+            handlebars.compileInline("{{ currency_no beløp_single_decimal }}").apply(context),
         )
         assertEquals(
             "9 001,00",
-            handlebars.compileInline("{{ currency_no beløp_integer }}").apply(context)
+            handlebars.compileInline("{{ currency_no beløp_integer }}").apply(context),
         )
         assertEquals(
             "1 337 420,69",
-            handlebars.compileInline("{{ currency_no beløp_stort }}").apply(context)
+            handlebars.compileInline("{{ currency_no beløp_stort }}").apply(context),
         )
     }
 
@@ -966,11 +964,11 @@ internal class HelperTest {
 
         assertEquals(
             "1 337",
-            handlebars.compileInline("{{ currency_no beløp true }}").apply(context)
+            handlebars.compileInline("{{ currency_no beløp true }}").apply(context),
         )
         assertEquals(
             "1 337 420",
-            handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context)
+            handlebars.compileInline("{{ currency_no beløp_stort true }}").apply(context),
         )
     }
 
@@ -995,11 +993,11 @@ internal class HelperTest {
 
         assertEquals(
             "90,01",
-            handlebars.compileInline("{{ int_as_currency_no beløp_integer }}").apply(context)
+            handlebars.compileInline("{{ int_as_currency_no beløp_integer }}").apply(context),
         )
         assertEquals(
             "0,10",
-            handlebars.compileInline("{{ int_as_currency_no beløp_liten_integer }}").apply(context)
+            handlebars.compileInline("{{ int_as_currency_no beløp_liten_integer }}").apply(context),
         )
         assertEquals(
             "0,00",
@@ -1048,7 +1046,7 @@ internal class HelperTest {
             "0,00",
             handlebars
                 .compileInline("{{ string_as_currency_no beløp_liten_string }}")
-                .apply(context)
+                .apply(context),
         )
         assertEquals(
             "10 000,01",
@@ -1102,9 +1100,8 @@ internal class HelperTest {
             "FOUND!",
             handlebars
                 .compileInline(
-                    "{{#contains_all myList \"FIRST_VAL\"}}FOUND!{{else}}NOTHING!{{/contains_all }}"
-                )
-                .apply(context),
+                    "{{#contains_all myList \"FIRST_VAL\"}}FOUND!{{else}}NOTHING!{{/contains_all }}",
+                ).apply(context),
         )
     }
 
@@ -1122,9 +1119,8 @@ internal class HelperTest {
             "FOUND!",
             handlebars
                 .compileInline(
-                    """{{#contains_all myList "FIRST_VAL" "THIRD_VAL" "SECOND_VAL"}}FOUND!{{else}}NOTHING!{{/contains_all }}"""
-                )
-                .apply(context),
+                    """{{#contains_all myList "FIRST_VAL" "THIRD_VAL" "SECOND_VAL"}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
+                ).apply(context),
         )
     }
 
@@ -1142,9 +1138,8 @@ internal class HelperTest {
             "NOTHING!",
             handlebars
                 .compileInline(
-                    """{{#contains_all myList "FIRST_VAL" "THIRD_VAL" "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}"""
-                )
-                .apply(context),
+                    """{{#contains_all myList "FIRST_VAL" "THIRD_VAL" "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
+                ).apply(context),
         )
     }
 
@@ -1162,9 +1157,8 @@ internal class HelperTest {
             "NOTHING!",
             handlebars
                 .compileInline(
-                    """{{#contains_all myList ""}}FOUND!{{else}}NOTHING!{{/contains_all }}"""
-                )
-                .apply(context),
+                    """{{#contains_all myList ""}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
+                ).apply(context),
         )
     }
 
@@ -1182,9 +1176,8 @@ internal class HelperTest {
             "NOTHING!",
             handlebars
                 .compileInline(
-                    """{{#contains_all myList}}FOUND!{{else}}NOTHING!{{/contains_all }}"""
-                )
-                .apply(context),
+                    """{{#contains_all myList}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
+                ).apply(context),
         )
     }
 
@@ -1202,9 +1195,8 @@ internal class HelperTest {
             "NOTHING!",
             handlebars
                 .compileInline(
-                    """{{#contains_all emptyList "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}"""
-                )
-                .apply(context),
+                    """{{#contains_all emptyList "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
+                ).apply(context),
         )
     }
 
@@ -1221,9 +1213,8 @@ internal class HelperTest {
         assertThrows<Exception> {
             handlebars
                 .compileInline(
-                    """{{#contains_all dontexist "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}"""
-                )
-                .apply(context)
+                    """{{#contains_all dontexist "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
+                ).apply(context)
         }
     }
 
@@ -1309,7 +1300,7 @@ internal class HelperTest {
 
         assertEquals(
             "O'Shea Olsen",
-            handlebars.compileInline("{{capitalize_names \" O'SHEA OLSEN \"}}").apply(context)
+            handlebars.compileInline("{{capitalize_names \" O'SHEA OLSEN \"}}").apply(context),
         )
     }
 
@@ -1329,7 +1320,7 @@ internal class HelperTest {
 
         assertEquals(
             "Brage",
-            handlebars.compileInline("{{capitalize_names \"Brage\"}}").apply(context)
+            handlebars.compileInline("{{capitalize_names \"Brage\"}}").apply(context),
         )
     }
 
@@ -1356,7 +1347,7 @@ internal class HelperTest {
         val context = jsonContext(jsonNodeFactory.objectNode())
         assertEquals(
             "0553 OSLO",
-            handlebars.compileInline("{{uppercase \"0553 Oslo\"}}").apply(context)
+            handlebars.compileInline("{{uppercase \"0553 Oslo\"}}").apply(context),
         )
     }
 

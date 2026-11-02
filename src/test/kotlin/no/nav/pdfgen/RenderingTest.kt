@@ -2,7 +2,6 @@ package no.nav.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import java.io.ByteArrayInputStream
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.core.pdf.render
@@ -13,6 +12,7 @@ import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
+import java.io.ByteArrayInputStream
 
 internal class RenderingTest {
     private val templates = Environment().templates
@@ -35,7 +35,7 @@ internal class RenderingTest {
                         ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
                         ?: objectMapper.createObjectNode()
                 println(
-                    "Renders the template $templateName for application $applicationName without exceptions"
+                    "Renders the template $templateName for application $applicationName without exceptions",
                 )
                 render(applicationName, templateName, node)
             }
@@ -58,7 +58,7 @@ internal class RenderingTest {
                         ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
                         ?: objectMapper.createObjectNode()
                 println(
-                    "Renders the template $templateName for application $applicationName to a PDF/A compliant document"
+                    "Renders the template $templateName for application $applicationName to a PDF/A compliant document",
                 )
                 val doc = render(applicationName, templateName, node)
                 val pdf = createPDFA(doc!!)

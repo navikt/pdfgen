@@ -2,16 +2,15 @@
 <configuration>
     <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider" />
+            <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider"/>
         </encoder>
     </appender>
 
     <logger name="pdfgen" level="INFO"/>
-    <logger name="org.apache.pdfbox" level="ERROR" />
+    <logger name="org.apache.pdfbox" level="ERROR"/>
 
     <root level="INFO">
-        <appender-ref ref="stdout_json" />
+        <appender-ref ref="stdout_json"/>
     </root>
-
 </configuration>
 
