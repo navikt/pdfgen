@@ -17,7 +17,7 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
 val testcontainersVersion = "2.0.5"
-val pdfgencoreVersion = "1.1.83-RC2"
+val pdfgencoreVersion = "1.1.84"
 
 // /Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
