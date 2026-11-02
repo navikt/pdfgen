@@ -1,11 +1,9 @@
-import com.diffplug.gradle.spotless.SpotlessTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "no.nav.pdfgen"
-version = "2.0.0" //This will never change. See GitHub releases for docker image release
+version = "2.0.0" // This will never change. See GitHub releases for docker image release
 
 val javaVersion = JvmTarget.JVM_25
-
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.21.3"
@@ -16,11 +14,10 @@ val openHtmlToPdfVersion = "1.1.37"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.1"
-val ktfmtVersion = "0.44"
 val testcontainersVersion = "2.0.5"
-val pdfgencoreVersion = "1.1.82"
+val pdfgencoreVersion = "1.1.83"
 
-///Due to vulnerabilities
+// /Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
 val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.1"
@@ -29,7 +26,7 @@ val nettyVersion = "4.2.19.Final"
 plugins {
     id("application")
     kotlin("jvm") version "2.3.21"
-    id("com.diffplug.spotless") version "8.5.1"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.54.0"
 }
 
@@ -44,8 +41,10 @@ kotlin {
 }
 
 tasks {
+    val installDist = named("installDist")
 
-    withType<Test> {
+    withType<Test>().configureEach {
+        dependsOn(installDist)
         useJUnitPlatform {}
         testLogging {
             events("passed", "skipped", "failed")
@@ -54,23 +53,6 @@ tasks {
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
     }
-
-   withType<Exec> {
-        println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
-        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
-        println("✅ Added Pre Commit Git Hook Script.")
-
-    }
-
-    withType<SpotlessTask> {
-        spotless{
-            kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
-            check {
-                dependsOn("spotlessApply")
-            }
-        }
-    }
-    
 }
 
 repositories {
@@ -135,5 +117,4 @@ dependencies {
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
     testImplementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-
 }

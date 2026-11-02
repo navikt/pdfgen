@@ -1,12 +1,15 @@
 package no.nav.pdfgen.plugins
 
 import com.github.jknack.handlebars.Template
-import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.TextContent
+import io.ktor.http.withCharset
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.path
+import io.ktor.server.response.respond
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.logger
 
@@ -34,21 +37,18 @@ fun Application.configureStatusPages(
 private fun messageFor404(
     templates: Map<Pair<String, String>, Template>,
     path: String,
-    environment: Environment
-): String {
-    if (environment.enableHtmlEndpoint && !environment.disablePdfGet) {
-        return "Unkown path '$path'. Known templates:\n" +
-            templates
-                .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
-                .joinToString("\n") +
-            templates
-                .map { (app, _) -> "/api/v1/genhtml/%s/%s".format(app.first, app.second) }
-                .joinToString("\n")
-    } else {
-
-        return "Unkown path '$path'. Known templates:\n" +
-            templates
-                .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
-                .joinToString("\n")
-    }
+    environment: Environment,
+): String = if (environment.enableHtmlEndpoint && !environment.disablePdfGet) {
+    "Unkown path '$path'. Known templates:\n" +
+        templates
+            .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
+            .joinToString("\n") +
+        templates
+            .map { (app, _) -> "/api/v1/genhtml/%s/%s".format(app.first, app.second) }
+            .joinToString("\n")
+} else {
+    "Unkown path '$path'. Known templates:\n" +
+        templates
+            .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
+            .joinToString("\n")
 }

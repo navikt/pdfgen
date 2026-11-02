@@ -6,10 +6,13 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.contentType
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveText
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import io.ktor.server.response.header
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondBytes
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.pdfgen.Environment
@@ -18,6 +21,8 @@ import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
 import no.nav.pdfgen.core.pdf.createPDFA
 import no.nav.pdfgen.logger
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
     if (!env.disablePdfGet) {
@@ -30,7 +35,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
             }
                 ?: call.respondText(
                     "Template or application not found",
-                    status = HttpStatusCode.NotFound
+                    status = HttpStatusCode.NotFound,
                 )
         }
     }
@@ -47,7 +52,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
         }
             ?: call.respondText(
                 "Template or application not found",
-                status = HttpStatusCode.NotFound
+                status = HttpStatusCode.NotFound,
             )
     }
 
@@ -61,7 +66,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
         call.response.header("Content-Type", ContentType.Application.Pdf.toString())
         call.respond(createPDFA(html))
         logger.info(
-            "Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms"
+            "Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms",
         )
     }
     post("/image/{applicationName}") {
@@ -71,7 +76,8 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
 
         when (call.request.contentType()) {
             ContentType.Image.JPEG,
-            ContentType.Image.PNG -> {
+            ContentType.Image.PNG,
+            -> {
                 withContext(Dispatchers.IO) {
                     call.receive<InputStream>().use { inputStream ->
                         ByteArrayOutputStream().use { outputStream ->
@@ -79,17 +85,17 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
                                 createPDFA(inputStream, outputStream)
                                 call.response.header(
                                     "Content-Type",
-                                    ContentType.Application.Pdf.toString()
+                                    ContentType.Application.Pdf.toString(),
                                 )
                                 call.respondBytes(
                                     outputStream.toByteArray(),
-                                    contentType = ContentType.Application.Pdf
+                                    contentType = ContentType.Application.Pdf,
                                 )
                             } catch (e: IllegalArgumentException) {
                                 logger.error("Klarte ikke å behandle bilde for $applicationName", e)
                                 call.respondText(
                                     "Bildet kunne ikke konverteres til PDF. Kontroller at filen er et gyldig JPEG- eller PNG-bilde.",
-                                    status = HttpStatusCode.UnprocessableEntity
+                                    status = HttpStatusCode.UnprocessableEntity,
                                 )
                             }
                         }
@@ -100,7 +106,7 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
             else -> call.respond(HttpStatusCode.UnsupportedMediaType)
         }
         logger.info(
-            "Generated PDF using image for $applicationName om ${timer.observeDuration()}ms"
+            "Generated PDF using image for $applicationName om ${timer.observeDuration()}ms",
         )
     }
 }
