@@ -13,11 +13,13 @@ To run a build simply exucute the following:
 ./gradlew installDist
 ```
 
-This will run all the steps defined in the `build.gradle.kts` file.
+This builds the application distribution without running tests or lint.
 
 
 ## Testing
 If you are adding a new feature or bug fix please ensure there is proper test coverage.
+
+Run tests and lint with `./gradlew check`. Use `./gradlew ktlintFormat` to format Kotlin code.
 
 ## Pull Request Review
 If you have a branch on your fork that is ready to be merged, please create a new pull request. The maintainers will review to make sure the above guidelines have been followed and if the changes are helpful to all library users, they will be merged.

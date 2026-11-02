@@ -1,10 +1,15 @@
 package no.nav.pdfgen.application.api.pdf
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.ktor.http.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.receive
+import io.ktor.server.response.header
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
@@ -22,7 +27,7 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
                 }
                     ?: call.respondText(
                         "Template or application not found",
-                        status = HttpStatusCode.NotFound
+                        status = HttpStatusCode.NotFound,
                     )
             }
         }
@@ -40,7 +45,7 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
             }
                 ?: call.respondText(
                     "Template or application not found",
-                    status = HttpStatusCode.NotFound
+                    status = HttpStatusCode.NotFound,
                 )
         }
     }
