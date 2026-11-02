@@ -2,12 +2,12 @@ package no.nav.pdfgen
 
 import com.openhtmltopdf.slf4j.Slf4jLogger
 import com.openhtmltopdf.util.XRLog
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
+import io.ktor.server.application.Application
+import io.ktor.server.engine.addShutdownHook
+import io.ktor.server.engine.connector
+import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.prometheus.client.hotspot.DefaultExports
-import java.util.concurrent.TimeUnit
-import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.plugins.configureContentNegotiation
 import no.nav.pdfgen.plugins.configureLifecycleHooks
@@ -18,6 +18,8 @@ import no.nav.pdfgen.plugins.configureStatusPages
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
+import java.util.concurrent.TimeUnit
+import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 
 val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
