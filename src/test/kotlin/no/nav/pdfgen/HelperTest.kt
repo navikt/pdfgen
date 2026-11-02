@@ -113,84 +113,78 @@ internal class HelperTest {
 
     @Test
     internal fun `Any operator should result in empty result when a single statement fails`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("a", "a")
-                    put("b", "b")
-                    put("c", "c")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("a", "a")
+                put("b", "b")
+                put("c", "c")
+            },
+        )
 
         assertEquals("", handlebars.compileInline("{{#any d}}YES{{/any}}").apply(context))
     }
 
     @Test
     internal fun `Any operator should result in a YES when a single statement is ok`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("a", "a")
-                    put("b", "b")
-                    put("c", "c")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("a", "a")
+                put("b", "b")
+                put("c", "c")
+            },
+        )
 
         assertEquals("YES", handlebars.compileInline("{{#any a}}YES{{/any}}").apply(context))
     }
 
     @Test
     internal fun `Any operator should result in a YES when one of multiple statements is ok`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("a", "a")
-                    put("b", "b")
-                    put("c", "c")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("a", "a")
+                put("b", "b")
+                put("c", "c")
+            },
+        )
 
         assertEquals("YES", handlebars.compileInline("{{#any d e f a}}YES{{/any}}").apply(context))
     }
 
     @Test
     internal fun `Any operator should result in a YES when the first of multiple statements is ok`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("a", "a")
-                    put("b", "b")
-                    put("c", "c")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("a", "a")
+                put("b", "b")
+                put("c", "c")
+            },
+        )
 
         assertEquals("YES", handlebars.compileInline("{{#any a d e f}}YES{{/any}}").apply(context))
     }
 
     @Test
     internal fun `Any operator should result in empty result when many statements fails`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("a", "a")
-                    put("b", "b")
-                    put("c", "c")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("a", "a")
+                put("b", "b")
+                put("c", "c")
+            },
+        )
 
         assertEquals("", handlebars.compileInline("{{#any d e f g}}YES{{/any}}").apply(context))
     }
 
     @Test
     internal fun `Datetime formatting should format as Norwegian short date and time`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("timestamp", "2020-03-03T10:15:30")
-                    put("timestampLong", "2020-10-03T10:15:30")
-                    put("date", "2020-02-12")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("timestamp", "2020-03-03T10:15:30")
+                put("timestampLong", "2020-10-03T10:15:30")
+                put("date", "2020-02-12")
+            },
+        )
 
         assertEquals(
             "03.03.2020 10:15",
@@ -200,14 +194,13 @@ internal class HelperTest {
 
     @Test
     internal fun `Datetime formatting should format as Norwegian short date`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("timestamp", "2020-03-03T10:15:30")
-                    put("timestampLong", "2020-10-03T10:15:30")
-                    put("date", "2020-02-12")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("timestamp", "2020-03-03T10:15:30")
+                put("timestampLong", "2020-10-03T10:15:30")
+                put("date", "2020-02-12")
+            },
+        )
 
         assertEquals(
             "03.03.2020",
@@ -217,14 +210,13 @@ internal class HelperTest {
 
     @Test
     internal fun `Datetime formatting should format timestamp as Norwegian long date`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("timestamp", "2020-03-03T10:15:30")
-                    put("timestampLong", "2020-10-03T10:15:30")
-                    put("date", "2020-02-12")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("timestamp", "2020-03-03T10:15:30")
+                put("timestampLong", "2020-10-03T10:15:30")
+                put("date", "2020-02-12")
+            },
+        )
 
         assertEquals(
             "3. oktober 2020",
@@ -234,14 +226,13 @@ internal class HelperTest {
 
     @Test
     internal fun `Datetime formatting should format date as Norwegian long date`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("timestamp", "2020-03-03T10:15:30")
-                    put("timestampLong", "2020-10-03T10:15:30")
-                    put("date", "2020-02-12")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("timestamp", "2020-03-03T10:15:30")
+                put("timestampLong", "2020-10-03T10:15:30")
+                put("date", "2020-02-12")
+            },
+        )
 
         assertEquals(
             "12. februar 2020",
@@ -251,16 +242,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -290,16 +280,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should equal to content`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -309,16 +298,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should equal to content - reverse`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -328,16 +316,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should equal int to string if string has same content`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -347,16 +334,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should equal int to string if string has same content - reverse`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -366,16 +352,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should equal double to string if string has same content`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -387,16 +372,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should equal double to string if string has same content - reverse`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -408,16 +392,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should not equal if not equal`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -429,16 +412,15 @@ internal class HelperTest {
 
     @Test
     internal fun `eq should equal self should not equal if null or empty`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -454,16 +436,15 @@ internal class HelperTest {
 
     @Test
     internal fun `not eq should return false when compared to one self`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -501,16 +482,15 @@ internal class HelperTest {
 
     @Test
     internal fun `not eq should return true if different content`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -520,16 +500,15 @@ internal class HelperTest {
 
     @Test
     internal fun `not eq should return true if different content - reverse`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -539,16 +518,15 @@ internal class HelperTest {
 
     @Test
     internal fun `not eq should return true if different values`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -560,16 +538,15 @@ internal class HelperTest {
 
     @Test
     internal fun `not eq should return true compared two null or empty`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("an_int", 1337)
-                    put("a_double", 1337.67)
-                    put("string_with_int", "1337")
-                    put("string_with_double", "1337.67")
-                    put("a_string", "imma string")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("an_int", 1337)
+                put("a_double", 1337.67)
+                put("string_with_int", "1337")
+                put("string_with_double", "1337.67")
+                put("a_string", "imma string")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -587,17 +564,16 @@ internal class HelperTest {
 
     @Test
     internal fun `gt - greater than should return false when compared to one self`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -621,17 +597,16 @@ internal class HelperTest {
 
     @Test
     internal fun `gt - greater than should return true when first param greater than second param`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -655,17 +630,16 @@ internal class HelperTest {
 
     @Test
     internal fun `gt - greater than should return false when first param less than second param`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -689,17 +663,16 @@ internal class HelperTest {
 
     @Test
     internal fun `gt - greater than should fail if argument are not of same type`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertThrows<Exception> {
             handlebars
@@ -720,17 +693,16 @@ internal class HelperTest {
 
     @Test
     internal fun `gt - greater than should fail if comparing two null or empty`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertThrows<Exception> {
             handlebars
@@ -749,17 +721,16 @@ internal class HelperTest {
 
     @Test
     internal fun `lt - less than should return false when compared to one self`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -783,17 +754,16 @@ internal class HelperTest {
 
     @Test
     internal fun `lt - less than should return false when first param greater than second param`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertEquals(
             "FALSE",
@@ -817,17 +787,16 @@ internal class HelperTest {
 
     @Test
     internal fun `lt - less than should return true when first param less than second param`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertEquals(
             "TRUE",
@@ -850,83 +819,81 @@ internal class HelperTest {
     }
 
     @Test
-    internal fun `lt - less than should fail if argument are not of same type`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+    internal fun `lt - less than should fail when arguments have different types`() {
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("int_string", "1337")
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt int_string large_int }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt int_string large_int }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt small_double a_string }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt small_double a_string }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt small_double small_int }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt small_double small_int }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
     }
 
     @Test
-    internal fun `lt - less than should fail if comparing two null or empty`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("small_int", -1)
-                    put("large_int", 1337)
-                    put("small_double", -1.67)
-                    put("large_double", 1337.67)
-                    put("a_string", "Adam")
-                    put("z_string", "Zorro")
-                },
-            )
+    internal fun `lt - less than should fail when arguments are null or missing`() {
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("small_int", -1)
+                put("large_int", 1337)
+                put("small_double", -1.67)
+                put("large_double", 1337.67)
+                put("a_string", "Adam")
+                put("z_string", "Zorro")
+            },
+        )
 
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt int_string noexists }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt int_string noexists }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt small_double null }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt small_double null }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
-            handlebars.compileInline("{{#gt small_double }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            handlebars.compileInline("{{#lt small_double }}TRUE{{else}}FALSE{{/lt}}").apply(context)
         }
     }
 
     @Test
     internal fun `Currency formatting should format number as currency`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("beløp", 1337.69)
-                    put("beløp_single_decimal", 1337.6)
-                    put("beløp_integer", 9001)
-                    put("beløp_stort", 1337420.69)
-                    put("beløp_ganske_liten_integer", 1)
-                    put("beløp_kjempeliten_integer", 0)
-                    put("beløp_liten_integer", 10)
-                    put("beløp_stor_integer", 1000001)
-                    put("beløp_kjempestor_integer", Int.MAX_VALUE)
-                    put("beløp_liten_string", "0")
-                    put("beløp_stor_string", "1000001")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("beløp", 1337.69)
+                put("beløp_single_decimal", 1337.6)
+                put("beløp_integer", 9001)
+                put("beløp_stort", 1337420.69)
+                put("beløp_ganske_liten_integer", 1)
+                put("beløp_kjempeliten_integer", 0)
+                put("beløp_liten_integer", 10)
+                put("beløp_stor_integer", 1000001)
+                put("beløp_kjempestor_integer", Int.MAX_VALUE)
+                put("beløp_liten_string", "0")
+                put("beløp_stor_string", "1000001")
+            },
+        )
 
         assertEquals("1 337,69", handlebars.compileInline("{{ currency_no beløp }}").apply(context))
         assertEquals(
@@ -945,22 +912,21 @@ internal class HelperTest {
 
     @Test
     internal fun `Currency formatting should format number as currency without decimals`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("beløp", 1337.69)
-                    put("beløp_single_decimal", 1337.6)
-                    put("beløp_integer", 9001)
-                    put("beløp_stort", 1337420.69)
-                    put("beløp_ganske_liten_integer", 1)
-                    put("beløp_kjempeliten_integer", 0)
-                    put("beløp_liten_integer", 10)
-                    put("beløp_stor_integer", 1000001)
-                    put("beløp_kjempestor_integer", Int.MAX_VALUE)
-                    put("beløp_liten_string", "0")
-                    put("beløp_stor_string", "1000001")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("beløp", 1337.69)
+                put("beløp_single_decimal", 1337.6)
+                put("beløp_integer", 9001)
+                put("beløp_stort", 1337420.69)
+                put("beløp_ganske_liten_integer", 1)
+                put("beløp_kjempeliten_integer", 0)
+                put("beløp_liten_integer", 10)
+                put("beløp_stor_integer", 1000001)
+                put("beløp_kjempestor_integer", Int.MAX_VALUE)
+                put("beløp_liten_string", "0")
+                put("beløp_stor_string", "1000001")
+            },
+        )
 
         assertEquals(
             "1 337",
@@ -974,22 +940,21 @@ internal class HelperTest {
 
     @Test
     internal fun `Currency formatting should format integer to currency`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("beløp", 1337.69)
-                    put("beløp_single_decimal", 1337.6)
-                    put("beløp_integer", 9001)
-                    put("beløp_stort", 1337420.69)
-                    put("beløp_ganske_liten_integer", 1)
-                    put("beløp_kjempeliten_integer", 0)
-                    put("beløp_liten_integer", 10)
-                    put("beløp_stor_integer", 1000001)
-                    put("beløp_kjempestor_integer", Int.MAX_VALUE)
-                    put("beløp_liten_string", "0")
-                    put("beløp_stor_string", "1000001")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("beløp", 1337.69)
+                put("beløp_single_decimal", 1337.6)
+                put("beløp_integer", 9001)
+                put("beløp_stort", 1337420.69)
+                put("beløp_ganske_liten_integer", 1)
+                put("beløp_kjempeliten_integer", 0)
+                put("beløp_liten_integer", 10)
+                put("beløp_stor_integer", 1000001)
+                put("beløp_kjempestor_integer", Int.MAX_VALUE)
+                put("beløp_liten_string", "0")
+                put("beløp_stor_string", "1000001")
+            },
+        )
 
         assertEquals(
             "90,01",
@@ -1025,22 +990,21 @@ internal class HelperTest {
 
     @Test
     internal fun `Currency formatting should format string to currency`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    put("beløp", 1337.69)
-                    put("beløp_single_decimal", 1337.6)
-                    put("beløp_integer", 9001)
-                    put("beløp_stort", 1337420.69)
-                    put("beløp_ganske_liten_integer", 1)
-                    put("beløp_kjempeliten_integer", 0)
-                    put("beløp_liten_integer", 10)
-                    put("beløp_stor_integer", 1000001)
-                    put("beløp_kjempestor_integer", Int.MAX_VALUE)
-                    put("beløp_liten_string", "0")
-                    put("beløp_stor_string", "1000001")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                put("beløp", 1337.69)
+                put("beløp_single_decimal", 1337.6)
+                put("beløp_integer", 9001)
+                put("beløp_stort", 1337420.69)
+                put("beløp_ganske_liten_integer", 1)
+                put("beløp_kjempeliten_integer", 0)
+                put("beløp_liten_integer", 10)
+                put("beløp_stor_integer", 1000001)
+                put("beløp_kjempestor_integer", Int.MAX_VALUE)
+                put("beløp_liten_string", "0")
+                put("beløp_stor_string", "1000001")
+            },
+        )
 
         assertEquals(
             "0,00",
@@ -1058,10 +1022,9 @@ internal class HelperTest {
 
     @Test
     internal fun `Is defined should output IS DEFINED if someProperty is defined`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply { put("someProperty", false) },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply { put("someProperty", false) },
+        )
 
         assertEquals(
             "IS DEFINED",
@@ -1073,10 +1036,9 @@ internal class HelperTest {
 
     @Test
     internal fun `Is defined should output empty string if someOtherProperty is not defined`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply { put("someProperty", false) },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply { put("someProperty", false) },
+        )
 
         assertEquals(
             "",
@@ -1088,13 +1050,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should find single param that matches`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertEquals(
             "FOUND!",
@@ -1107,13 +1068,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should find all values without order`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertEquals(
             "FOUND!",
@@ -1126,13 +1086,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should not find if at least one did not match`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertEquals(
             "NOTHING!",
@@ -1145,13 +1104,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should not find if empty parameter`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertEquals(
             "NOTHING!",
@@ -1164,13 +1122,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should not find if no parameter`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertEquals(
             "NOTHING!",
@@ -1183,13 +1140,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should not fail if list is empty`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertEquals(
             "NOTHING!",
@@ -1202,13 +1158,12 @@ internal class HelperTest {
 
     @Test
     internal fun `contains_all should throw exception if unknown list`() {
-        val context =
-            jsonContext(
-                jsonNodeFactory.objectNode().apply {
-                    putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
-                    putArray("emptyList")
-                },
-            )
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().apply {
+                putArray("myList").add("FIRST_VAL").add("SECOND_VAL").add("THIRD_VAL")
+                putArray("emptyList")
+            },
+        )
 
         assertThrows<Exception> {
             handlebars
