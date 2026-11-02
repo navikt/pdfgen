@@ -25,10 +25,10 @@ jobs:
           java-version: '25'
           architecture: x64
           cache: 'gradle'
-      - name: Build gradle artifacts
+      - name: Run checks and build Gradle artifacts
         shell: bash
         run: |
-          ./gradlew installDist
+          ./gradlew check installDist
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Login to ghcr.io
