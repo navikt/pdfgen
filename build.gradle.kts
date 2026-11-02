@@ -25,7 +25,7 @@ val nettyVersion = "4.2.17.Final"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.3.21"
+    kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.54.0"
 }
