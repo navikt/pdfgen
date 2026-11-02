@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test
 
 internal class MetricsTest {
     @Test
-    internal fun `HTTP-målinger bruker rutemaler og registrerer feil én gang`() {
+    internal fun `HTTP metrics should use route patterns and count failures exactly once`() {
         testApplication {
             application {
                 configureRouting(Environment())
@@ -89,7 +89,7 @@ internal class MetricsTest {
     }
 
     @Test
-    internal fun `konverteringsmålinger bruker fast applikasjonsetikett og teller bilder som avvises`() {
+    internal fun `Conversion metrics should use a fixed application label and count rejected images`() {
         testApplication {
             application {
                 receivePipeline.intercept(ApplicationReceivePipeline.Before) {

@@ -27,7 +27,7 @@ internal class RenderingTest {
     }
 
     @Test
-    internal fun `Alle PDF-er gjengis med standardverdier`() {
+    internal fun `All PDFs should render with default values`() {
         templates
             .map { it.key }
             .forEach {
@@ -46,7 +46,7 @@ internal class RenderingTest {
     }
 
     @Test
-    internal fun `Alle maler gjengis som PDF-A-2a- og PDF-UA-1-kompatible dokumenter`() {
+    internal fun `All templates should produce PDF-A-2a and PDF-UA-1 compliant documents`() {
         assertAll(
             "Alle maler gjengis som PDF/A-2a- og PDF/UA-1-kompatible dokumenter",
             templates.map { it.key }.map { (applicationName, templateName) ->
@@ -69,7 +69,7 @@ internal class RenderingTest {
     }
 
     @Test
-    internal fun `HTML-fixturen gjengis som PDF-A-2a- og PDF-UA-1-kompatibelt dokument`() {
+    internal fun `HTML fixture should produce a PDF-A-2a and PDF-UA-1 compliant document`() {
         val doc = testTemplateIncludedFonts
         val pdf = createPDFA(doc)
         assertCompliant(pdf, "HTML-fixturen '/html/test_template_included_fonts.html'")

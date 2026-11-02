@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 
 internal class StatusPagesTest {
     @Test
-    internal fun `Ugyldig JSON gir 400 uten å lekke innhold`() = testApplication {
+    internal fun `Invalid JSON should return 400 without exposing request content`() = testApplication {
         application { configureTestApplication() }
 
         val response = client.post("/json") {
@@ -42,7 +42,7 @@ internal class StatusPagesTest {
     }
 
     @Test
-    internal fun `Ikke-støttet innholdstype gir 415 uten å lekke innhold`() = testApplication {
+    internal fun `Unsupported content type should return 415 without exposing request content`() = testApplication {
         application { configureTestApplication() }
 
         val response = client.post("/json") {
@@ -56,7 +56,7 @@ internal class StatusPagesTest {
     }
 
     @Test
-    internal fun `Uventet feil gir 500 uten å lekke feildetaljer`() = testApplication {
+    internal fun `Unexpected errors should return 500 without exposing error details`() = testApplication {
         application { configureTestApplication() }
 
         val response = client.get("/fail")
@@ -68,7 +68,7 @@ internal class StatusPagesTest {
     }
 
     @Test
-    internal fun `Gyldig JSON håndteres som før`() = testApplication {
+    internal fun `Valid JSON should be handled as before`() = testApplication {
         application { configureTestApplication() }
 
         val response = client.post("/json") {
@@ -80,7 +80,7 @@ internal class StatusPagesTest {
     }
 
     @Test
-    internal fun `Ukjent sti beholder den tilpassede 404-responsen`() = testApplication {
+    internal fun `Unknown paths should preserve the custom 404 response`() = testApplication {
         application { configureTestApplication() }
 
         val response = client.get("/missing")
