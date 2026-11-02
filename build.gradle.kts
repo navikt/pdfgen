@@ -7,7 +7,7 @@ val javaVersion = JvmTarget.JVM_25
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.22.4"
-val ktorVersion = "3.5.2"
+val ktorVersion = "3.6.0"
 val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.100"
