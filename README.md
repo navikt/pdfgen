@@ -66,14 +66,16 @@ mkdir {templates,data}/your_teamname # your_teamname can be anything, but it'll 
 
 ## Developing pdfgen
 
-### Build and run tests
+### Run tests and lint
 ```shell script
-./gradlew installDist
+./gradlew check
 ```
 or on windows
 ```shell script
-gradlew.bat installDist
+gradlew.bat check
 ```
+
+Use `./gradlew ktlintFormat` to format Kotlin code and `./gradlew installDist` to build the application distribution.
 
 Running the application locally enables a GET endpoint at `/api/v1/genpdf/<application>/<template>`
 which looks for test data at `data/<application>/<template>.json` and outputs a PDF to your browser.
@@ -122,7 +124,6 @@ This project is currently maintained by the organisation [@navikt](https://githu
 
 If you need to raise an issue or question about this library, please create an issue here and tag it with the appropriate label.
 
-For contact requests within the [@navikt](https://github.com/navikt) org, you can use the Slack channel #pdfgen
 
 If you need to contact anyone directly, please see [CODEOWNERS](CODEOWNERS)
 
