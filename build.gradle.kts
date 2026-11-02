@@ -5,8 +5,10 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 
 val javaVersion = JvmTarget.JVM_25
 
-val handlebarsVersion = "4.3.1"
+val handlebarsVersion = "4.5.8"
+val handlebarsJackson2Version = "4.3.1"
 val jacksonVersion = "2.22.4"
+val jackson3Version = "3.2.4"
 val ktorVersion = "3.5.2"
 val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
@@ -15,7 +17,7 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
 val testcontainersVersion = "2.0.5"
-val pdfgencoreVersion = "1.1.83"
+val pdfgencoreVersion = "1.1.83-RC2"
 
 // /Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
@@ -67,7 +69,7 @@ dependencies {
     implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
-    implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
+    implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
@@ -80,11 +82,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    constraints {
-        implementation("io.netty:netty-handler:$nettyVersion") {
-            because("Due to vulnerabilitie in this transitive dependency")
-        }
-    }
+    implementation(platform("io.netty:netty-bom:$nettyVersion"))
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
@@ -93,15 +91,16 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
-    implementation("org.verapdf:validation-model:$verapdfVersion")
+    implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     constraints {
         implementation("org.mozilla:rhino:$rhinoVersion") {
-            because("Due to vulnerabilities in org.verapdf:validation-model")
+            because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
         }
     }
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+    implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
