@@ -1,14 +1,15 @@
 name: Build PR
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
     paths-ignore:
       - '**.md'
       - '**.MD'
       - '.gitignore'
       - 'LICENCE'
       - 'CODEOWNERS'
+
+permissions:
+  contents: read
 
 jobs:
   build:
