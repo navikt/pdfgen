@@ -58,55 +58,61 @@ fun Route.registerGeneratePdfApi(env: Environment = Environment()) {
 
     post("/html/{applicationName}") {
         val applicationName = call.parameters["applicationName"]!!
-        val timer =
-            OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "converthtml").startTimer()
+        val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels("all", "converthtml").startTimer()
+        var durationMillis: Double
+        try {
+            val html = call.receiveText()
 
-        val html = call.receiveText()
-
-        call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-        call.respond(createPDFA(html))
-        logger.info(
-            "Generated PDF using HTML template for $applicationName om ${timer.observeDuration()}ms",
-        )
+            call.response.header("Content-Type", ContentType.Application.Pdf.toString())
+            call.respond(createPDFA(html))
+        } finally {
+            durationMillis = timer.observeDuration() * 1000
+        }
+        logger.info("Generated PDF using HTML template for $applicationName in ${durationMillis}ms")
     }
     post("/image/{applicationName}") {
         val applicationName = call.parameters["applicationName"]!!
-        val timer =
-            OPENHTMLTOPDF_RENDERING_SUMMARY.labels(applicationName, "convertjpeg").startTimer()
-
-        when (call.request.contentType()) {
-            ContentType.Image.JPEG,
-            ContentType.Image.PNG,
-            -> {
-                withContext(Dispatchers.IO) {
-                    call.receive<InputStream>().use { inputStream ->
-                        ByteArrayOutputStream().use { outputStream ->
-                            try {
-                                createPDFA(inputStream, outputStream)
-                                call.response.header(
-                                    "Content-Type",
-                                    ContentType.Application.Pdf.toString(),
-                                )
-                                call.respondBytes(
-                                    outputStream.toByteArray(),
-                                    contentType = ContentType.Application.Pdf,
-                                )
-                            } catch (e: IllegalArgumentException) {
-                                logger.error("Klarte ikke å behandle bilde for $applicationName", e)
-                                call.respondText(
-                                    "Bildet kunne ikke konverteres til PDF. Kontroller at filen er et gyldig JPEG- eller PNG-bilde.",
-                                    status = HttpStatusCode.UnprocessableEntity,
-                                )
+        val timer = OPENHTMLTOPDF_RENDERING_SUMMARY.labels("all", "convertjpeg").startTimer()
+        var durationMillis: Double
+        var generatedPdf = false
+        try {
+            when (call.request.contentType()) {
+                ContentType.Image.JPEG,
+                ContentType.Image.PNG,
+                -> {
+                    withContext(Dispatchers.IO) {
+                        call.receive<InputStream>().use { inputStream ->
+                            ByteArrayOutputStream().use { outputStream ->
+                                try {
+                                    createPDFA(inputStream, outputStream)
+                                    call.response.header(
+                                        "Content-Type",
+                                        ContentType.Application.Pdf.toString(),
+                                    )
+                                    call.respondBytes(
+                                        outputStream.toByteArray(),
+                                        contentType = ContentType.Application.Pdf,
+                                    )
+                                    generatedPdf = true
+                                } catch (e: IllegalArgumentException) {
+                                    logger.error("Klarte ikke å behandle bilde for $applicationName", e)
+                                    call.respondText(
+                                        "Bildet kunne ikke konverteres til PDF. Kontroller at filen er et gyldig JPEG- eller PNG-bilde.",
+                                        status = HttpStatusCode.UnprocessableEntity,
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            else -> call.respond(HttpStatusCode.UnsupportedMediaType)
+                else -> call.respond(HttpStatusCode.UnsupportedMediaType)
+            }
+        } finally {
+            durationMillis = timer.observeDuration() * 1000
         }
-        logger.info(
-            "Generated PDF using image for $applicationName om ${timer.observeDuration()}ms",
-        )
+        if (generatedPdf) {
+            logger.info("Generated PDF using image for $applicationName in ${durationMillis}ms")
+        }
     }
 }
