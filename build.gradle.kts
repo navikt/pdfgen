@@ -6,7 +6,7 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 val javaVersion = JvmTarget.JVM_25
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.21.3"
+val jacksonVersion = "2.22.4"
 val ktorVersion = "3.5.2"
 val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
