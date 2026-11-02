@@ -1,7 +1,9 @@
 package no.nav.pdfgen.plugins
 
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import no.nav.pdfgen.Environment
 import no.nav.pdfgen.application.api.pdf.registerGenerateHtmlApi
 import no.nav.pdfgen.application.api.pdf.registerGeneratePdfApi

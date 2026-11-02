@@ -1,18 +1,20 @@
 package no.nav.pdfgen
 
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationStarted
+import io.ktor.server.application.ApplicationStopPreparing
+import io.ktor.server.application.ServerReady
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.ApplicationTestBuilder
+import io.ktor.server.testing.testApplication
 import no.nav.pdfgen.application.api.nais.registerNaisApi
 import no.nav.pdfgen.plugins.configureLifecycleHooks
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class ApplicationTest {
-
     @Test
     internal fun `App is ready only after ServerReady is raised`() {
         testApplication {

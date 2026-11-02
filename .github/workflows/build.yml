@@ -28,6 +28,6 @@ jobs:
         shell: bash
         run: |
           ./gradlew installDist
-      - name: Run tests
+      - name: Run checks
         run: |
-          ./gradlew test
+          ./gradlew check
