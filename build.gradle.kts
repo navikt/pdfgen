@@ -48,6 +48,7 @@ tasks.named<Test>("test") {
     // DockerImageTest requires the application distribution.
     dependsOn(tasks.named("installDist"))
     useJUnitPlatform()
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
 repositories {
