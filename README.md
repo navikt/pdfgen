@@ -107,12 +107,12 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 
 ## pdfgen 2.0
 
-`pdfgen` 2.0 targets a new PDF standard, [PDF/A-2a](https://en.wikipedia.org/wiki/PDF/A#PDF/A-2), as well as [PDF/UA](https://en.wikipedia.org/wiki/PDF/UA).
-The primary goal is to produce PDFs that are not only valid for archival, but also valid according to Universal Accessibility standards.
-This introduces a few "breaking" changes, although they are not enforced by pdfgen; it is still possible to produce PDFs that don't achieve "Universal Accessibility" as defined by PDF/UA.
+`pdfgen` 2.0 targets [PDF/A-2a](https://en.wikipedia.org/wiki/PDF/A#PDF/A-2) and [PDF/UA-1](https://en.wikipedia.org/wiki/PDF/UA).
+`RenderingTest` validates PDFs from all bundled templates and the HTML test fixture against PDF/A-2a. It also checks PDF/UA-1 compliance for all bundled templates except `dsopkontroll/kontrollforespoersel`, and for the HTML test fixture, using veraPDF.
 
-At the time of writing, none of the documentation exists to describe how to produce PDFs with proper UA for template writers.
-As such, here be dragons!
+These automated checks cover machine-verifiable requirements, not full accessibility.
+Template authors must also review reading order, alternative text and document semantics manually.
+Passing the tests does not guarantee that PDFs generated from other templates or data meet PDF/UA-1.
 
 A [licensed Adobe Acrobat DC](https://gist.github.com/karinaldw/1c4c321fe05bdc1e8996e00722d5317a#adobe-acrobat-dc-pdf) can help you check whether the PDFs you generate achieve UA. 
 [PAC 3](https://www.access-for-all.ch/en/pdf-accessibility-checker.html) (Windows only) is another tool for UA verification.

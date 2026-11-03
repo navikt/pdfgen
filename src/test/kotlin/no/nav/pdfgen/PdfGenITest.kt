@@ -17,6 +17,7 @@ import no.nav.pdfgen.plugins.configureStatusPages
 import org.apache.pdfbox.Loader
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -107,7 +108,7 @@ internal class PdfGenITest {
                     }
                     assertEquals(true, response.status.isSuccess())
                     assertEquals(true, response.headers["Content-Type"]!!.contains("text/html"))
-                    assertEquals(true, response.bodyAsText().contains("<html>"))
+                    assertTrue(response.bodyAsText().contains(Regex("<html[\\s>]")))
                 }
         }
     }
