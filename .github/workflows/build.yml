@@ -26,11 +26,12 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
           architecture: x64
-          cache: 'gradle'
+
       - name: Build gradle artifacts
         shell: bash
         run: |
           ./gradlew installDist
+
       - name: Run checks
         run: |
           ./gradlew check
