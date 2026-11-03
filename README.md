@@ -108,7 +108,7 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 ## pdfgen 2.0
 
 `pdfgen` 2.0 targets [PDF/A-2a](https://en.wikipedia.org/wiki/PDF/A#PDF/A-2) and [PDF/UA-1](https://en.wikipedia.org/wiki/PDF/UA).
-`RenderingTest` validates PDFs from all bundled templates with test data, and from the HTML test fixture, against both profiles using veraPDF.
+`RenderingTest` validates PDFs from all bundled templates and the HTML test fixture against PDF/A-2a. It also checks PDF/UA-1 compliance for all bundled templates except `dsopkontroll/kontrollforespoersel`, and for the HTML test fixture, using veraPDF.
 
 These automated checks cover machine-verifiable requirements, not full accessibility.
 Template authors must also review reading order, alternative text and document semantics manually.
