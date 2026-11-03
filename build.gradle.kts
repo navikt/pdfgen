@@ -30,7 +30,7 @@ plugins {
     id("application")
     kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("com.github.ben-manes.versions") version "0.66.0"
+    id("io.github.ben-manes.versions") version "0.66.0"
 }
 
 application { mainClass = "no.nav.pdfgen.ApplicationKt" }
