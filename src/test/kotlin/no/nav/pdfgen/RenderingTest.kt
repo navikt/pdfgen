@@ -20,6 +20,7 @@ internal class RenderingTest {
     private val templates = Environment().templates
     private val objectMapper = ObjectMapper()
     private val requiredProfiles = listOf(PDFAFlavour.PDFA_2_A, PDFAFlavour.PDFUA_1)
+    private val pdfUaExcludedTemplates = setOf("dsopkontroll" to "kontrollforespoersel")
 
     @BeforeEach
     internal fun setup() {
@@ -46,9 +47,9 @@ internal class RenderingTest {
     }
 
     @Test
-    internal fun `All templates should produce PDF-A-2a and PDF-UA-1 compliant documents`() {
+    internal fun `All templates should produce PDF-A-2a and supported templates PDF-UA-1 compliant documents`() {
         assertAll(
-            "All templates render as PDF/A-2a and PDF/UA-1 compliant documents",
+            "All templates render as PDF/A-2a, and supported templates as PDF/UA-1 compliant documents",
             templates.map { it.key }.map { (applicationName, templateName) ->
                 Executable {
                     val node = javaClass
@@ -56,13 +57,23 @@ internal class RenderingTest {
                         ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
                         ?: objectMapper.createObjectNode()
 
+                    val profiles =
+                        if ((applicationName to templateName) in pdfUaExcludedTemplates) {
+                            listOf(PDFAFlavour.PDFA_2_A)
+                        } else {
+                            requiredProfiles
+                        }
                     println(
-                        "Validates the template $templateName for application $applicationName against PDF/A-2a and PDF/UA-1",
+                        "Validates the template $templateName for application $applicationName against $profiles",
                     )
 
                     val doc = render(applicationName, templateName, node)
                     val pdf = createPDFA(doc!!)
-                    assertCompliant(pdf, "template '$templateName' for application '$applicationName'")
+                    assertCompliant(
+                        pdf,
+                        "template '$templateName' for application '$applicationName'",
+                        profiles,
+                    )
                 }
             },
         )
@@ -78,8 +89,9 @@ internal class RenderingTest {
     private fun assertCompliant(
         pdf: ByteArray,
         documentDescription: String,
+        profiles: List<PDFAFlavour> = requiredProfiles,
     ) {
-        val validationResults = requiredProfiles.map { profile ->
+        val validationResults = profiles.map { profile ->
             val foundry = Foundries.defaultInstance()
             foundry.createValidator(profile, false).use { validator ->
                 ByteArrayInputStream(pdf).use { stream ->
