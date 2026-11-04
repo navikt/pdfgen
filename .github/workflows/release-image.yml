@@ -2,22 +2,44 @@ name: Publish main
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release tag to build and publish (for example 2.0.126)
+        required: true
+        type: string
 
 permissions:
   contents: read
-  id-token: write
   packages: write
 env:
   IMAGE: ghcr.io/${{ github.repository }}
-  NEW_VERSION: ${{ github.event.release.tag_name }}
 
 jobs:
   build:
     name: Build and publish docker image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Checkout code
+      - name: Validate release tag
+        id: validate_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.version || github.event.release.tag_name }}
+        run: |
+          is_draft=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" --jq '.draft')
+          if [[ "$is_draft" != "false" ]]; then
+            echo "::error::Tag is not a published GitHub release"
+            exit 1
+          fi
+
+          printf 'tag=%s\n' "$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout release tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.validate_release.outputs.tag }}
+          persist-credentials: false
 
       - name: Set up Java
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
@@ -43,8 +65,10 @@ jobs:
 
       # Konsumenter bygger for amd64 og arm64; Dockerfile har ingen RUN-steg, så QEMU trengs ikke
       - name: Build and push multi-platform docker image to ghcr.io
+        env:
+          RELEASE_TAG: ${{ steps.validate_release.outputs.tag }}
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --tag "${IMAGE}:${NEW_VERSION}" \
+            --tag "${IMAGE}:${RELEASE_TAG}" \
             --push .
