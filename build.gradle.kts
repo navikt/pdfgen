@@ -12,7 +12,7 @@ val jackson3Version = "3.2.4"
 val ktorVersion = "3.5.2"
 val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
-val openHtmlToPdfVersion = "1.1.100"
+val openHtmlToPdfVersion = "1.1.103"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
@@ -23,7 +23,7 @@ val ktLintClientVersion = "1.8.0"
 // Transitive dependency alignment
 val commonsCompressVersion = "1.28.0"
 val commonsIoVersion = "2.22.0"
-val rhinoVersion = "1.9.1"
+val rhinoVersion = "1.9.2"
 val nettyVersion = "4.2.19.Final"
 
 plugins {
