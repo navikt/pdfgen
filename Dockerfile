@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY build/install/*/lib /lib
 
-ENV JDK_JAVA_OPTIONS="-Dlogback.configurationFile=logback.xml"
+ENV JDK_JAVA_OPTIONS="--enable-native-access=ALL-UNNAMED -Dlogback.configurationFile=logback.xml"
 ENV DISABLE_PDF_GET="true"
 ENV ENABLE_HTML_ENDPOINT="false"
 
