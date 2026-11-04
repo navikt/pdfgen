@@ -1,0 +1,46 @@
+{
+  "collection": "(à la carte)",
+  "version": "2026.11.03-092240-f3ff8e1",
+  "scope": "repo",
+  "source_repo": "navikt/copilot",
+  "source_sha": "fac3f33a8f7ac99f44690ebf8fc00616370e422f",
+  "installed_at": "2026-11-04T19:03:10Z",
+  "files": [
+    {
+      "path": ".github/skills/api-design/",
+      "hash": "cc11f76f432c6df8"
+    },
+    {
+      "path": ".github/skills/kotlin-app-config/",
+      "hash": "9168a07cc0b620c3"
+    },
+    {
+      "path": ".github/skills/nais/",
+      "hash": "2171eb3c7681210f"
+    },
+    {
+      "path": ".github/skills/nav-troubleshoot/",
+      "hash": "db7b1810b9dda6a7"
+    },
+    {
+      "path": ".github/skills/observability-debugging/",
+      "hash": "d09dd467d7ce45a7"
+    },
+    {
+      "path": ".github/skills/observability-setup/",
+      "hash": "9962327c056eda64"
+    },
+    {
+      "path": ".github/skills/readme-review/",
+      "hash": "5037548d384639b6"
+    },
+    {
+      "path": ".github/skills/security-owasp/",
+      "hash": "6c2dc64c5fe6b81e"
+    },
+    {
+      "path": ".github/skills/security-review/",
+      "hash": "09af5a47b658c7fe"
+    }
+  ]
+}
