@@ -5,7 +5,7 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 
 val javaVersion = 25
 
-val handlebarsVersion = "4.5.8"
+val pdfgencoreVersion = "1.1.85"
 val handlebarsJackson2Version = "4.3.1"
 val jacksonVersion = "2.22.4"
 val jackson3Version = "3.2.4"
@@ -17,7 +17,6 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
 val testcontainersVersion = "2.0.5"
-val pdfgencoreVersion = "1.1.84"
 val ktLintClientVersion = "1.8.0"
 
 // Transitive dependency alignment
@@ -79,8 +78,6 @@ dependencies {
 
     // PDF generation and templates
     implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
-    implementation("com.github.jknack:handlebars:$handlebarsVersion")
-    implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
@@ -103,6 +100,7 @@ dependencies {
 
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.ktor:ktor-client-cio")
