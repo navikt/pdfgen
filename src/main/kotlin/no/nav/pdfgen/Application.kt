@@ -3,7 +3,6 @@ package no.nav.pdfgen
 import com.openhtmltopdf.slf4j.Slf4jLogger
 import com.openhtmltopdf.util.XRLog
 import io.ktor.server.application.Application
-import io.ktor.server.engine.addShutdownHook
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -43,10 +42,11 @@ fun main() {
                 callGroupSize = callSize ?: parallelism
                 logger.info("Setter call group size: $callGroupSize")
                 responseWriteTimeoutSeconds = 70
+                shutdownGracePeriod = TimeUnit.SECONDS.toMillis(15)
+                shutdownTimeout = TimeUnit.SECONDS.toMillis(20)
                 connector { port = Environment().port }
             },
         )
-    embeddedServer.addShutdownHook { embeddedServer.stop(3, 5, TimeUnit.SECONDS) }
     embeddedServer.start(true)
 }
 
