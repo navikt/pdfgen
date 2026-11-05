@@ -5,7 +5,7 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 
 val javaVersion = 25
 
-val pdfgencoreVersion = "1.1.86"
+val pdfgencoreVersion = "1.1.87"
 val handlebarsJackson2Version = "4.3.1"
 val jacksonVersion = "2.22.4"
 val jackson3Version = "3.2.4"
