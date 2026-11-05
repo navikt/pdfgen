@@ -1,5 +1,8 @@
-⚠️ Deprecated ⚠️ use [pdfgenrs](https://github.com/navikt/pdfgenrs) 
-============= 
+## Maintenance mode
+
+This project is in maintenance mode. No new features are planned. Future changes will focus on bug fixes and security updates.
+
+For new projects, use [pdfgenrs](https://github.com/navikt/pdfgenrs).
 
 
 # pdfgen
