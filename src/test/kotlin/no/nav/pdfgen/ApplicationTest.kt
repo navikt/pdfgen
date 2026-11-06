@@ -10,6 +10,7 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import no.nav.pdfgen.application.api.nais.registerNaisApi
+import no.nav.pdfgen.application.metrics.createPrometheusMeterRegistry
 import no.nav.pdfgen.plugins.configureLifecycleHooks
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,7 +24,7 @@ internal class ApplicationTest {
             application {
                 routing {
                     val applicationState = ApplicationState()
-                    registerNaisApi(applicationState)
+                    registerNaisApi(applicationState, meterRegistry = createPrometheusMeterRegistry())
                     configureLifecycleHooks(applicationState)
                 }
                 raiseApplicationStarted = { monitor.raise(ApplicationStarted, this) }
@@ -45,7 +46,7 @@ internal class ApplicationTest {
                 routing {
                     val applicationState = ApplicationState()
                     configureLifecycleHooks(applicationState)
-                    registerNaisApi(applicationState)
+                    registerNaisApi(applicationState, meterRegistry = createPrometheusMeterRegistry())
                 }
             }
             val response = client.get("/internal/is_alive")
@@ -62,7 +63,7 @@ internal class ApplicationTest {
                     val applicationState = ApplicationState()
                     applicationState.ready = true
                     applicationState.alive = true
-                    registerNaisApi(applicationState)
+                    registerNaisApi(applicationState, meterRegistry = createPrometheusMeterRegistry())
                 }
             }
             val response = client.get("/internal/is_alive")
@@ -80,7 +81,7 @@ internal class ApplicationTest {
                     val applicationState = ApplicationState()
                     applicationState.ready = false
                     applicationState.alive = false
-                    registerNaisApi(applicationState)
+                    registerNaisApi(applicationState, meterRegistry = createPrometheusMeterRegistry())
                 }
             }
             val response = client.get("/internal/is_alive")
@@ -98,7 +99,7 @@ internal class ApplicationTest {
                     val applicationState = ApplicationState()
                     applicationState.ready = false
                     applicationState.alive = false
-                    registerNaisApi(applicationState)
+                    registerNaisApi(applicationState, meterRegistry = createPrometheusMeterRegistry())
                 }
             }
             assertNotReady()
@@ -114,7 +115,7 @@ internal class ApplicationTest {
             application {
                 routing {
                     val applicationState = ApplicationState()
-                    registerNaisApi(applicationState)
+                    registerNaisApi(applicationState, meterRegistry = createPrometheusMeterRegistry())
                     configureLifecycleHooks(applicationState)
                 }
                 raiseApplicationStarted = { monitor.raise(ApplicationStarted, this) }

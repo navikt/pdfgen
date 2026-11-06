@@ -6,7 +6,8 @@ import io.ktor.server.application.Application
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.prometheus.client.hotspot.DefaultExports
+import no.nav.pdfgen.application.metrics.configureMonitoring
+import no.nav.pdfgen.application.metrics.createPrometheusMeterRegistry
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.plugins.configureContentNegotiation
 import no.nav.pdfgen.plugins.configureLifecycleHooks
@@ -23,8 +24,6 @@ import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
 fun main() {
-    DefaultExports.initialize()
-
     val workerSize = System.getenv("WORKER_GROUP_SIZE")?.toIntOrNull()
     val connectionSize = System.getenv("CONNECTION_GROUP_SIZE")?.toIntOrNull()
     val callSize = System.getenv("CALL_GROUP_SIZE")?.toIntOrNull()
@@ -52,23 +51,34 @@ fun main() {
 
 fun Application.module() {
     val applicationState = ApplicationState()
+    val meterRegistry = createPrometheusMeterRegistry()
 
     System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider")
     VeraGreenfieldFoundryProvider.initialise()
 
     val environment = Environment()
     val coreEnvironment = PDFGenCoreEnvironment()
-    PDFGenCore.init(coreEnvironment)
+    PDFGenCore.init(
+        initialEnvironment = coreEnvironment,
+        meterRegistry = meterRegistry,
+    )
 
     val templates = coreEnvironment.templates
     XRLog.setLoggerImpl(Slf4jLogger())
 
     configureLifecycleHooks(applicationState = applicationState)
+    configureMonitoring(meterRegistry)
     configureContentNegotiation()
     configureStatusPages(templates = templates, environment = environment)
-    configureNais(applicationState = applicationState)
+    configureNais(
+        applicationState = applicationState,
+        meterRegistry = meterRegistry,
+    )
     configureReloadPDFGenCore(environment = environment)
-    configureRouting(environment = environment)
+    configureRouting(
+        environment = environment,
+        meterRegistry = meterRegistry,
+    )
 }
 
 data class ApplicationState(
