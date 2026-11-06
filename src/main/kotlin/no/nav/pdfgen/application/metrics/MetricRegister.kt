@@ -1,13 +1,20 @@
 package no.nav.pdfgen.application.metrics
 
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Timer
+import java.util.concurrent.TimeUnit
 
-const val METRICS_NS = "pdfgen"
-
-val HTTP_HISTOGRAM: Histogram = Histogram
-    .Builder()
-    .namespace(METRICS_NS)
-    .labelNames("path")
-    .name("requests_duration_seconds")
-    .help("http requests durations for incoming requests in seconds")
-    .register()
+fun recordPdfRendering(
+    meterRegistry: MeterRegistry,
+    templateType: String,
+    durationNanos: Long,
+) {
+    Timer
+        .builder("pdfgen_core.openhtmltopdf.rendering")
+        .description("Time it takes to render a PDF")
+        .tag("application_name", "all")
+        .tag("template_type", templateType)
+        .publishPercentileHistogram()
+        .register(meterRegistry)
+        .record(durationNanos, TimeUnit.NANOSECONDS)
+}
