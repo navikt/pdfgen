@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -21,12 +22,17 @@ import io.micrometer.core.instrument.Timer
 import no.nav.pdfgen.application.metrics.configureMonitoring
 import no.nav.pdfgen.application.metrics.createPrometheusMeterRegistry
 import no.nav.pdfgen.application.metrics.recordPdfRendering
+import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
+import no.nav.pdfgen.core.PDFGenCore
+import no.nav.pdfgen.core.pdf.render
 import no.nav.pdfgen.plugins.configureNais
 import no.nav.pdfgen.plugins.configureRouting
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 
 internal class MetricsTest {
     @Test
@@ -96,39 +102,59 @@ internal class MetricsTest {
     internal fun `Prometheus endpoint should expose Micrometer metrics`() {
         val meterRegistry = createPrometheusMeterRegistry()
         recordPdfRendering(meterRegistry, "converthtml", 10_000_000)
+        val coreEnvironment = PDFGenCoreEnvironment()
+        val legacyHandlebarsCount = HANDLEBARS_RENDERING_SUMMARY.get().count
+        PDFGenCore.init(coreEnvironment, meterRegistry)
 
-        testApplication {
-            application {
-                configureMonitoring(meterRegistry)
-                configureNais(ApplicationState(alive = true, ready = true), meterRegistry)
-                configureRouting(Environment(), meterRegistry)
-            }
+        try {
+            val renderedHtml = render(
+                "dsopkontroll",
+                "kontrollforespoersel",
+                JsonNodeFactory.instance.objectNode(),
+            )
+            assertNotNull(renderedHtml)
 
-            val healthResponse = client.get("/internal/is_alive")
-            assertEquals(HttpStatusCode.OK, healthResponse.status)
+            val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
+            assertNotNull(handlebarsTimer)
+            assertEquals(1L, handlebarsTimer?.count())
+            assertEquals(legacyHandlebarsCount, HANDLEBARS_RENDERING_SUMMARY.get().count)
 
-            val response = client.get("/internal/prometheus")
-            assertEquals(HttpStatusCode.OK, response.status)
-            val scrape = response.bodyAsText()
-
-            assertTrue(scrape.contains("jvm_memory_used_bytes"))
-            assertTrue(scrape.contains("jvm_memory_max_bytes"))
-            assertTrue(scrape.contains("ktor_http_server_requests_seconds_count"))
-            assertFalse(scrape.contains("pdfgen_requests_duration_seconds_count"))
-            assertTrue(scrape.contains("pdfgen_core_openhtmltopdf_rendering_seconds_count"))
-            assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
-
-            val renderingFamily = "pdfgen_core_openhtmltopdf_rendering_seconds"
-            for (sampleSuffix in listOf("_count", "_sum", "_bucket")) {
-                val sampleName = renderingFamily + sampleSuffix
-                val filteredResponse = client.get("/internal/prometheus") {
-                    parameter("name[]", sampleName)
+            testApplication {
+                application {
+                    configureMonitoring(meterRegistry)
+                    configureNais(ApplicationState(alive = true, ready = true), meterRegistry)
+                    configureRouting(Environment(), meterRegistry)
                 }
-                assertEquals(HttpStatusCode.OK, filteredResponse.status)
-                val filteredScrape = filteredResponse.bodyAsText()
-                assertTrue(filteredScrape.contains("# HELP $renderingFamily "))
-                assertTrue(filteredScrape.contains(sampleName))
+
+                val healthResponse = client.get("/internal/is_alive")
+                assertEquals(HttpStatusCode.OK, healthResponse.status)
+
+                val response = client.get("/internal/prometheus")
+                assertEquals(HttpStatusCode.OK, response.status)
+                val scrape = response.bodyAsText()
+
+                assertTrue(scrape.contains("jvm_memory_used_bytes"))
+                assertTrue(scrape.contains("jvm_memory_max_bytes"))
+                assertTrue(scrape.contains("ktor_http_server_requests_seconds_count"))
+                assertFalse(scrape.contains("pdfgen_requests_duration_seconds_count"))
+                assertTrue(scrape.contains("pdfgen_core_openhtmltopdf_rendering_seconds_count"))
+                assertTrue(scrape.contains("pdfgen_core_handlebars_rendering_seconds_count"))
+                assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
+
+                val renderingFamily = "pdfgen_core_openhtmltopdf_rendering_seconds"
+                for (sampleSuffix in listOf("_count", "_sum", "_bucket")) {
+                    val sampleName = renderingFamily + sampleSuffix
+                    val filteredResponse = client.get("/internal/prometheus") {
+                        parameter("name[]", sampleName)
+                    }
+                    assertEquals(HttpStatusCode.OK, filteredResponse.status)
+                    val filteredScrape = filteredResponse.bodyAsText()
+                    assertTrue(filteredScrape.contains("# HELP $renderingFamily "))
+                    assertTrue(filteredScrape.contains(sampleName))
+                }
             }
+        } finally {
+            PDFGenCore.init(coreEnvironment)
         }
     }
 
