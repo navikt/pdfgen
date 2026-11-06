@@ -1,6 +1,5 @@
 package no.nav.pdfgen
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -8,6 +7,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.http.content.TextContent
 import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -21,10 +21,9 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import no.nav.pdfgen.application.metrics.configureMonitoring
 import no.nav.pdfgen.application.metrics.createPrometheusMeterRegistry
-import no.nav.pdfgen.application.metrics.recordPdfRendering
 import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
 import no.nav.pdfgen.core.PDFGenCore
-import no.nav.pdfgen.core.pdf.render
+import no.nav.pdfgen.plugins.configureContentNegotiation
 import no.nav.pdfgen.plugins.configureNais
 import no.nav.pdfgen.plugins.configureRouting
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,6 +31,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 
 internal class MetricsTest {
@@ -101,30 +101,31 @@ internal class MetricsTest {
     @Test
     internal fun `Prometheus endpoint should expose Micrometer metrics`() {
         val meterRegistry = createPrometheusMeterRegistry()
-        recordPdfRendering(meterRegistry, "converthtml", 10_000_000)
         val coreEnvironment = PDFGenCoreEnvironment()
         val legacyHandlebarsCount = HANDLEBARS_RENDERING_SUMMARY.get().count
         PDFGenCore.init(coreEnvironment, meterRegistry)
+        VeraGreenfieldFoundryProvider.initialise()
 
         try {
-            val renderedHtml = render(
-                "dsopkontroll",
-                "kontrollforespoersel",
-                JsonNodeFactory.instance.objectNode(),
-            )
-            assertNotNull(renderedHtml)
-
-            val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
-            assertNotNull(handlebarsTimer)
-            assertEquals(1L, handlebarsTimer?.count())
-            assertEquals(legacyHandlebarsCount, HANDLEBARS_RENDERING_SUMMARY.get().count)
-
             testApplication {
                 application {
+                    configureContentNegotiation()
                     configureMonitoring(meterRegistry)
                     configureNais(ApplicationState(alive = true, ready = true), meterRegistry)
                     configureRouting(Environment(), meterRegistry)
                 }
+
+                val pdfResponse = client.post("/api/v1/genpdf/dsopkontroll/kontrollforespoersel") {
+                    contentType(ContentType.Application.Json)
+                    setBody("{}")
+                }
+                assertEquals(HttpStatusCode.OK, pdfResponse.status)
+
+                val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
+                assertNotNull(handlebarsTimer)
+                assertEquals(1L, handlebarsTimer?.count())
+                assertEquals(legacyHandlebarsCount, HANDLEBARS_RENDERING_SUMMARY.get().count)
+                assertEquals(1.0, renderingCount(meterRegistry, "template"))
 
                 val healthResponse = client.get("/internal/is_alive")
                 assertEquals(HttpStatusCode.OK, healthResponse.status)

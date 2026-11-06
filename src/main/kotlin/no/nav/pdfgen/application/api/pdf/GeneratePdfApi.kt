@@ -25,6 +25,22 @@ import no.nav.pdfgen.logger
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
+private fun renderTemplatePdf(
+    html: String,
+    meterRegistry: MeterRegistry,
+): ByteArray {
+    val startNanos = System.nanoTime()
+    return try {
+        createPDFA(html)
+    } finally {
+        recordPdfRendering(
+            meterRegistry = meterRegistry,
+            templateType = "template",
+            durationNanos = System.nanoTime() - startNanos,
+        )
+    }
+}
+
 fun Route.registerGeneratePdfApi(
     env: Environment,
     meterRegistry: MeterRegistry,
@@ -39,7 +55,7 @@ fun Route.registerGeneratePdfApi(
                 directoryName = applicationName,
             )?.let { document ->
                 call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-                call.respond(createPDFA(document))
+                call.respond(renderTemplatePdf(document, meterRegistry))
             } ?: call.respondText(
                 "Template or application not found",
                 status = HttpStatusCode.NotFound,
@@ -59,7 +75,7 @@ fun Route.registerGeneratePdfApi(
             jsonPayload = jsonNode,
         )?.let { document ->
             call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-            call.respond(createPDFA(document))
+            call.respond(renderTemplatePdf(document, meterRegistry))
             logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         } ?: call.respondText(
             "Template or application not found",
