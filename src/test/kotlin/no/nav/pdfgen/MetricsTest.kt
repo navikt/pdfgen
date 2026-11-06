@@ -6,6 +6,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.readRawBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
@@ -31,189 +32,256 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 
 internal class MetricsTest {
-    @Test
-    internal fun `Ktor HTTP timer should use route patterns and count failures exactly once`() {
-        val meterRegistry = createPrometheusMeterRegistry()
-        testApplication {
-            application {
-                configureMonitoring(meterRegistry)
-                configureRouting(Environment(), meterRegistry)
-                install(StatusPages) {
-                    exception<IllegalStateException> { call, _ ->
-                        call.respond(HttpStatusCode.InternalServerError)
-                    }
-                }
-                routing {
-                    get("/metrics-cardinality/{identifier}") {
-                        call.respondText("ok")
-                    }
-                    get("/metrics-failure/{identifier}") {
-                        throw IllegalStateException("metrics test failure")
-                    }
-                    get("/internal/is_alive") {
-                        call.respondText("I'm alive")
-                    }
-                }
-            }
-
-            val parameterizedPath = "/metrics-cardinality/{identifier}"
-            val matchedBefore = requestCountContainingRoute(meterRegistry, parameterizedPath)
-            val unmatchedBefore = requestCountForRoute(meterRegistry, "n/a")
-            val failedBefore = requestCountContainingRoute(meterRegistry, "/metrics-failure/{identifier}")
-            val healthBefore = requestCountContainingRoute(meterRegistry, "/internal/is_alive")
-
-            repeat(50) { index ->
-                val response = client.get("/metrics-cardinality/value-$index")
-                assertEquals(HttpStatusCode.OK, response.status)
-            }
-            repeat(50) { index ->
-                val response = client.get("/unmatched-metrics-$index/deep/path")
-                assertEquals(HttpStatusCode.NotFound, response.status)
-            }
-            val failedResponse = client.get("/metrics-failure/request-specific-value")
-            assertEquals(HttpStatusCode.InternalServerError, failedResponse.status)
-            val healthResponse = client.get("/internal/is_alive")
-            assertEquals(HttpStatusCode.OK, healthResponse.status)
-            assertEquals("I'm alive", healthResponse.bodyAsText())
-
-            assertEquals(50.0, requestCountContainingRoute(meterRegistry, parameterizedPath) - matchedBefore)
-            assertEquals(
-                1,
-                requestRouteLabels(meterRegistry).filter { it.contains("/metrics-cardinality") }.distinct().size,
-                "Ulike parameterverdier skal dele én rutemal som etikett",
-            )
-            assertTrue(requestCountForRoute(meterRegistry, "n/a") - unmatchedBefore >= 50.0)
-            assertFalse(requestRouteLabels(meterRegistry).any { it.contains("/unmatched-metrics-") })
-            assertEquals(
-                1.0,
-                requestCountContainingRoute(meterRegistry, "/metrics-failure/{identifier}") - failedBefore,
-                "Feilende håndterere skal telles nøyaktig én gang",
-            )
-            assertEquals(1.0, requestCountContainingRoute(meterRegistry, "/internal/is_alive") - healthBefore)
-            assertFalse(requestRouteLabels(meterRegistry).any { it.contains("request-specific-value") })
-        }
-    }
-
-    @Test
-    internal fun `Prometheus endpoint should expose Micrometer metrics`() {
-        val meterRegistry = createPrometheusMeterRegistry()
-        recordPdfRendering(meterRegistry, "converthtml", 10_000_000)
-        val coreEnvironment = PDFGenCoreEnvironment()
-        val legacyHandlebarsCount = HANDLEBARS_RENDERING_SUMMARY.get().count
-        PDFGenCore.init(coreEnvironment, meterRegistry)
-
-        try {
-            val renderedHtml = render(
-                "dsopkontroll",
-                "kontrollforespoersel",
-                JsonNodeFactory.instance.objectNode(),
-            )
-            assertNotNull(renderedHtml)
-
-            val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
-            assertNotNull(handlebarsTimer)
-            assertEquals(1L, handlebarsTimer?.count())
-            assertEquals(legacyHandlebarsCount, HANDLEBARS_RENDERING_SUMMARY.get().count)
-
+    @Nested
+    inner class KtorHttpMetrics {
+        @Test
+        internal fun `Ktor HTTP timer should use route patterns and count failures exactly once`() {
+            // Arrange
+            val meterRegistry = createPrometheusMeterRegistry()
             testApplication {
                 application {
                     configureMonitoring(meterRegistry)
-                    configureNais(ApplicationState(alive = true, ready = true), meterRegistry)
                     configureRouting(Environment(), meterRegistry)
-                }
-
-                val healthResponse = client.get("/internal/is_alive")
-                assertEquals(HttpStatusCode.OK, healthResponse.status)
-
-                val response = client.get("/internal/prometheus")
-                assertEquals(HttpStatusCode.OK, response.status)
-                val scrape = response.bodyAsText()
-
-                assertTrue(scrape.contains("jvm_memory_used_bytes"))
-                assertTrue(scrape.contains("jvm_memory_max_bytes"))
-                assertTrue(scrape.contains("ktor_http_server_requests_seconds_count"))
-                assertFalse(scrape.contains("pdfgen_requests_duration_seconds_count"))
-                assertTrue(scrape.contains("pdfgen_core_openhtmltopdf_rendering_seconds_count"))
-                assertTrue(scrape.contains("pdfgen_core_handlebars_rendering_seconds_count"))
-                assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
-
-                val renderingFamily = "pdfgen_core_openhtmltopdf_rendering_seconds"
-                for (sampleSuffix in listOf("_count", "_sum", "_bucket")) {
-                    val sampleName = renderingFamily + sampleSuffix
-                    val filteredResponse = client.get("/internal/prometheus") {
-                        parameter("name[]", sampleName)
+                    install(StatusPages) {
+                        exception<IllegalStateException> { call, _ ->
+                            call.respond(HttpStatusCode.InternalServerError)
+                        }
                     }
-                    assertEquals(HttpStatusCode.OK, filteredResponse.status)
-                    val filteredScrape = filteredResponse.bodyAsText()
-                    assertTrue(filteredScrape.contains("# HELP $renderingFamily "))
-                    assertTrue(filteredScrape.contains(sampleName))
+                    routing {
+                        get("/metrics-cardinality/{identifier}") {
+                            call.respondText("ok")
+                        }
+                        get("/metrics-failure/{identifier}") {
+                            throw IllegalStateException("metrics test failure")
+                        }
+                        get("/internal/is_alive") {
+                            call.respondText("I'm alive")
+                        }
+                    }
                 }
+
+                val parameterizedPath = "/metrics-cardinality/{identifier}"
+                val matchedBefore = requestCountContainingRoute(meterRegistry, parameterizedPath)
+                val unmatchedBefore = requestCountForRoute(meterRegistry, "n/a")
+                val failedBefore = requestCountContainingRoute(meterRegistry, "/metrics-failure/{identifier}")
+                val healthBefore = requestCountContainingRoute(meterRegistry, "/internal/is_alive")
+
+                // Act
+                val matchedStatuses = (0 until 50).map { index ->
+                    client.get("/metrics-cardinality/value-$index").status
+                }
+                val unmatchedStatuses = (0 until 50).map { index ->
+                    client.get("/unmatched-metrics-$index/deep/path").status
+                }
+                val failedResponse = client.get("/metrics-failure/request-specific-value")
+                val healthResponse = client.get("/internal/is_alive")
+                val healthBody = healthResponse.bodyAsText()
+
+                // Assert
+                assertTrue(matchedStatuses.all { it == HttpStatusCode.OK })
+                assertTrue(unmatchedStatuses.all { it == HttpStatusCode.NotFound })
+                assertEquals(HttpStatusCode.InternalServerError, failedResponse.status)
+                assertEquals(HttpStatusCode.OK, healthResponse.status)
+                assertEquals("I'm alive", healthBody)
+                assertEquals(50.0, requestCountContainingRoute(meterRegistry, parameterizedPath) - matchedBefore)
+                assertEquals(
+                    1,
+                    requestRouteLabels(meterRegistry).filter { it.contains("/metrics-cardinality") }.distinct().size,
+                    "Ulike parameterverdier skal dele én rutemal som etikett",
+                )
+                assertTrue(requestCountForRoute(meterRegistry, "n/a") - unmatchedBefore >= 50.0)
+                assertFalse(requestRouteLabels(meterRegistry).any { it.contains("/unmatched-metrics-") })
+                assertEquals(
+                    1.0,
+                    requestCountContainingRoute(meterRegistry, "/metrics-failure/{identifier}") - failedBefore,
+                    "Feilende håndterere skal telles nøyaktig én gang",
+                )
+                assertEquals(1.0, requestCountContainingRoute(meterRegistry, "/internal/is_alive") - healthBefore)
+                assertFalse(requestRouteLabels(meterRegistry).any { it.contains("request-specific-value") })
             }
-        } finally {
-            PDFGenCore.init(coreEnvironment)
         }
     }
 
-    @Test
-    internal fun `Conversion metrics should use a fixed application label and count rejected images`() {
-        val meterRegistry = createPrometheusMeterRegistry()
-        testApplication {
-            application {
-                receivePipeline.intercept(ApplicationReceivePipeline.Before) {
-                    throw IllegalStateException("Testfeil i mottak")
-                }
-                configureMonitoring(meterRegistry)
-                configureRouting(Environment(), meterRegistry)
-                install(StatusPages) {
-                    exception<IllegalStateException> { call, _ ->
-                        call.respond(HttpStatusCode.InternalServerError)
+    @Nested
+    inner class PrometheusMetrics {
+        @Test
+        internal fun `Prometheus endpoint should expose Micrometer metrics`() {
+            // Arrange
+            val meterRegistry = createPrometheusMeterRegistry()
+            recordPdfRendering(meterRegistry, "converthtml", 10_000_000)
+            val coreEnvironment = PDFGenCoreEnvironment()
+            val legacyHandlebarsCount = HANDLEBARS_RENDERING_SUMMARY.get().count
+            PDFGenCore.init(coreEnvironment, meterRegistry)
+
+            try {
+                testApplication {
+                    application {
+                        configureMonitoring(meterRegistry)
+                        configureNais(ApplicationState(alive = true, ready = true), meterRegistry)
+                        configureRouting(Environment(), meterRegistry)
+                    }
+
+                    // Act
+                    val renderedHtml = render(
+                        "dsopkontroll",
+                        "kontrollforespoersel",
+                        JsonNodeFactory.instance.objectNode(),
+                    )
+                    val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
+                    val legacyCountAfterRender = HANDLEBARS_RENDERING_SUMMARY.get().count
+                    val healthResponse = client.get("/internal/is_alive")
+                    val healthBody = healthResponse.bodyAsText()
+                    val response = client.get("/internal/prometheus")
+                    val scrape = response.bodyAsText()
+                    val filteredScrapes = listOf("_count", "_sum", "_bucket").map { sampleSuffix ->
+                        val sampleName = "pdfgen_core_openhtmltopdf_rendering_seconds$sampleSuffix"
+                        val filteredResponse = client.get("/internal/prometheus") {
+                            parameter("name[]", sampleName)
+                        }
+                        Triple(sampleName, filteredResponse.status, filteredResponse.bodyAsText())
+                    }
+
+                    // Assert
+                    assertNotNull(renderedHtml)
+                    assertNotNull(handlebarsTimer)
+                    assertEquals(1L, handlebarsTimer?.count())
+                    assertEquals(legacyHandlebarsCount, legacyCountAfterRender)
+                    assertEquals(HttpStatusCode.OK, healthResponse.status)
+                    assertEquals("I'm alive", healthBody)
+                    assertEquals(HttpStatusCode.OK, response.status)
+                    assertTrue(scrape.contains("jvm_memory_used_bytes"))
+                    assertTrue(scrape.contains("jvm_memory_max_bytes"))
+                    assertTrue(scrape.contains("ktor_http_server_requests_seconds_count"))
+                    assertFalse(scrape.contains("pdfgen_requests_duration_seconds_count"))
+                    assertTrue(scrape.contains("pdfgen_core_openhtmltopdf_rendering_seconds_count"))
+                    assertTrue(scrape.contains("pdfgen_core_handlebars_rendering_seconds_count"))
+                    assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
+                    filteredScrapes.forEach { (sampleName, status, filteredScrape) ->
+                        assertEquals(HttpStatusCode.OK, status)
+                        assertTrue(filteredScrape.contains("# HELP pdfgen_core_openhtmltopdf_rendering_seconds "))
+                        assertTrue(filteredScrape.contains(sampleName))
                     }
                 }
+            } finally {
+                PDFGenCore.init(coreEnvironment)
             }
+        }
 
-            val htmlApplication = "arbitrary-html-metric-application"
-            val imageApplication = "arbitrary-image-metric-application"
-            val htmlBefore = renderingCount(meterRegistry, "converthtml")
-            val imageBefore = renderingCount(meterRegistry, "convertjpeg")
+        @Test
+        internal fun `module should expose Handlebars rendering metrics after template API call`() {
+            // Arrange
+            val coreEnvironment = PDFGenCoreEnvironment()
+            val handlebarsCountMetric = "pdfgen_core_handlebars_rendering_seconds_count"
 
-            val htmlResponse = client.post("/api/v1/genpdf/html/$htmlApplication") {
-                setBody(
-                    TextContent(
-                        "<html><body>metrics test</body></html>",
-                        contentType = ContentType.Text.Html,
-                    ),
+            try {
+                testApplication {
+                    application { module() }
+
+                    val initialScrapeResponse = client.get("/internal/prometheus")
+                    val initialScrape = initialScrapeResponse.bodyAsText()
+                    val initialCount = prometheusSampleValue(initialScrape, handlebarsCountMetric)
+                    val templateData = javaClass
+                        .getResourceAsStream(
+                            "/data/dsopkontroll/kontrollforespoersel.json",
+                        )?.use { it.readBytes().toString(Charsets.UTF_8) }
+                        ?: error("Missing test data for dsopkontroll/kontrollforespoersel")
+
+                    // Act
+                    val renderResponse = client.post(
+                        "/api/v1/genpdf/dsopkontroll/kontrollforespoersel",
+                    ) {
+                        setBody(
+                            TextContent(
+                                templateData,
+                                contentType = ContentType.Application.Json,
+                            ),
+                        )
+                    }
+                    val renderBody = renderResponse.readRawBytes()
+                    val scrapeResponse = client.get("/internal/prometheus")
+                    val scrape = scrapeResponse.bodyAsText()
+
+                    // Assert
+                    assertEquals(HttpStatusCode.OK, initialScrapeResponse.status)
+                    assertEquals(HttpStatusCode.OK, renderResponse.status)
+                    assertTrue(renderBody.isNotEmpty())
+                    assertEquals(HttpStatusCode.OK, scrapeResponse.status)
+                    assertTrue(prometheusSampleValue(scrape, handlebarsCountMetric) > initialCount)
+                    assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
+                }
+            } finally {
+                PDFGenCore.init(coreEnvironment)
+            }
+        }
+    }
+
+    @Nested
+    inner class PdfConversionMetrics {
+        @Test
+        internal fun `Conversion metrics should use a fixed application label and count rejected images`() {
+            // Arrange
+            val meterRegistry = createPrometheusMeterRegistry()
+            testApplication {
+                application {
+                    receivePipeline.intercept(ApplicationReceivePipeline.Before) {
+                        throw IllegalStateException("Testfeil i mottak")
+                    }
+                    configureMonitoring(meterRegistry)
+                    configureRouting(Environment(), meterRegistry)
+                    install(StatusPages) {
+                        exception<IllegalStateException> { call, _ ->
+                            call.respond(HttpStatusCode.InternalServerError)
+                        }
+                    }
+                }
+
+                val htmlApplication = "arbitrary-html-metric-application"
+                val imageApplication = "arbitrary-image-metric-application"
+                val htmlBefore = renderingCount(meterRegistry, "converthtml")
+                val imageBefore = renderingCount(meterRegistry, "convertjpeg")
+
+                // Act
+                val htmlResponse = client.post("/api/v1/genpdf/html/$htmlApplication") {
+                    setBody(
+                        TextContent(
+                            "<html><body>metrics test</body></html>",
+                            contentType = ContentType.Text.Html,
+                        ),
+                    )
+                }
+                val imageResponse = client.post("/api/v1/genpdf/image/$imageApplication") {
+                    setBody(
+                        TextContent(
+                            "not an image",
+                            contentType = ContentType.Text.Plain,
+                        ),
+                    )
+                }
+
+                // Assert
+                assertEquals(HttpStatusCode.InternalServerError, htmlResponse.status)
+                assertEquals(HttpStatusCode.UnsupportedMediaType, imageResponse.status)
+
+                assertEquals(
+                    htmlBefore + 1.0,
+                    renderingCount(meterRegistry, "converthtml"),
                 )
-            }
-            assertEquals(HttpStatusCode.InternalServerError, htmlResponse.status)
-
-            val imageResponse = client.post("/api/v1/genpdf/image/$imageApplication") {
-                setBody(
-                    TextContent(
-                        "not an image",
-                        contentType = ContentType.Text.Plain,
-                    ),
+                assertEquals(
+                    imageBefore + 1.0,
+                    renderingCount(meterRegistry, "convertjpeg"),
                 )
+                val renderingLabels = meterRegistry.meters
+                    .filterIsInstance<Timer>()
+                    .filter { it.id.name == "pdfgen_core.openhtmltopdf.rendering" }
+                    .flatMap { timer -> timer.id.tags.map { it.value } }
+                assertFalse(renderingLabels.contains(htmlApplication))
+                assertFalse(renderingLabels.contains(imageApplication))
             }
-            assertEquals(HttpStatusCode.UnsupportedMediaType, imageResponse.status)
-
-            assertEquals(
-                htmlBefore + 1.0,
-                renderingCount(meterRegistry, "converthtml"),
-            )
-            assertEquals(
-                imageBefore + 1.0,
-                renderingCount(meterRegistry, "convertjpeg"),
-            )
-            val renderingLabels = meterRegistry.meters
-                .filterIsInstance<Timer>()
-                .filter { it.id.name == "pdfgen_core.openhtmltopdf.rendering" }
-                .flatMap { timer -> timer.id.tags.map { it.value } }
-            assertFalse(renderingLabels.contains(htmlApplication))
-            assertFalse(renderingLabels.contains(imageApplication))
         }
     }
 
@@ -226,6 +294,16 @@ internal class MetricsTest {
         .tag("template_type", templateType)
         .timer()
         ?.count()
+        ?.toDouble()
+        ?: 0.0
+
+    private fun prometheusSampleValue(
+        scrape: String,
+        sampleName: String,
+    ): Double = scrape
+        .lineSequence()
+        .firstOrNull { it.startsWith("$sampleName ") }
+        ?.substringAfterLast(' ')
         ?.toDouble()
         ?: 0.0
 
