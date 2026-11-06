@@ -56,8 +56,9 @@ fun Routing.registerNaisApi(
 /**
  * Filters a Prometheus text-format scrape to the requested metric families.
  *
- * An empty [names] set returns the scrape unchanged. Otherwise, each `# HELP` line starts a
- * family, and the filter keeps that line and its following lines until the next family.
+ * A name can match a family name from its `# HELP` line or an exported sample name such as
+ * `_count`, `_sum`, or `_bucket`. If any name matches, the filter keeps the full family.
+ * An empty [names] set returns the scrape unchanged.
  */
 private fun filterMetricFamilies(
     scrape: String,
@@ -65,16 +66,32 @@ private fun filterMetricFamilies(
 ): String {
     if (names.isEmpty()) return scrape
 
-    var includeFamily = false
-    val lines = scrape
-        .lineSequence()
-        .filter { line ->
-            if (line.startsWith("# HELP ")) {
-                // A HELP line starts a family and sets whether its lines are included.
-                includeFamily = line.removePrefix("# HELP ").substringBefore(' ') in names
-            }
-            includeFamily
-        }.toList()
+    val selectedLines = buildList {
+        val familyLines = mutableListOf<String>()
+        var includeFamily = false
 
-    return if (lines.isEmpty()) "" else lines.joinToString("\n", postfix = "\n")
+        scrape.lineSequence().forEach { line ->
+            if (line.startsWith("# HELP ")) {
+                // Flush the previous family before selecting the next one.
+                if (includeFamily) addAll(familyLines)
+                familyLines.clear()
+                includeFamily = line.removePrefix("# HELP ").substringBefore(' ') in names
+            } else if (!includeFamily && sampleName(line)?.let(names::contains) == true) {
+                // Sample names may include suffixes that differ from the family name.
+                includeFamily = true
+            }
+            familyLines.add(line)
+        }
+        if (includeFamily) addAll(familyLines)
+    }
+
+    return if (selectedLines.isEmpty()) "" else selectedLines.joinToString("\n", postfix = "\n")
+}
+
+private fun sampleName(line: String): String? {
+    if (line.isBlank() || line.startsWith("#")) return null
+
+    return line
+        .substringBefore('{')
+        .substringBefore(' ')
 }

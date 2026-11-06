@@ -1,6 +1,7 @@
 package no.nav.pdfgen
 
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -116,6 +117,18 @@ internal class MetricsTest {
             assertFalse(scrape.contains("pdfgen_requests_duration_seconds_count"))
             assertTrue(scrape.contains("pdfgen_core_openhtmltopdf_rendering_seconds_count"))
             assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
+
+            val renderingFamily = "pdfgen_core_openhtmltopdf_rendering_seconds"
+            for (sampleSuffix in listOf("_count", "_sum", "_bucket")) {
+                val sampleName = renderingFamily + sampleSuffix
+                val filteredResponse = client.get("/internal/prometheus") {
+                    parameter("name[]", sampleName)
+                }
+                assertEquals(HttpStatusCode.OK, filteredResponse.status)
+                val filteredScrape = filteredResponse.bodyAsText()
+                assertTrue(filteredScrape.contains("# HELP $renderingFamily "))
+                assertTrue(filteredScrape.contains(sampleName))
+            }
         }
     }
 
