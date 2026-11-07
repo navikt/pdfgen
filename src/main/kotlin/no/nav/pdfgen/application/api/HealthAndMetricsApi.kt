@@ -1,36 +1,32 @@
-package no.nav.pdfgen.application.api.nais
+package no.nav.pdfgen.application.api
 
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
+import io.ktor.util.AttributeKey
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import no.nav.pdfgen.ApplicationState
 
 private val prometheusContentType = ContentType.parse("text/plain; version=0.0.4; charset=utf-8")
 
-fun Routing.registerNaisApi(
-    applicationState: ApplicationState,
-    readynessCheck: () -> Boolean = { applicationState.ready },
-    alivenessCheck: () -> Boolean = { applicationState.alive },
-    meterRegistry: PrometheusMeterRegistry,
-) {
+val isReadyKey = AttributeKey<Boolean>("isReady")
+
+fun Routing.registerHealthApi(meterRegistry: PrometheusMeterRegistry) {
     get("/internal/is_alive") {
-        if (alivenessCheck()) {
-            call.respondText("I'm alive")
-        } else {
-            call.respondText("I'm dead x_x", status = HttpStatusCode.InternalServerError)
-        }
+        // always return success for liveness
+        call.respondText("I'm alive")
     }
 
     get("/internal/is_ready") {
-        if (readynessCheck()) {
+        val isReady = call.application.attributes.getOrNull(isReadyKey) ?: false
+
+        if (isReady) {
             call.respondText("I'm ready")
         } else {
             call.respondText(
                 "Please wait! I'm not ready :(",
-                status = HttpStatusCode.InternalServerError,
+                status = HttpStatusCode.ServiceUnavailable,
             )
         }
     }
