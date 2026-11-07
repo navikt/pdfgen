@@ -62,17 +62,11 @@ dependencies {
     implementation(platform("io.netty:netty-bom:$nettyVersion"))
     implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     constraints {
-        implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion") {
-            because("Keep SVG support aligned with the PDF renderer")
-        }
         implementation("commons-io:commons-io:$commonsIoVersion") {
             because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
         }
         implementation("org.mozilla:rhino:$rhinoVersion") {
             because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
-        }
-        implementation("org.apache.commons:commons-compress:$commonsCompressVersion") {
-            because("Due to vulnerabilities, see CVE-2024-26308")
         }
     }
 
@@ -85,6 +79,7 @@ dependencies {
     // HTTP server
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-netty")
+    implementation("io.ktor:ktor-server-config-yaml")
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-server-status-pages")
 

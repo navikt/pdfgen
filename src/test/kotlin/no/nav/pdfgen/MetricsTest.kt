@@ -20,13 +20,13 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.pdfgen.application.metrics.configureMonitoring
 import no.nav.pdfgen.application.metrics.createPrometheusMeterRegistry
 import no.nav.pdfgen.application.metrics.recordPdfRendering
-import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.pdf.render
-import no.nav.pdfgen.plugins.configureNais
+import no.nav.pdfgen.plugins.configureHealthAndMetrics
 import no.nav.pdfgen.plugins.configureRouting
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -115,14 +115,13 @@ internal class MetricsTest {
             val meterRegistry = createPrometheusMeterRegistry()
             recordPdfRendering(meterRegistry, "converthtml", 10_000_000)
             val coreEnvironment = PDFGenCoreEnvironment()
-            val legacyHandlebarsCount = HANDLEBARS_RENDERING_SUMMARY.get().count
             PDFGenCore.init(coreEnvironment, meterRegistry)
 
             try {
                 testApplication {
                     application {
                         configureMonitoring(meterRegistry)
-                        configureNais(ApplicationState(alive = true, ready = true), meterRegistry)
+                        configureHealthAndMetrics(meterRegistry)
                         configureRouting(Environment(), meterRegistry)
                     }
 
@@ -133,7 +132,6 @@ internal class MetricsTest {
                         JsonNodeFactory.instance.objectNode(),
                     )
                     val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
-                    val legacyCountAfterRender = HANDLEBARS_RENDERING_SUMMARY.get().count
                     val healthResponse = client.get("/internal/is_alive")
                     val healthBody = healthResponse.bodyAsText()
                     val response = client.get("/internal/prometheus")
@@ -150,7 +148,6 @@ internal class MetricsTest {
                     assertNotNull(renderedHtml)
                     assertNotNull(handlebarsTimer)
                     assertEquals(1L, handlebarsTimer?.count())
-                    assertEquals(legacyHandlebarsCount, legacyCountAfterRender)
                     assertEquals(HttpStatusCode.OK, healthResponse.status)
                     assertEquals("I'm alive", healthBody)
                     assertEquals(HttpStatusCode.OK, response.status)
@@ -160,7 +157,6 @@ internal class MetricsTest {
                     assertFalse(scrape.contains("pdfgen_requests_duration_seconds_count"))
                     assertTrue(scrape.contains("pdfgen_core_openhtmltopdf_rendering_seconds_count"))
                     assertTrue(scrape.contains("pdfgen_core_handlebars_rendering_seconds_count"))
-                    assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
                     filteredScrapes.forEach { (sampleName, status, filteredScrape) ->
                         assertEquals(HttpStatusCode.OK, status)
                         assertTrue(filteredScrape.contains("# HELP pdfgen_core_openhtmltopdf_rendering_seconds "))
@@ -168,7 +164,10 @@ internal class MetricsTest {
                     }
                 }
             } finally {
-                PDFGenCore.init(coreEnvironment)
+                PDFGenCore.init(
+                    initialEnvironment = coreEnvironment,
+                    meterRegistry = SimpleMeterRegistry(),
+                )
             }
         }
 
@@ -212,10 +211,12 @@ internal class MetricsTest {
                     assertTrue(renderBody.isNotEmpty())
                     assertEquals(HttpStatusCode.OK, scrapeResponse.status)
                     assertTrue(prometheusSampleValue(scrape, handlebarsCountMetric) > initialCount)
-                    assertFalse(scrape.contains("pdfgen_core_handlebars_rendering_count"))
                 }
             } finally {
-                PDFGenCore.init(coreEnvironment)
+                PDFGenCore.init(
+                    initialEnvironment = coreEnvironment,
+                    meterRegistry = SimpleMeterRegistry(),
+                )
             }
         }
     }
