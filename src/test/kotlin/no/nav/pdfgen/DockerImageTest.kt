@@ -1,65 +1,76 @@
 package no.nav.pdfgen
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.accept
 import io.ktor.client.request.get
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.jackson.jackson
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.utility.MountableFile
 import kotlin.io.path.Path
 
 internal class DockerImageTest {
-    @Test
-    internal fun `Test Dockerfile`() {
-        Network.newNetwork().use { network ->
-            GenericContainer(ImageFromDockerfile().withDockerfile(Path("./Dockerfile")))
-                .withNetwork(network)
-                .withCopyToContainer(MountableFile.forHostPath("templates"), "/app/templates")
-                .withCopyToContainer(MountableFile.forHostPath("fonts"), "/app/fonts")
-                .withCopyToContainer(MountableFile.forHostPath("resources"), "/app/resources")
-                .withExposedPorts(8080)
-                .waitingFor(Wait.forHttp("/internal/is_ready"))
-                .use { pdfgenContainer ->
-                    pdfgenContainer.start()
+    @Nested
+    inner class PackagedStartupTests {
+        @Test
+        fun `EngineMain starts with group size variables unset`() = runTest {
+            // Arrange
+            val groupSizeOverrides = emptyMap<String, String>()
 
-                    runBlocking {
-                        val pdfgenContainerUrlIsReady = pdfgenContainer.buildUrl("internal/is_ready")
+            // Act
+            val responseStatus = startPackagedApplication(groupSizeOverrides)
 
-                        HttpClient(CIO) {
-                            install(ContentNegotiation) {
-                                jackson {
-                                    registerKotlinModule()
-                                    registerModule(JavaTimeModule())
-                                    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                                    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                                }
-                            }
-                        }.use { httpClient ->
-                            val response =
-                                httpClient.get(pdfgenContainerUrlIsReady) {
-                                    accept(ContentType.Application.Json)
-                                }
+            // Assert
+            assertEquals(HttpStatusCode.OK, responseStatus)
+        }
 
-                            Assertions.assertEquals(HttpStatusCode.OK, response.status)
-                        }
-                    }
-                }
+        @Test
+        fun `EngineMain starts with overridden Netty group sizes`() = runTest {
+            // Arrange
+            val groupSizeOverrides = mapOf(
+                "WORKER_GROUP_SIZE" to "2",
+                "CONNECTION_GROUP_SIZE" to "1",
+                "CALL_GROUP_SIZE" to "2",
+            )
+
+            // Act
+            val responseStatus = startPackagedApplication(groupSizeOverrides)
+
+            // Assert
+            assertEquals(HttpStatusCode.OK, responseStatus)
         }
     }
 
-    private fun GenericContainer<*>.buildUrl(url: String) = "http://${this.host}:${this.getMappedPort(8080)}/$url"
+    private val groupSizeEnvironmentVariables =
+        setOf("WORKER_GROUP_SIZE", "CONNECTION_GROUP_SIZE", "CALL_GROUP_SIZE")
+
+    private suspend fun startPackagedApplication(groupSizeOverrides: Map<String, String>): HttpStatusCode =
+        GenericContainer(ImageFromDockerfile().withDockerfile(Path("./Dockerfile")))
+            .withCopyToContainer(MountableFile.forHostPath("templates"), "/app/templates")
+            .withCopyToContainer(MountableFile.forHostPath("fonts"), "/app/fonts")
+            .withCopyToContainer(MountableFile.forHostPath("resources"), "/app/resources")
+            .withEnv(groupSizeOverrides)
+            .withExposedPorts(8080)
+            .waitingFor(Wait.forHttp("/internal/is_ready"))
+            .use { container ->
+                container.start()
+
+                // verify that environment is as expected
+                assertEquals(
+                    groupSizeOverrides,
+                    container.envMap.filterKeys { it in groupSizeEnvironmentVariables },
+                )
+
+                HttpClient(CIO).use { client ->
+                    client
+                        .get(
+                            "http://${container.host}:${container.getMappedPort(8080)}/internal/is_ready",
+                        ).status
+                }
+            }
 }
