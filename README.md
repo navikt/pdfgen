@@ -40,9 +40,11 @@ COPY templates /app/templates # handlebars templates
 COPY fonts /app/fonts         # fonts to be embedded
 COPY resources /app/resources # additional resources
 ```
-If you need to specify your own worker group size, connection group size or call group size you may add these as environment variables in the 
-Dockerfile. The variable names are WORKER_GROUP_SIZE, CONNECTION_GROUP_SIZE and CALL_GROUP_SIZE.
-
+You can optionally override the Netty worker, connection and call group sizes with the `WORKER_GROUP_SIZE`,
+`CONNECTION_GROUP_SIZE` and `CALL_GROUP_SIZE` environment variables. If unset, Ktor sizes these groups from
+the JVM's reported processor count. Leaving the CPU limit unset in a NAIS manifest does not guarantee that
+this count matches the pod's CPU request. Leave the overrides unset unless load testing shows that different
+group sizes are needed.
 
 Check GitHub releases to find the latest `release` version 
 Check [GitHub releases](https://github.com/navikt/pdfgen/releases) to find the latest `release` version

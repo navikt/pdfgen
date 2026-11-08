@@ -11,6 +11,8 @@ updates:
       - maven-github
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "build(deps): "
     cooldown:
       default-days: 7
       exclude:
@@ -31,6 +33,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "build(deps): "
     cooldown:
       default-days: 0
     open-pull-requests-limit: 15
@@ -39,6 +43,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "ci(deps): "
     cooldown:
       default-days: 7
     open-pull-requests-limit: 15

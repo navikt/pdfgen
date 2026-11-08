@@ -1,0 +1,16 @@
+ktor:
+  deployment:
+    port: "$SERVER_PORT:8080"
+    workerGroupSize: "${?WORKER_GROUP_SIZE}"
+    connectionGroupSize: "${?CONNECTION_GROUP_SIZE}"
+    callGroupSize: "${?CALL_GROUP_SIZE}"
+    responseWriteTimeoutSeconds: 70
+    shutdownGracePeriod: 15000
+    shutdownTimeout: 20000
+  application:
+    modules:
+      - no.nav.pdfgen.ApplicationKt.module
+pdfgen:
+  isDevMode: "$DEV_MODE:false"
+  disablePdfGet: "$DISABLE_PDF_GET:false"
+  enableHtmlEndpoint: "$ENABLE_HTML_ENDPOINT:false"
