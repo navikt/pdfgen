@@ -21,8 +21,6 @@ val ktLintClientVersion = "1.8.0"
 
 // Transitive dependency alignment
 val commonsCompressVersion = "1.28.0"
-val commonsIoVersion = "2.22.0"
-val rhinoVersion = "1.9.2"
 val nettyVersion = "4.2.19.Final"
 
 plugins {
@@ -61,14 +59,6 @@ dependencies {
     implementation(platform("io.ktor:ktor-bom:$ktorVersion"))
     implementation(platform("io.netty:netty-bom:$nettyVersion"))
     implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
-    constraints {
-        implementation("commons-io:commons-io:$commonsIoVersion") {
-            because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
-        }
-        implementation("org.mozilla:rhino:$rhinoVersion") {
-            because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
-        }
-    }
 
     // PDF generation and templates
     implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
