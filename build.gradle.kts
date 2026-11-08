@@ -7,7 +7,6 @@ val javaVersion = 25
 
 val pdfgencoreVersion = "1.1.90"
 val handlebarsJackson2Version = "4.3.1"
-val jacksonVersion = "2.22.4"
 val jackson3Version = "3.2.4"
 val ktorVersion = "3.6.1"
 val logbackVersion = "1.6.6"
@@ -62,7 +61,6 @@ dependencies {
 
     // PDF generation and templates
     implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
-    implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
 
@@ -75,7 +73,6 @@ dependencies {
 
     // JSON serialization
     implementation("io.ktor:ktor-serialization-jackson")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     // Logging and metrics
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -84,12 +81,16 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
 
     // Testing
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.ktor:ktor-client-cio")
     testImplementation("io.ktor:ktor-client-content-negotiation")
     testImplementation("io.ktor:ktor-server-test-host")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
+
+    testImplementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
+    testImplementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
 }
