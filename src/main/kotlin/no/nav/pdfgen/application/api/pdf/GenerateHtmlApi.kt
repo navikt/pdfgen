@@ -25,11 +25,10 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
                 createHtmlFromTemplateData(template, applicationName)?.let {
                     call.response.header("Content-Type", ContentType.Text.Html.toString())
                     call.respond(it)
-                }
-                    ?: call.respondText(
-                        "Template or application not found",
-                        status = HttpStatusCode.NotFound,
-                    )
+                } ?: call.respondText(
+                    "Template or application not found",
+                    status = HttpStatusCode.NotFound,
+                )
             }
         }
 
