@@ -6,10 +6,12 @@ val testTemplateInvalidFonts: String = getResource("/html/test_template_invalid_
 val testJpg: ByteArray = getResource("/image/test.jpg")
 val testPng: ByteArray = getResource("/image/test.png")
 
-internal inline fun <reified T> getResource(path: String): T = PdfGenITest::class.java.getResourceAsStream(path).use { stream ->
+internal inline fun <reified T> getResource(path: String): T = getResourceOrNull<T>(path) ?: error("Classpath resource not found: $path")
+
+internal inline fun <reified T> getResourceOrNull(path: String): T? = PdfGenITest::class.java.getResourceAsStream(path)?.use { stream ->
     when (T::class) {
-        String::class -> stream!!.bufferedReader(Charsets.UTF_8).use { it.readText() } as T
-        ByteArray::class -> stream!!.readBytes() as T
+        String::class -> stream.bufferedReader(Charsets.UTF_8).use { it.readText() } as T
+        ByteArray::class -> stream.readBytes() as T
         else -> throw UnsupportedOperationException()
     }
 }

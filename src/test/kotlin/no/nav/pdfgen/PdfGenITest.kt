@@ -226,8 +226,5 @@ internal class PdfGenITest {
     private fun templateJson(
         applicationName: String,
         templateName: String,
-    ): String = javaClass
-        .getResourceAsStream("/data/$applicationName/$templateName.json")
-        ?.use { it.readBytes().toString(Charsets.UTF_8) }
-        ?: "{}"
+    ): String = getResourceOrNull("/data/$applicationName/$templateName.json") ?: "{}"
 }

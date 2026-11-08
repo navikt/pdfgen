@@ -31,11 +31,10 @@ internal class RenderingTest {
     internal fun `All PDFs should render with default values`() {
         templates
             .map { it.key }
-            .forEach {
-                val (applicationName, templateName) = it
-                val node = javaClass
-                    .getResourceAsStream("/data/$applicationName/$templateName.json")
-                    ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
+            .forEach { template ->
+                val (applicationName, templateName) = template
+                val node = getResourceOrNull<String>("/data/$applicationName/$templateName.json")
+                    ?.let { json -> objectMapper.readValue(json, JsonNode::class.java) }
                     ?: objectMapper.createObjectNode()
 
                 println(
@@ -52,27 +51,34 @@ internal class RenderingTest {
             "All templates render as PDF/A-2a, and supported templates as PDF/UA-1 compliant documents",
             templates.map { it.key }.map { (applicationName, templateName) ->
                 Executable {
-                    val node = javaClass
-                        .getResourceAsStream("/data/$applicationName/$templateName.json")
-                        ?.use { that -> objectMapper.readValue(that, JsonNode::class.java) }
+                    val node = getResourceOrNull<String>("/data/$applicationName/$templateName.json")
+                        ?.let { json -> objectMapper.readValue(json, JsonNode::class.java) }
                         ?: objectMapper.createObjectNode()
 
-                    val profiles =
-                        if ((applicationName to templateName) in pdfUaExcludedTemplates) {
-                            listOf(PDFAFlavour.PDFA_2_A)
-                        } else {
-                            requiredProfiles
-                        }
+                    val profiles = if ((applicationName to templateName) in pdfUaExcludedTemplates) {
+                        listOf(PDFAFlavour.PDFA_2_A)
+                    } else {
+                        requiredProfiles
+                    }
+
                     println(
                         "Validates the template $templateName for application $applicationName against $profiles",
                     )
 
-                    val doc = render(applicationName, templateName, node)
-                    val pdf = createPDFA(doc!!)
+                    val doc = requireNotNull(
+                        render(
+                            directoryName = applicationName,
+                            template = templateName,
+                            jsonNode = node,
+                        ),
+                    )
+
+                    val pdf = createPDFA(doc)
+
                     assertCompliant(
-                        pdf,
-                        "template '$templateName' for application '$applicationName'",
-                        profiles,
+                        pdf = pdf,
+                        documentDescription = "template '$templateName' for application '$applicationName'",
+                        profiles = profiles,
                     )
                 }
             },

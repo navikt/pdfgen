@@ -12,7 +12,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.nav.pdfgen.core.Environment
-import org.apache.pdfbox.io.IOUtils
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -38,14 +37,9 @@ internal class PdfgenPerformanceTest {
                                 (1..passes)
                                     .map {
                                         launch {
-                                            val json =
-                                                javaClass
-                                                    .getResourceAsStream(
-                                                        "/data/$applicationName/$templateName.json",
-                                                    )?.use {
-                                                        IOUtils.toByteArray(it).toString(Charsets.UTF_8)
-                                                    }
-                                                    ?: "{}"
+                                            val json = getResourceOrNull<String>(
+                                                "/data/$applicationName/$templateName.json",
+                                            ) ?: "{}"
 
                                             val response =
                                                 client
@@ -88,10 +82,9 @@ internal class PdfgenPerformanceTest {
                     )
                     val startTime = System.currentTimeMillis()
                     repeat(passes) {
-                        val json = javaClass
-                            .getResourceAsStream(
-                                "/data/$applicationName/$templateName.json",
-                            )?.use { IOUtils.toByteArray(it).toString(Charsets.UTF_8) }
+                        val json = getResourceOrNull<String>(
+                            "/data/$applicationName/$templateName.json",
+                        )
                             ?: "{}"
 
                         val response =
