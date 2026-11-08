@@ -6,6 +6,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.contentType
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveText
+import io.ktor.server.request.requirePathParameter
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondBytes
@@ -25,37 +26,26 @@ import no.nav.pdfgen.logger
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-private fun renderTemplatePdf(
-    html: String,
-    meterRegistry: MeterRegistry,
-): ByteArray {
-    val startNanos = System.nanoTime()
-    return try {
-        createPDFA(html)
-    } finally {
-        recordPdfRendering(
-            meterRegistry = meterRegistry,
-            templateType = "template",
-            durationNanos = System.nanoTime() - startNanos,
-        )
-    }
-}
-
 fun Route.registerGeneratePdfApi(
     env: Environment,
     meterRegistry: MeterRegistry,
 ) {
     if (!env.disablePdfGet) {
         get("/{applicationName}/{template}") {
-            val template = call.parameters["template"]!!
-            val applicationName = call.parameters["applicationName"]!!
+            val template = call.requirePathParameter("template")
+            val applicationName = call.requirePathParameter("applicationName")
 
             createHtmlFromTemplateData(
                 template = template,
                 directoryName = applicationName,
             )?.let { document ->
                 call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-                call.respond(renderTemplatePdf(document, meterRegistry))
+                call.respond(
+                    renderTemplatePdf(
+                        html = document,
+                        meterRegistry = meterRegistry,
+                    ),
+                )
             } ?: call.respondText(
                 "Template or application not found",
                 status = HttpStatusCode.NotFound,
@@ -65,8 +55,8 @@ fun Route.registerGeneratePdfApi(
 
     post("/{applicationName}/{template}") {
         val startTime = System.currentTimeMillis()
-        val template = call.parameters["template"]!!
-        val applicationName = call.parameters["applicationName"]!!
+        val template = call.requirePathParameter("template")
+        val applicationName = call.requirePathParameter("applicationName")
         val jsonNode: JsonNode = call.receive()
 
         createHtml(
@@ -75,7 +65,12 @@ fun Route.registerGeneratePdfApi(
             jsonPayload = jsonNode,
         )?.let { document ->
             call.response.header("Content-Type", ContentType.Application.Pdf.toString())
-            call.respond(renderTemplatePdf(document, meterRegistry))
+            call.respond(
+                renderTemplatePdf(
+                    html = document,
+                    meterRegistry = meterRegistry,
+                ),
+            )
             logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         } ?: call.respondText(
             "Template or application not found",
@@ -84,7 +79,7 @@ fun Route.registerGeneratePdfApi(
     }
 
     post("/html/{applicationName}") {
-        val applicationName = call.parameters["applicationName"]!!
+        val applicationName = call.requirePathParameter("applicationName")
         val startNanos = System.nanoTime()
         var durationMillis: Double
         try {
@@ -105,7 +100,7 @@ fun Route.registerGeneratePdfApi(
     }
 
     post("/image/{applicationName}") {
-        val applicationName = call.parameters["applicationName"]!!
+        val applicationName = call.requirePathParameter("applicationName")
         val startNanos = System.nanoTime()
         var durationMillis: Double
         var generatedPdf = false
@@ -155,5 +150,21 @@ fun Route.registerGeneratePdfApi(
         if (generatedPdf) {
             logger.info("Generated PDF using image for $applicationName in ${durationMillis}ms")
         }
+    }
+}
+
+private fun renderTemplatePdf(
+    html: String,
+    meterRegistry: MeterRegistry,
+): ByteArray {
+    val startNanos = System.nanoTime()
+    return try {
+        createPDFA(html)
+    } finally {
+        recordPdfRendering(
+            meterRegistry = meterRegistry,
+            templateType = "template",
+            durationNanos = System.nanoTime() - startNanos,
+        )
     }
 }

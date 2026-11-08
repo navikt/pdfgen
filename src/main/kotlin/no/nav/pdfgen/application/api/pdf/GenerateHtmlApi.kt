@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
+import io.ktor.server.request.requirePathParameter
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -19,8 +20,8 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
     if (env.enableHtmlEndpoint) {
         if (!env.disablePdfGet) {
             get("/{applicationName}/{template}") {
-                val template = call.parameters["template"]!!
-                val applicationName = call.parameters["applicationName"]!!
+                val template = call.requirePathParameter("template")
+                val applicationName = call.requirePathParameter("applicationName")
                 createHtmlFromTemplateData(template, applicationName)?.let {
                     call.response.header("Content-Type", ContentType.Text.Html.toString())
                     call.respond(it)
@@ -34,8 +35,8 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
 
         post("/{applicationName}/{template}") {
             val startTime = System.currentTimeMillis()
-            val template = call.parameters["template"]!!
-            val applicationName = call.parameters["applicationName"]!!
+            val template = call.requirePathParameter("template")
+            val applicationName = call.requirePathParameter("applicationName")
             val jsonNode: JsonNode = call.receive()
 
             createHtml(template, applicationName, jsonNode)?.let {
