@@ -10,5 +10,4 @@ ENV JDK_JAVA_OPTIONS="--enable-native-access=ALL-UNNAMED -Dlogback.configuration
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/bin/java"]
-CMD ["-cp", "/lib/*", "no.nav.pdfgen.ApplicationKt"]
+ENTRYPOINT ["/usr/bin/java", "-cp", "/lib/*", "no.nav.pdfgen.ApplicationKt"]
