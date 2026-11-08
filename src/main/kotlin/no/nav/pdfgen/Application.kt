@@ -19,6 +19,10 @@ import org.slf4j.LoggerFactory
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 
+private const val IS_DEV_MODE_PROPERTY = "pdfgen.isDevMode"
+private const val DISABLE_PDF_GET_PROPERTY = "pdfgen.disablePdfGet"
+private const val ENABLE_HTML_ENDPOINT_PROPERTY = "pdfgen.enableHtmlEndpoint"
+
 val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
 fun main(args: Array<String>) = EngineMain.main(args)
@@ -27,9 +31,9 @@ fun Application.module() {
     val config = environment.config
 
     val pdfgenEnvironment = Environment(
-        isDevMode = config.propertyOrNull("pdfgen.isDevMode")?.getString() == "true",
-        disablePdfGet = config.propertyOrNull("pdfgen.disablePdfGet")?.getString() == "true",
-        enableHtmlEndpoint = config.propertyOrNull("pdfgen.enableHtmlEndpoint")?.getString() == "true",
+        isDevMode = config.propertyOrNull(IS_DEV_MODE_PROPERTY)?.getString() == "true",
+        disablePdfGet = config.propertyOrNull(DISABLE_PDF_GET_PROPERTY)?.getString() == "true",
+        enableHtmlEndpoint = config.propertyOrNull(ENABLE_HTML_ENDPOINT_PROPERTY)?.getString() == "true",
     )
 
     // Route OpenHTMLToPDF logs through the application's SLF4J/Logback configuration.
