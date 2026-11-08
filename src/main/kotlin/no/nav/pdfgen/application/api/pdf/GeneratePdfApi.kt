@@ -2,6 +2,7 @@ package no.nav.pdfgen.application.api.pdf
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.contentType
 import io.ktor.server.request.receive
@@ -18,6 +19,10 @@ import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.application.api.APPLICATION_NAME_PARAMETER
+import no.nav.pdfgen.application.api.ApiMessages
+import no.nav.pdfgen.application.api.TEMPLATE_PARAMETER
+import no.nav.pdfgen.application.metrics.PdfRenderingMetric
 import no.nav.pdfgen.application.metrics.recordPdfRendering
 import no.nav.pdfgen.core.pdf.createHtml
 import no.nav.pdfgen.core.pdf.createHtmlFromTemplateData
@@ -32,14 +37,14 @@ fun Route.registerGeneratePdfApi(
 ) {
     if (!env.disablePdfGet) {
         get("/{applicationName}/{template}") {
-            val template = call.requirePathParameter("template")
-            val applicationName = call.requirePathParameter("applicationName")
+            val template = call.requirePathParameter(TEMPLATE_PARAMETER)
+            val applicationName = call.requirePathParameter(APPLICATION_NAME_PARAMETER)
 
             createHtmlFromTemplateData(
                 template = template,
                 directoryName = applicationName,
             )?.let { document ->
-                call.response.header("Content-Type", ContentType.Application.Pdf.toString())
+                call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
                 call.respond(
                     renderTemplatePdf(
                         html = document,
@@ -47,7 +52,7 @@ fun Route.registerGeneratePdfApi(
                     ),
                 )
             } ?: call.respondText(
-                "Template or application not found",
+                ApiMessages.TEMPLATE_OR_APPLICATION_NOT_FOUND,
                 status = HttpStatusCode.NotFound,
             )
         }
@@ -55,8 +60,8 @@ fun Route.registerGeneratePdfApi(
 
     post("/{applicationName}/{template}") {
         val startTime = System.currentTimeMillis()
-        val template = call.requirePathParameter("template")
-        val applicationName = call.requirePathParameter("applicationName")
+        val template = call.requirePathParameter(TEMPLATE_PARAMETER)
+        val applicationName = call.requirePathParameter(APPLICATION_NAME_PARAMETER)
         val jsonNode: JsonNode = call.receive()
 
         createHtml(
@@ -64,7 +69,7 @@ fun Route.registerGeneratePdfApi(
             directoryName = applicationName,
             jsonPayload = jsonNode,
         )?.let { document ->
-            call.response.header("Content-Type", ContentType.Application.Pdf.toString())
+            call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
             call.respond(
                 renderTemplatePdf(
                     html = document,
@@ -73,25 +78,25 @@ fun Route.registerGeneratePdfApi(
             )
             logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         } ?: call.respondText(
-            "Template or application not found",
+            ApiMessages.TEMPLATE_OR_APPLICATION_NOT_FOUND,
             status = HttpStatusCode.NotFound,
         )
     }
 
     post("/html/{applicationName}") {
-        val applicationName = call.requirePathParameter("applicationName")
+        val applicationName = call.requirePathParameter(APPLICATION_NAME_PARAMETER)
         val startNanos = System.nanoTime()
         var durationMillis: Double
         try {
             val html = call.receiveText()
 
-            call.response.header("Content-Type", ContentType.Application.Pdf.toString())
+            call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
             call.respond(createPDFA(html))
         } finally {
             val durationNanos = System.nanoTime() - startNanos
             recordPdfRendering(
                 meterRegistry = meterRegistry,
-                templateType = "converthtml",
+                templateType = PdfRenderingMetric.TEMPLATE_TYPE_HTML_CONVERSION,
                 durationNanos = durationNanos,
             )
             durationMillis = durationNanos / 1_000_000.0
@@ -100,7 +105,7 @@ fun Route.registerGeneratePdfApi(
     }
 
     post("/image/{applicationName}") {
-        val applicationName = call.requirePathParameter("applicationName")
+        val applicationName = call.requirePathParameter(APPLICATION_NAME_PARAMETER)
         val startNanos = System.nanoTime()
         var durationMillis: Double
         var generatedPdf = false
@@ -115,7 +120,7 @@ fun Route.registerGeneratePdfApi(
                                 try {
                                     createPDFA(inputStream, outputStream)
                                     call.response.header(
-                                        "Content-Type",
+                                        HttpHeaders.ContentType,
                                         ContentType.Application.Pdf.toString(),
                                     )
                                     call.respondBytes(
@@ -141,7 +146,7 @@ fun Route.registerGeneratePdfApi(
             val durationNanos = System.nanoTime() - startNanos
             recordPdfRendering(
                 meterRegistry = meterRegistry,
-                templateType = "convertjpeg",
+                templateType = PdfRenderingMetric.TEMPLATE_TYPE_IMAGE_CONVERSION,
                 durationNanos = durationNanos,
             )
             durationMillis = durationNanos / 1_000_000.0
@@ -163,7 +168,7 @@ private fun renderTemplatePdf(
     } finally {
         recordPdfRendering(
             meterRegistry = meterRegistry,
-            templateType = "template",
+            templateType = PdfRenderingMetric.TEMPLATE_TYPE_TEMPLATE,
             durationNanos = System.nanoTime() - startNanos,
         )
     }

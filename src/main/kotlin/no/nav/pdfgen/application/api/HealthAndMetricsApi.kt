@@ -13,12 +13,12 @@ private val prometheusContentType = ContentType.parse("text/plain; version=0.0.4
 val isReadyKey = AttributeKey<Boolean>("isReady")
 
 fun Routing.registerHealthApi(meterRegistry: PrometheusMeterRegistry) {
-    get("/internal/is_alive") {
+    get(ApiPaths.IS_ALIVE) {
         // always return success for liveness
         call.respondText("I'm alive")
     }
 
-    get("/internal/is_ready") {
+    get(ApiPaths.IS_READY) {
         val isReady = call.application.attributes.getOrNull(isReadyKey) ?: false
 
         if (isReady) {
@@ -31,7 +31,7 @@ fun Routing.registerHealthApi(meterRegistry: PrometheusMeterRegistry) {
         }
     }
 
-    get("/internal/prometheus") {
+    get(ApiPaths.PROMETHEUS) {
         val names = call.request.queryParameters
             .getAll("name[]")
             ?.toSet()
