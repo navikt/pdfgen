@@ -5,13 +5,13 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 
 val javaVersion = 25
 
-val pdfgencoreVersion = "1.1.90"
+val pdfgencoreVersion = "1.1.91"
 val handlebarsJackson2Version = "4.3.1"
 val jackson3Version = "3.2.4"
 val ktorVersion = "3.6.1"
 val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
-val openHtmlToPdfVersion = "1.1.105"
+val openHtmlToPdfVersion = "1.1.108"
 val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
@@ -26,7 +26,7 @@ plugins {
     id("application")
     kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("io.github.ben-manes.versions") version "0.66.0"
+    id("io.github.ben-manes.versions") version "0.67.0"
 }
 
 application { mainClass = "no.nav.pdfgen.ApplicationKt" }
