@@ -17,7 +17,11 @@ import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import kotlinx.coroutines.CancellationException
 import no.nav.pdfgen.Environment
+import no.nav.pdfgen.application.api.ApiPaths
 import no.nav.pdfgen.logger
+
+private const val UNSUPPORTED_MEDIA_TYPE_MESSAGE = "Unsupported Media Type"
+private const val UNKNOWN_PATH_MESSAGE_TEMPLATE = "Unkown path '%s'. Known templates:\n"
 
 fun Application.configureStatusPages(
     templates: Map<Pair<String, String>, Template>,
@@ -25,13 +29,13 @@ fun Application.configureStatusPages(
 ) {
     install(StatusPages) {
         exception<BadRequestException> { call, _ ->
-            call.respondError(HttpStatusCode.BadRequest, "Bad Request")
+            call.respondError(HttpStatusCode.BadRequest, HttpStatusCode.BadRequest.description)
         }
         exception<UnsupportedMediaTypeException> { call, _ ->
-            call.respondError(HttpStatusCode.UnsupportedMediaType, "Unsupported Media Type")
+            call.respondError(HttpStatusCode.UnsupportedMediaType, UNSUPPORTED_MEDIA_TYPE_MESSAGE)
         }
         exception<CannotTransformContentToTypeException> { call, _ ->
-            call.respondError(HttpStatusCode.UnsupportedMediaType, "Unsupported Media Type")
+            call.respondError(HttpStatusCode.UnsupportedMediaType, UNSUPPORTED_MEDIA_TYPE_MESSAGE)
         }
         exception<NotFoundException> { call, _ ->
             call.respondNotFound(templates, environment)
@@ -41,7 +45,7 @@ fun Application.configureStatusPages(
                 throw cause
             }
             logger.error("Caught exception", cause)
-            call.respondError(HttpStatusCode.InternalServerError, "Internal Server Error")
+            call.respondError(HttpStatusCode.InternalServerError, HttpStatusCode.InternalServerError.description)
         }
         status(HttpStatusCode.NotFound) { call, _ ->
             call.respondNotFound(templates, environment)
@@ -77,16 +81,16 @@ private fun messageFor404(
     path: String,
     environment: Environment,
 ): String = if (environment.enableHtmlEndpoint && !environment.disablePdfGet) {
-    "Unkown path '$path'. Known templates:\n" +
+    UNKNOWN_PATH_MESSAGE_TEMPLATE.format(path) +
         templates
-            .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
+            .map { (app, _) -> "${ApiPaths.GENERATE_PDF}/${app.first}/${app.second}" }
             .joinToString("\n") +
         templates
-            .map { (app, _) -> "/api/v1/genhtml/%s/%s".format(app.first, app.second) }
+            .map { (app, _) -> "${ApiPaths.GENERATE_HTML}/${app.first}/${app.second}" }
             .joinToString("\n")
 } else {
-    "Unkown path '$path'. Known templates:\n" +
+    UNKNOWN_PATH_MESSAGE_TEMPLATE.format(path) +
         templates
-            .map { (app, _) -> "/api/v1/genpdf/%s/%s".format(app.first, app.second) }
+            .map { (app, _) -> "${ApiPaths.GENERATE_PDF}/${app.first}/${app.second}" }
             .joinToString("\n")
 }
