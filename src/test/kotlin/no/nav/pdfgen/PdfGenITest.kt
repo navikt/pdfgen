@@ -1,5 +1,3 @@
-@file:Suppress("BlockingMethodInNonBlockingContext")
-
 package no.nav.pdfgen
 
 import io.ktor.client.request.post
