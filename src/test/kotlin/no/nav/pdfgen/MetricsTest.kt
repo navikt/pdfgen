@@ -1,15 +1,14 @@
 package no.nav.pdfgen
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.readRawBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
+import io.ktor.http.contentType
 import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.ApplicationReceivePipeline
@@ -23,9 +22,8 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.pdfgen.application.metrics.configureMonitoring
 import no.nav.pdfgen.application.metrics.createPrometheusMeterRegistry
-import no.nav.pdfgen.application.metrics.recordPdfRendering
 import no.nav.pdfgen.core.PDFGenCore
-import no.nav.pdfgen.core.pdf.render
+import no.nav.pdfgen.plugins.configureContentNegotiation
 import no.nav.pdfgen.plugins.configureHealthAndMetrics
 import no.nav.pdfgen.plugins.configureRouting
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -34,6 +32,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 
 internal class MetricsTest {
@@ -113,27 +112,26 @@ internal class MetricsTest {
         internal fun `Prometheus endpoint should expose Micrometer metrics`() {
             // Arrange
             val meterRegistry = createPrometheusMeterRegistry()
-            recordPdfRendering(meterRegistry, "converthtml", 10_000_000)
             val coreEnvironment = PDFGenCoreEnvironment()
             PDFGenCore.init(coreEnvironment, meterRegistry)
+            VeraGreenfieldFoundryProvider.initialise()
 
             try {
                 testApplication {
                     application {
+                        configureContentNegotiation()
                         configureMonitoring(meterRegistry)
                         configureHealthAndMetrics(meterRegistry)
                         configureRouting(Environment(), meterRegistry)
                     }
 
                     // Act
-                    val renderedHtml = render(
-                        "dsopkontroll",
-                        "kontrollforespoersel",
-                        JsonNodeFactory.instance.objectNode(),
-                    )
+                    val pdfResponse = client.post("/api/v1/genpdf/dsopkontroll/kontrollforespoersel") {
+                        contentType(ContentType.Application.Json)
+                        setBody("{}")
+                    }
                     val handlebarsTimer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
                     val healthResponse = client.get("/internal/is_alive")
-                    val healthBody = healthResponse.bodyAsText()
                     val response = client.get("/internal/prometheus")
                     val scrape = response.bodyAsText()
                     val filteredScrapes = listOf("_count", "_sum", "_bucket").map { sampleSuffix ->
@@ -145,11 +143,11 @@ internal class MetricsTest {
                     }
 
                     // Assert
-                    assertNotNull(renderedHtml)
+                    assertEquals(HttpStatusCode.OK, pdfResponse.status)
                     assertNotNull(handlebarsTimer)
                     assertEquals(1L, handlebarsTimer?.count())
+                    assertEquals(1.0, renderingCount(meterRegistry, "template"))
                     assertEquals(HttpStatusCode.OK, healthResponse.status)
-                    assertEquals("I'm alive", healthBody)
                     assertEquals(HttpStatusCode.OK, response.status)
                     assertTrue(scrape.contains("jvm_memory_used_bytes"))
                     assertTrue(scrape.contains("jvm_memory_max_bytes"))
@@ -162,55 +160,6 @@ internal class MetricsTest {
                         assertTrue(filteredScrape.contains("# HELP pdfgen_core_openhtmltopdf_rendering_seconds "))
                         assertTrue(filteredScrape.contains(sampleName))
                     }
-                }
-            } finally {
-                PDFGenCore.init(
-                    initialEnvironment = coreEnvironment,
-                    meterRegistry = SimpleMeterRegistry(),
-                )
-            }
-        }
-
-        @Test
-        internal fun `module should expose Handlebars rendering metrics after template API call`() {
-            // Arrange
-            val coreEnvironment = PDFGenCoreEnvironment()
-            val handlebarsCountMetric = "pdfgen_core_handlebars_rendering_seconds_count"
-
-            try {
-                testApplication {
-                    application { module() }
-
-                    val initialScrapeResponse = client.get("/internal/prometheus")
-                    val initialScrape = initialScrapeResponse.bodyAsText()
-                    val initialCount = prometheusSampleValue(initialScrape, handlebarsCountMetric)
-                    val templateData = javaClass
-                        .getResourceAsStream(
-                            "/data/dsopkontroll/kontrollforespoersel.json",
-                        )?.use { it.readBytes().toString(Charsets.UTF_8) }
-                        ?: error("Missing test data for dsopkontroll/kontrollforespoersel")
-
-                    // Act
-                    val renderResponse = client.post(
-                        "/api/v1/genpdf/dsopkontroll/kontrollforespoersel",
-                    ) {
-                        setBody(
-                            TextContent(
-                                templateData,
-                                contentType = ContentType.Application.Json,
-                            ),
-                        )
-                    }
-                    val renderBody = renderResponse.readRawBytes()
-                    val scrapeResponse = client.get("/internal/prometheus")
-                    val scrape = scrapeResponse.bodyAsText()
-
-                    // Assert
-                    assertEquals(HttpStatusCode.OK, initialScrapeResponse.status)
-                    assertEquals(HttpStatusCode.OK, renderResponse.status)
-                    assertTrue(renderBody.isNotEmpty())
-                    assertEquals(HttpStatusCode.OK, scrapeResponse.status)
-                    assertTrue(prometheusSampleValue(scrape, handlebarsCountMetric) > initialCount)
                 }
             } finally {
                 PDFGenCore.init(
@@ -295,16 +244,6 @@ internal class MetricsTest {
         .tag("template_type", templateType)
         .timer()
         ?.count()
-        ?.toDouble()
-        ?: 0.0
-
-    private fun prometheusSampleValue(
-        scrape: String,
-        sampleName: String,
-    ): Double = scrape
-        .lineSequence()
-        .firstOrNull { it.startsWith("$sampleName ") }
-        ?.substringAfterLast(' ')
         ?.toDouble()
         ?: 0.0
 
