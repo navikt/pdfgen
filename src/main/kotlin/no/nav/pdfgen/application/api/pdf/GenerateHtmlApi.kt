@@ -43,11 +43,10 @@ fun Route.registerGenerateHtmlApi(env: Environment = Environment()) {
                 call.response.header("Content-Type", ContentType.Text.Html.toString())
                 call.respond(it)
                 logger.info("Done generating HTML in ${System.currentTimeMillis() - startTime}ms")
-            }
-                ?: call.respondText(
-                    "Template or application not found",
-                    status = HttpStatusCode.NotFound,
-                )
+            } ?: call.respondText(
+                "Template or application not found",
+                status = HttpStatusCode.NotFound,
+            )
         }
     }
 }
