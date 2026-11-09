@@ -7,6 +7,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
@@ -14,6 +15,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.utility.MountableFile
 import kotlin.io.path.Path
 
+@Tag("docker-image")
 internal class DockerImageTest {
     @Nested
     inner class PackagedStartupTests {

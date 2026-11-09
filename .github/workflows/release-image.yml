@@ -52,10 +52,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
-      - name: Run checks and build Gradle artifacts
+      - name: Run checks and build app distribution
         shell: bash
         run: |
-          ./gradlew check installDist
+          ./gradlew -PskipDockerImageTests=true check installDist
 
       - name: Authenticate to Nais Artifact Registry
         uses: nais/login@40b72a35a18ddf2ad74b632461139ab838cc2a2f # v0

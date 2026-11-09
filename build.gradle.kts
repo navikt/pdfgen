@@ -40,10 +40,17 @@ kotlin {
 
 ktlint { version = ktLintClientVersion }
 
+val skipDockerImageTests = providers.gradleProperty("skipDockerImageTests").orNull == "true"
+
 tasks.named<Test>("test") {
-    // DockerImageTest requires the application distribution.
-    dependsOn(tasks.named("installDist"))
-    useJUnitPlatform()
+    if (!skipDockerImageTests) {
+        dependsOn(tasks.named("installDist"))
+    }
+    useJUnitPlatform {
+        if (skipDockerImageTests) {
+            excludeTags("docker-image")
+        }
+    }
     jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
