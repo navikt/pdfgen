@@ -134,6 +134,7 @@ internal class MetricsTest {
                     val healthResponse = client.get("/internal/is_alive")
                     val response = client.get("/internal/prometheus")
                     val scrape = response.bodyAsText()
+                    val loadedClassesGauge = meterRegistry.find("jvm.classes.loaded").gauge()
                     val filteredScrapes = listOf("_count", "_sum", "_bucket").map { sampleSuffix ->
                         val sampleName = "pdfgen_core_openhtmltopdf_rendering_seconds$sampleSuffix"
                         val filteredResponse = client.get("/internal/prometheus") {
@@ -149,6 +150,11 @@ internal class MetricsTest {
                     assertEquals(1.0, renderingCount(meterRegistry, "template"))
                     assertEquals(HttpStatusCode.OK, healthResponse.status)
                     assertEquals(HttpStatusCode.OK, response.status)
+                    assertTrue(
+                        loadedClassesGauge != null && loadedClassesGauge.value() > 0,
+                        "JVM loaded-class gauge should be registered and positive",
+                    )
+                    assertTrue(scrape.contains("jvm_classes_loaded"))
                     assertTrue(scrape.contains("jvm_memory_used_bytes"))
                     assertTrue(scrape.contains("jvm_memory_max_bytes"))
                     assertTrue(scrape.contains("ktor_http_server_requests_seconds_count"))
