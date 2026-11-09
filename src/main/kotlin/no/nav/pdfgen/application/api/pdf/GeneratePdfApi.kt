@@ -40,17 +40,20 @@ fun Route.registerGeneratePdfApi(
             val template = call.requirePathParameter(TEMPLATE_PARAMETER)
             val applicationName = call.requirePathParameter(APPLICATION_NAME_PARAMETER)
 
-            createHtmlFromTemplateData(
-                template = template,
-                directoryName = applicationName,
-            )?.let { document ->
-                call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
-                call.respond(
+            val pdf = withContext(Dispatchers.IO) {
+                createHtmlFromTemplateData(
+                    template = template,
+                    directoryName = applicationName,
+                )?.let { document ->
                     renderTemplatePdf(
                         html = document,
                         meterRegistry = meterRegistry,
-                    ),
-                )
+                    )
+                }
+            }
+            pdf?.let {
+                call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
+                call.respond(it)
             } ?: call.respondText(
                 ApiMessages.TEMPLATE_OR_APPLICATION_NOT_FOUND,
                 status = HttpStatusCode.NotFound,
@@ -64,18 +67,21 @@ fun Route.registerGeneratePdfApi(
         val applicationName = call.requirePathParameter(APPLICATION_NAME_PARAMETER)
         val jsonNode: JsonNode = call.receive()
 
-        createHtml(
-            template = template,
-            directoryName = applicationName,
-            jsonPayload = jsonNode,
-        )?.let { document ->
-            call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
-            call.respond(
+        val pdf = withContext(Dispatchers.IO) {
+            createHtml(
+                template = template,
+                directoryName = applicationName,
+                jsonPayload = jsonNode,
+            )?.let { document ->
                 renderTemplatePdf(
                     html = document,
                     meterRegistry = meterRegistry,
-                ),
-            )
+                )
+            }
+        }
+        pdf?.let {
+            call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
+            call.respond(it)
             logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         } ?: call.respondText(
             ApiMessages.TEMPLATE_OR_APPLICATION_NOT_FOUND,
@@ -89,9 +95,12 @@ fun Route.registerGeneratePdfApi(
         var durationMillis: Double
         try {
             val html = call.receiveText()
+            val pdf = withContext(Dispatchers.IO) {
+                createPDFA(html)
+            }
 
             call.response.header(HttpHeaders.ContentType, ContentType.Application.Pdf.toString())
-            call.respond(createPDFA(html))
+            call.respond(pdf)
         } finally {
             val durationNanos = System.nanoTime() - startNanos
             recordPdfRendering(
