@@ -5,22 +5,28 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 
 val javaVersion = 25
 
-val pdfgencoreVersion = "1.1.92"
-val handlebarsJackson2Version = "4.3.1"
-val jackson3Version = "3.2.4"
-val ktorVersion = "3.6.1"
+// PDF generation
+val pdfgenCoreVersion = "1.1.92"
+val openHtmlToPdfVersion = "1.1.108"
+val verapdfVersion = "1.30.3"
+
+// Logging and metrics
 val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
-val openHtmlToPdfVersion = "1.1.108"
 val micrometerVersion = "1.17.2"
-val junitJupiterVersion = "6.1.3"
-val verapdfVersion = "1.30.3"
-val testcontainersVersion = "2.0.5"
-val ktLintClientVersion = "1.8.0"
 
-// Transitive dependency alignment
-val commonsCompressVersion = "1.28.0"
+// Test dependencies
+val handlebarsJackson2Version = "4.3.1"
+val junitJupiterVersion = "6.1.3"
+val testcontainersVersion = "2.0.5"
+
+// Dependency alignment
+val ktorVersion = "3.6.1"
+val jackson3Version = "3.2.4"
 val nettyVersion = "4.2.19.Final"
+
+// Tooling
+val ktLintClientVersion = "1.8.0"
 
 plugins {
     id("application")
@@ -67,7 +73,7 @@ dependencies {
     implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
 
     // PDF generation and templates
-    implementation("no.nav.pdfgen:pdfgen-core:$pdfgencoreVersion")
+    implementation("no.nav.pdfgen:pdfgen-core:$pdfgenCoreVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
 
