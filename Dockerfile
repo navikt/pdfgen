@@ -4,10 +4,7 @@ WORKDIR /app
 
 COPY build/install/*/lib /lib
 
-ENV JDK_JAVA_OPTIONS="--enable-native-access=ALL-UNNAMED -Dlogback.configurationFile=logback.xml" \
-    DISABLE_PDF_GET=true \
-    ENABLE_HTML_ENDPOINT=false
+ENV DISABLE_PDF_GET=true
 
 EXPOSE 8080
-
 ENTRYPOINT ["/usr/bin/java", "-cp", "/lib/*", "no.nav.pdfgen.ApplicationKt"]
