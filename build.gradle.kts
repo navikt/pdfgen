@@ -6,7 +6,7 @@ version = "2.0.0" // This will never change. See GitHub releases for docker imag
 val javaVersion = 25
 
 // PDF generation
-val pdfgenCoreVersion = "1.1.92"
+val pdfgenCoreVersion = "1.1.93"
 val openHtmlToPdfVersion = "1.1.108"
 val verapdfVersion = "1.30.3"
 
