@@ -83,6 +83,7 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --provenance=false \
+            --build-arg "APP_VERSION=${RELEASE_TAG}" \
             --tag "${IMAGE}:${RELEASE_TAG}" \
             --push .
 

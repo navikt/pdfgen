@@ -22,6 +22,7 @@ import no.nav.pdfgen.core.Environment as PDFGenCoreEnvironment
 private const val IS_DEV_MODE_PROPERTY = "pdfgen.isDevMode"
 private const val DISABLE_PDF_GET_PROPERTY = "pdfgen.disablePdfGet"
 private const val ENABLE_HTML_ENDPOINT_PROPERTY = "pdfgen.enableHtmlEndpoint"
+private const val VERSION_PROPERTY = "pdfgen.version"
 
 val logger: Logger = LoggerFactory.getLogger("pdfgen")
 
@@ -29,6 +30,11 @@ fun main(args: Array<String>) = EngineMain.main(args)
 
 fun Application.module() {
     val config = environment.config
+
+    logger.info(
+        "Starting pdfgen version {}",
+        config.propertyOrNull(VERSION_PROPERTY)?.getString() ?: "unknown",
+    )
 
     val pdfgenEnvironment = Environment(
         isDevMode = config.propertyOrNull(IS_DEV_MODE_PROPERTY)?.getString() == "true",

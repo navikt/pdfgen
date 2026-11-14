@@ -11,6 +11,7 @@ ktor:
     modules:
       - no.nav.pdfgen.ApplicationKt.module
 pdfgen:
+  version: "$APP_VERSION:unknown"
   isDevMode: "$DEV_MODE:false"
   disablePdfGet: "$DISABLE_PDF_GET:false"
   enableHtmlEndpoint: "$ENABLE_HTML_ENDPOINT:false"
