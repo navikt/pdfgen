@@ -35,6 +35,12 @@ jobs:
           fi
 
           printf 'tag=%s\n' "$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          latest_tag=$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" --jq '.tag_name')
+          if [[ "$RELEASE_TAG" == "$latest_tag" ]]; then
+            printf 'is_latest=true\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'is_latest=false\n' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Checkout release tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -79,3 +85,9 @@ jobs:
             --provenance=false \
             --tag "${IMAGE}:${RELEASE_TAG}" \
             --push .
+
+      - name: Tag image as latest
+        if: steps.validate_release.outputs.is_latest == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.validate_release.outputs.tag }}
+        run: docker buildx imagetools create --tag "${IMAGE}:latest" "${IMAGE}:${RELEASE_TAG}"
