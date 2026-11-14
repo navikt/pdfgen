@@ -10,7 +10,9 @@ updates:
     registries:
       - maven-github
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "03:00"
+      timezone: "Europe/Oslo"
     commit-message:
       prefix: "build(deps): "
     cooldown:
@@ -19,20 +21,22 @@ updates:
         - "no.nav*"
     open-pull-requests-limit: 15
     groups:
+      major-updates:
+        update-types:
+          - "major"
       nav-dependencies:
         patterns:
           - "no.nav*"
-      minor-and-patch:
+      other-dependencies:
         patterns:
           - "*"
-        update-types:
-          - "minor"
-          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "03:00"
+      timezone: "Europe/Oslo"
     commit-message:
       prefix: "ci(deps): "
     cooldown:
