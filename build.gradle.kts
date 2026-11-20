@@ -7,7 +7,7 @@ val javaVersion = 25
 
 // PDF generation
 val pdfgenCoreVersion = "2.0.0"
-val openHtmlToPdfVersion = "1.1.112"
+val openHtmlToPdfVersion = "1.1.113"
 val verapdfVersion = "1.30.4"
 
 // Logging and metrics
