@@ -11,7 +11,7 @@ val openHtmlToPdfVersion = "1.1.113"
 val verapdfVersion = "1.30.4"
 
 // Logging and metrics
-val logbackVersion = "1.6.6"
+val logbackVersion = "1.6.7"
 val logstashEncoderVersion = "9.0"
 val micrometerVersion = "1.17.2"
 
