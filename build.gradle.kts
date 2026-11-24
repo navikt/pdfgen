@@ -23,7 +23,7 @@ val testcontainersVersion = "2.0.5"
 // Dependency alignment
 val ktorVersion = "3.6.1"
 val jackson3Version = "3.3.0"
-val nettyVersion = "4.2.20.Final"
+val nettyVersion = "4.2.21.Final"
 
 // Tooling
 val ktLintClientVersion = "1.8.0"
