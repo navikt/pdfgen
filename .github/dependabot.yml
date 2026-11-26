@@ -16,7 +16,7 @@ updates:
     commit-message:
       prefix: "build(deps): "
     cooldown:
-      default-days: 7
+      default-days: 4
       exclude:
         - "no.nav*"
     open-pull-requests-limit: 15
@@ -40,5 +40,5 @@ updates:
     commit-message:
       prefix: "ci(deps): "
     cooldown:
-      default-days: 7
+      default-days: 4
     open-pull-requests-limit: 15
